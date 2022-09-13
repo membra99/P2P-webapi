@@ -1,24 +1,20 @@
 {
   "format": 1,
   "restore": {
-    "D:\\C#\\P2P_Novi\\P2P.DTO\\P2P.DTO.csproj": {}
+    "C:\\Users\\Uros\\Source\\Repos\\P2P-webapi\\P2P.DTO\\P2P.DTO.csproj": {}
   },
   "projects": {
-    "D:\\C#\\P2P_Novi\\P2P.DTO\\P2P.DTO.csproj": {
+    "C:\\Users\\Uros\\Source\\Repos\\P2P-webapi\\P2P.DTO\\P2P.DTO.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\C#\\P2P_Novi\\P2P.DTO\\P2P.DTO.csproj",
+        "projectUniqueName": "C:\\Users\\Uros\\Source\\Repos\\P2P-webapi\\P2P.DTO\\P2P.DTO.csproj",
         "projectName": "P2P.DTO",
-        "projectPath": "D:\\C#\\P2P_Novi\\P2P.DTO\\P2P.DTO.csproj",
-        "packagesPath": "C:\\Users\\teodo\\.nuget\\packages\\",
-        "outputPath": "D:\\C#\\P2P_Novi\\P2P.DTO\\obj\\",
+        "projectPath": "C:\\Users\\Uros\\Source\\Repos\\P2P-webapi\\P2P.DTO\\P2P.DTO.csproj",
+        "packagesPath": "C:\\Users\\Uros\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\Uros\\Source\\Repos\\P2P-webapi\\P2P.DTO\\obj\\",
         "projectStyle": "PackageReference",
-        "fallbackFolders": [
-          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
-        ],
         "configFilePaths": [
-          "C:\\Users\\teodo\\AppData\\Roaming\\NuGet\\NuGet.Config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
+          "C:\\Users\\Uros\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
@@ -26,7 +22,6 @@
         ],
         "sources": {
           "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
-          "C:\\Program Files\\dotnet\\library-packs": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
