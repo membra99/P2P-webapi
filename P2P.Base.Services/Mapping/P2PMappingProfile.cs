@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Entities.P2P.MainData;
+using Entities.P2P.MainData.Settings;
 using P2P.DTO.Input;
 using P2P.DTO.Output;
 using System;
@@ -12,7 +13,6 @@ namespace P2P.Base.Services.Mapping
 {
     public class P2PMappingProfile : Profile
     {
-
         public P2PMappingProfile()
         {
             #region MainData
@@ -23,6 +23,14 @@ namespace P2P.Base.Services.Mapping
 
             CreateMap<Language, LanguageODTO>();
             CreateMap<LanguageIDTO, Language>();
+
+            CreateMap<DataType, DataTypeODTO>();
+            CreateMap<DataTypeIDTO, DataType>();
+
+            
+            CreateMap<NavigationSettings, NavigationSettingsODTO>()
+                .ForMember(dest => dest.LanguageName, source => source.MapFrom(m => m.Language.LanguageName));
+            CreateMap<NavigationSettingsIDTO, NavigationSettings>();
 
             CreateMap<ReviewAttribute, ReviewAttributeODTO>();
             CreateMap<ReviewAttributeIDTO, ReviewAttribute>();

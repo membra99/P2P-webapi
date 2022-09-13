@@ -1,4 +1,5 @@
 ﻿using Entities.P2P.MainData;
+using Entities.P2P.MainData.Settings;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -15,8 +16,10 @@ namespace Entities.Context
         public DbSet<Testimonial> Testimonials { get; set; }
         public DbSet<Language> Languages { get; set; }
         public DbSet<ReviewAttribute> ReviewAttributes { get; set; }
+        public DbSet<DataType> DataTypes { get; set; }
+        public DbSet<NavigationSettings> NavigationSettings { get; set; }
 
-        #endregion
+        #endregion MainData
 
         private void P2PModelCreating(ModelBuilder modelBuilder)
         {
@@ -31,12 +34,25 @@ namespace Entities.Context
                       .OnDelete(DeleteBehavior.Restrict);
             });
 
-
             modelBuilder.Entity<Language>(entity =>
             {
                 entity.HasKey(x => x.LanguageId);
 
                 entity.HasIndex(x => x.LanguageName);
+            });
+
+            modelBuilder.Entity<DataType>(entity =>
+            {
+                entity.HasKey(x => x.DataTypeId);
+            });
+            modelBuilder.Entity<NavigationSettings>(entity =>
+            {
+                entity.HasKey(x => x.NavigationSettingsId);
+
+                entity.HasOne(x => x.Language)
+                      .WithMany(x => x.NavigationSettings)
+                      .OnDelete(DeleteBehavior.Restrict);
+
             });
 
             modelBuilder.Entity<ReviewAttribute>(entity =>
