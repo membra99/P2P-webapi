@@ -46,8 +46,6 @@ namespace P2P.Services
 
         public async Task<List<TestimonialODTO>> EditTestimonial(TestimonialIDTO testimonialIDTO)
         {
-            //noviiiii
-            //123123
             var testimonial = _mapper.Map<Testimonial>(testimonialIDTO);
 
             _context.Entry(testimonial).State = EntityState.Modified;
