@@ -14,6 +14,7 @@ namespace Entities.Context
 
         public DbSet<Testimonial> Testimonials { get; set; }
         public DbSet<Language> Languages { get; set; }
+        public DbSet<ReviewAttribute> ReviewAttributes { get; set; }
 
         #endregion
 
@@ -36,6 +37,11 @@ namespace Entities.Context
                 entity.HasKey(x => x.LanguageId);
 
                 entity.HasIndex(x => x.LanguageName);
+            });
+
+            modelBuilder.Entity<ReviewAttribute>(entity =>
+            {
+                entity.HasKey(x => x.ReviewAttributeId);
             });
 
             #endregion

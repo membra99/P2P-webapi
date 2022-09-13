@@ -24,6 +24,8 @@ namespace P2P.Base.Services.Mapping
             CreateMap<Language, LanguageODTO>();
             CreateMap<LanguageIDTO, Language>();
 
+            CreateMap<ReviewAttribute, ReviewAttributeODTO>();
+            CreateMap<ReviewAttributeIDTO, ReviewAttribute>();
             #endregion
         }
     }

@@ -128,5 +128,52 @@ namespace P2P.Services
         }
 
         #endregion Language
+
+        #region ReviewAttribute
+        private IQueryable<ReviewAttributeODTO> GetReviewAttr(int id)
+        {
+            return from x in _context.ReviewAttributes
+                   where (id == 0 || x.ReviewAttributeId == id)
+                   select _mapper.Map<ReviewAttributeODTO>(x);
+        }
+
+        public async Task<ReviewAttributeODTO> GetReviewAttribute(int id)
+        {
+            return await GetReviewAttr(id).AsNoTracking().SingleOrDefaultAsync();
+        }
+
+        public async Task<ReviewAttributeODTO> EditReviewAttribute(ReviewAttributeIDTO reviewAttributeIDTO)
+        {
+            var reviewAttribute = _mapper.Map<ReviewAttribute>(reviewAttributeIDTO);
+
+            _context.Entry(reviewAttribute).State = EntityState.Modified;
+
+            await SaveContextChangesAsync();
+
+            return await GetReviewAttribute(reviewAttribute.ReviewAttributeId);
+        }
+
+        public async Task<ReviewAttributeODTO> AddReviewAttribute(ReviewAttributeIDTO reviewAttributeIDTO)
+        {
+            var reviewAttribute = _mapper.Map<ReviewAttribute>(reviewAttributeIDTO);
+
+            _context.ReviewAttributes.Add(reviewAttribute);
+
+            await SaveContextChangesAsync();
+
+            return await GetReviewAttribute(reviewAttribute.ReviewAttributeId);
+        }
+
+        public async Task<ReviewAttributeODTO> DeleteReviewAttribute(int id)
+        {
+            var reviewAttribute = await _context.ReviewAttributes.FindAsync(id);
+            if (reviewAttribute == null) return null;
+
+            var reviewAttributeODTO = await GetReviewAttribute(id);
+            _context.ReviewAttributes.Remove(reviewAttribute);
+            await SaveContextChangesAsync();
+            return reviewAttributeODTO;
+        }
+        #endregion
     }
 }
