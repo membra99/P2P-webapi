@@ -14,8 +14,9 @@ namespace Entities.Context
 
         public DbSet<Testimonial> Testimonials { get; set; }
         public DbSet<Language> Languages { get; set; }
+        public DbSet<DataType> DataTypes { get; set; }
 
-        #endregion
+        #endregion MainData
 
         private void P2PModelCreating(ModelBuilder modelBuilder)
         {
@@ -30,7 +31,6 @@ namespace Entities.Context
                       .OnDelete(DeleteBehavior.Restrict);
             });
 
-
             modelBuilder.Entity<Language>(entity =>
             {
                 entity.HasKey(x => x.LanguageId);
@@ -38,7 +38,12 @@ namespace Entities.Context
                 entity.HasIndex(x => x.LanguageName);
             });
 
-            #endregion
+            modelBuilder.Entity<DataType>(entity =>
+            {
+                entity.HasKey(x => x.DataTypeId);
+            });
+
+            #endregion MainData
         }
     }
 }

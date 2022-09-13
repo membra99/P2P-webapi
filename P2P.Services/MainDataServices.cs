@@ -128,5 +128,57 @@ namespace P2P.Services
         }
 
         #endregion Language
+
+        #region DataType
+
+        private IQueryable<DataTypeODTO> GetDataType(int id, string dataTypeName)
+        {
+            return from x in _context.DataTypes
+                   where (id == 0 || x.DataTypeId == id)
+                   && (string.IsNullOrEmpty(dataTypeName) || x.DataTypeName.StartsWith(dataTypeName))
+                   select _mapper.Map<DataTypeODTO>(x);
+        }
+
+        public async Task<DataTypeODTO> GetDataType(int id)
+        {
+            return await GetDataType(id, null).AsNoTracking().SingleOrDefaultAsync();
+        }
+
+        public async Task<DataTypeODTO> EditDataType(DataTypeIDTO dataTypeIDTO)
+        {
+            var dataType = _mapper.Map<DataType>(dataTypeIDTO);
+
+            _context.Entry(dataType).State = EntityState.Modified;
+
+            await SaveContextChangesAsync();
+
+            return await GetDataType(dataType.DataTypeId);
+        }
+
+        public async Task<DataTypeODTO> AddDataType(DataTypeIDTO dataTypeIDTO)
+        {
+            var dataType = _mapper.Map<DataType>(dataTypeIDTO);
+
+            dataType.DataTypeId = 0;
+
+            _context.DataTypes.Add(dataType);
+
+            await SaveContextChangesAsync();
+
+            return await GetDataType(dataType.DataTypeId);
+        }
+
+        public async Task<DataTypeODTO> DeleteDataType(int id)
+        {
+            var dataType = await _context.DataTypes.FindAsync(id);
+            if (dataType == null) return null;
+
+            var dataTypeODTO = await GetDataType(id);
+            _context.DataTypes.Remove(dataType);
+            await SaveContextChangesAsync();
+            return dataTypeODTO;
+        }
+
+        #endregion DataType
     }
 }

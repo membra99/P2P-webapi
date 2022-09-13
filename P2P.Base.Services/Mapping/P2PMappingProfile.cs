@@ -12,7 +12,6 @@ namespace P2P.Base.Services.Mapping
 {
     public class P2PMappingProfile : Profile
     {
-
         public P2PMappingProfile()
         {
             #region MainData
@@ -24,7 +23,10 @@ namespace P2P.Base.Services.Mapping
             CreateMap<Language, LanguageODTO>();
             CreateMap<LanguageIDTO, Language>();
 
-            #endregion
+            CreateMap<DataType, DataTypeODTO>();
+            CreateMap<DataTypeIDTO, DataType>();
+
+            #endregion MainData
         }
     }
 }
