@@ -2,6 +2,7 @@
 using Entities.Context;
 using Entities.P2P;
 using Entities.P2P.MainData;
+using Entities.P2P.MainData.Settings;
 using Microsoft.EntityFrameworkCore;
 using P2P.Base.Services;
 using P2P.DTO.Input;
@@ -51,7 +52,7 @@ namespace P2P.Services
         public async Task<List<TestimonialODTO>> EditTestimonial(TestimonialIDTO testimonialIDTO)
         {
             var testimonial = _mapper.Map<Testimonial>(testimonialIDTO);
-
+            testimonial.TestimonialId = 0;
             _context.Entry(testimonial).State = EntityState.Modified;
 
             await SaveContextChangesAsync();
@@ -108,7 +109,7 @@ namespace P2P.Services
         public async Task<LanguageODTO> AddLanguage(LanguageIDTO languageIDTO)
         {
             var language = _mapper.Map<Language>(languageIDTO);
-
+            language.LanguageId = 0;
             _context.Languages.Add(language);
 
             await SaveContextChangesAsync();
@@ -180,5 +181,62 @@ namespace P2P.Services
         }
 
         #endregion DataType
+
+        #region NavigationSettings
+
+        private IQueryable<NavigationSettingsODTO> GetNavigationSettings(int id, int langId)
+        {
+            return from x in _context.NavigationSettings
+                   where (id == 0 || x.NavigationSettingsId == id)
+                   && (langId ==0 || x.LanguageId == langId)
+                   select _mapper.Map<NavigationSettingsODTO>(x);
+        }
+
+        public async Task<NavigationSettingsODTO> GetNavigationSettings(int id)
+        {
+            return await GetNavigationSettings(id, 0).AsNoTracking().SingleOrDefaultAsync();
+        }
+
+        public async Task<List<NavigationSettingsODTO>> GetNavigationSettingsByLangId(int langId)
+        {
+            return await GetNavigationSettings(0, langId).ToListAsync();
+        }
+
+        public async Task<NavigationSettingsODTO> EditnavigationSettings(NavigationSettingsIDTO navigationSettingsIDTO)
+        {
+            var navigationSettings = _mapper.Map<NavigationSettings>(navigationSettingsIDTO);
+
+            _context.Entry(navigationSettings).State = EntityState.Modified;
+
+            await SaveContextChangesAsync();
+
+            return await GetNavigationSettings(navigationSettings.NavigationSettingsId);
+        }
+
+        public async Task<NavigationSettingsODTO> AddNavigationSettings(NavigationSettingsIDTO navigationSettingsIDTO)
+        {
+            var navigationSettings = _mapper.Map<NavigationSettings>(navigationSettingsIDTO);
+
+            navigationSettings.NavigationSettingsId = 0;
+
+            _context.NavigationSettings.Add(navigationSettings);
+
+            await SaveContextChangesAsync();
+
+            return await GetNavigationSettings(navigationSettings.NavigationSettingsId);
+        }
+
+        public async Task<NavigationSettingsODTO> DeleteNavigationSettings(int id)
+        {
+            var navigationSettings = await _context.NavigationSettings.FindAsync(id);
+            if (navigationSettings == null) return null;
+
+            var navigationSettingsODTO = await GetNavigationSettings(id);
+            _context.NavigationSettings.Remove(navigationSettings);
+            await SaveContextChangesAsync();
+            return navigationSettingsODTO;
+        }
+
+        #endregion
     }
 }

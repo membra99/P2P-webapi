@@ -1,4 +1,5 @@
 ﻿using Entities.P2P.MainData;
+using Entities.P2P.MainData.Settings;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -15,6 +16,7 @@ namespace Entities.Context
         public DbSet<Testimonial> Testimonials { get; set; }
         public DbSet<Language> Languages { get; set; }
         public DbSet<DataType> DataTypes { get; set; }
+        public DbSet<NavigationSettings> NavigationSettings { get; set; }
 
         #endregion MainData
 
@@ -42,8 +44,17 @@ namespace Entities.Context
             {
                 entity.HasKey(x => x.DataTypeId);
             });
+            modelBuilder.Entity<NavigationSettings>(entity =>
+            {
+                entity.HasKey(x => x.NavigationSettingsId);
 
-            #endregion MainData
+                entity.HasOne(x => x.Language)
+                      .WithMany(x => x.NavigationSettings)
+                      .OnDelete(DeleteBehavior.Restrict);
+
+            });
+
+            #endregion
         }
     }
 }

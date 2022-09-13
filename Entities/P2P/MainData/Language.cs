@@ -1,10 +1,7 @@
-﻿using System;
+﻿using Entities.P2P.MainData.Settings;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Entities.P2P.MainData
 {
@@ -18,5 +15,6 @@ namespace Entities.P2P.MainData
         public string LanguageName { get; set; }
 
         public ICollection<Testimonial> Testimonials { get; set; }
+        public ICollection<NavigationSettings> NavigationSettings { get; set; }
     }
 }
