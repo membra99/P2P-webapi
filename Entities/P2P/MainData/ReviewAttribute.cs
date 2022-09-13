@@ -12,13 +12,16 @@ namespace Entities.P2P.MainData
     public class ReviewAttribute
     {
         public int ReviewAttributeId { get; set; }
-        //public int DataTypeId { get; set; }
+
+        [Required]
+        public int DataTypeId { get; set; }
+
         //public int ReviewId { get; set; }
         public int? Index { get; set; }
+
         [StringLength(100)]
         public string Value { get; set; }
 
-        //public ICollection<DataType> DataTypes { get; set; }
-        //public ICollection<Review> Reviews { get; set; }
+        public DataType DataType { get; set; }
     }
 }

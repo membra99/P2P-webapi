@@ -16,5 +16,7 @@ namespace Entities.P2P.MainData
         [Required]
         [StringLength(50)]
         public string DataTypeName { get; set; }
+
+        public ICollection<ReviewAttribute> ReviewAttributes { get; set; }
     }
 }

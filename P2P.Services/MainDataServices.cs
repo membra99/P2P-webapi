@@ -266,7 +266,7 @@ namespace P2P.Services
         public async Task<ReviewAttributeODTO> AddReviewAttribute(ReviewAttributeIDTO reviewAttributeIDTO)
         {
             var reviewAttribute = _mapper.Map<ReviewAttribute>(reviewAttributeIDTO);
-
+            reviewAttribute.ReviewAttributeId = 0;
             _context.ReviewAttributes.Add(reviewAttribute);
 
             await SaveContextChangesAsync();

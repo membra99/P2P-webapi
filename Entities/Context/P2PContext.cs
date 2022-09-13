@@ -59,6 +59,11 @@ namespace Entities.Context
             modelBuilder.Entity<ReviewAttribute>(entity =>
             {
                 entity.HasKey(x => x.ReviewAttributeId);
+
+                entity.HasOne(x => x.DataType)
+                      .WithMany(x => x.ReviewAttributes)
+                      .OnDelete(DeleteBehavior.Restrict);
+
             });
 
             #endregion
