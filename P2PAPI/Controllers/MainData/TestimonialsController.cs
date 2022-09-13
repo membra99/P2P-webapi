@@ -28,6 +28,13 @@ namespace P2P.WebApi.Controllers.MainData
             return await _mainDataServices.Get(id);
         }
 
+        //GET: api/Testimonial
+        [HttpGet("ByLanguageId")]
+        public async Task<ActionResult<IEnumerable<TestimonialODTO>>> GetByLanguageId(int langId)
+        {
+            return await _mainDataServices.GetTestimonialByLanguage(langId);
+        }
+
 
         //PUT: api/Testimonial
         [HttpPut]

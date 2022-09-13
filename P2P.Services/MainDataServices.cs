@@ -19,15 +19,14 @@ namespace P2P.Services
         {
         }
 
-        //123
-
         #region Testimonial
 
-        private IQueryable<TestimonialODTO> GetTestimonial(int id, string fullName)
+        private IQueryable<TestimonialODTO> GetTestimonial(int id, string fullName, int langId)
         {
             return from x in _context.Testimonials
                    .Include(x => x.Language)
                    where (id == 0 || x.TestimonialId == id)
+                   && (langId == 0 || x.LanguageId == langId)
                    && (string.IsNullOrEmpty(fullName) || x.FullName.StartsWith(fullName))
                    select _mapper.Map<TestimonialODTO>(x);
         }
@@ -36,12 +35,17 @@ namespace P2P.Services
         {
             if (id != 0)
             {
-                return await GetTestimonial(id, null).AsNoTracking().ToListAsync();
+                return await GetTestimonial(id, null, 0).AsNoTracking().ToListAsync();
             }
             else
             {
-                return await GetTestimonial(0, null).AsNoTracking().ToListAsync();
+                return await GetTestimonial(0, null, 0).AsNoTracking().ToListAsync();
             }
+        }
+
+        public async Task<List<TestimonialODTO>> GetTestimonialByLanguage(int langId)
+        {
+            return await GetTestimonial(0, null, langId).AsNoTracking().ToListAsync();
         }
 
         public async Task<List<TestimonialODTO>> EditTestimonial(TestimonialIDTO testimonialIDTO)
@@ -122,8 +126,6 @@ namespace P2P.Services
             await SaveContextChangesAsync();
             return languageODTO;
         }
-
-        //aloha
 
         #endregion Language
     }
