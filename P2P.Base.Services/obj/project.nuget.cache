@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "JyTvWuLtGHf+22IoafnNWGUWGsWXQfyL1RpkP7cLSKyer3E9br+yM21DWE+fVyleV2rt6+hymQ939uJyObfGJg==",
+  "dgSpecHash": "N78TUh5BY0yfjbqIomQCs0mm/DhacJBTiLFJ4Y637tk8A31dCa/g1xMrCMB1Pzkcju0fK4cQqDMCcoXSmdFMfA==",
   "success": true,
-  "projectFilePath": "C:\\Users\\Uros\\source\\repos\\P2PAPI\\P2P.Base.Services\\P2P.Base.Services.csproj",
+  "projectFilePath": "C:\\Users\\Uros\\Source\\Repos\\P2P-webapi\\P2P.Base.Services\\P2P.Base.Services.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\Uros\\.nuget\\packages\\automapper\\11.0.1\\automapper.11.0.1.nupkg.sha512",
     "C:\\Users\\Uros\\.nuget\\packages\\humanizer.core\\2.8.26\\humanizer.core.2.8.26.nupkg.sha512",

@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "vZH5FGFsAt3xqupdbMpVBvSR3XLTOi3kvjFNMkmnC6QBH90LolhZenR4cNQERp4nT4RPPUlr0+7ozz6NDNdPqA==",
+  "dgSpecHash": "+2cZ27PH7ccyUkBEYLwzsFkGAP926ATodQ9W0dFL1W/uJayQXk2uZkQln3mJJeDix9shGuweEZw+augyO8THWg==",
   "success": true,
-  "projectFilePath": "C:\\Users\\Uros\\source\\repos\\P2PAPI\\P2PAPI\\P2P.WebApi.csproj",
+  "projectFilePath": "C:\\Users\\Uros\\Source\\Repos\\P2P-webapi\\P2PAPI\\P2P.WebApi.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\Uros\\.nuget\\packages\\automapper\\11.0.1\\automapper.11.0.1.nupkg.sha512",
     "C:\\Users\\Uros\\.nuget\\packages\\automapper.extensions.microsoft.dependencyinjection\\11.0.0\\automapper.extensions.microsoft.dependencyinjection.11.0.0.nupkg.sha512",

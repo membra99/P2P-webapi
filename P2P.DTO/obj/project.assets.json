@@ -6067,11 +6067,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\Uros\\source\\repos\\P2PAPI\\P2P.DTO\\P2P.DTO.csproj",
+      "projectUniqueName": "C:\\Users\\Uros\\Source\\Repos\\P2P-webapi\\P2P.DTO\\P2P.DTO.csproj",
       "projectName": "P2P.DTO",
-      "projectPath": "C:\\Users\\Uros\\source\\repos\\P2PAPI\\P2P.DTO\\P2P.DTO.csproj",
+      "projectPath": "C:\\Users\\Uros\\Source\\Repos\\P2P-webapi\\P2P.DTO\\P2P.DTO.csproj",
       "packagesPath": "C:\\Users\\Uros\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\Uros\\source\\repos\\P2PAPI\\P2P.DTO\\obj\\",
+      "outputPath": "C:\\Users\\Uros\\Source\\Repos\\P2P-webapi\\P2P.DTO\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "C:\\Users\\Uros\\AppData\\Roaming\\NuGet\\NuGet.Config",

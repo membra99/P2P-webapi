@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\Uros\\source\\repos\\P2PAPI\\P2PAPI\\P2P.WebApi.csproj": {}
+    "C:\\Users\\Uros\\Source\\Repos\\P2P-webapi\\P2PAPI\\P2P.WebApi.csproj": {}
   },
   "projects": {
-    "C:\\Users\\Uros\\source\\repos\\P2PAPI\\Entities\\Entities.csproj": {
+    "C:\\Users\\Uros\\Source\\Repos\\P2P-webapi\\Entities\\Entities.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\Uros\\source\\repos\\P2PAPI\\Entities\\Entities.csproj",
+        "projectUniqueName": "C:\\Users\\Uros\\Source\\Repos\\P2P-webapi\\Entities\\Entities.csproj",
         "projectName": "Entities",
-        "projectPath": "C:\\Users\\Uros\\source\\repos\\P2PAPI\\Entities\\Entities.csproj",
+        "projectPath": "C:\\Users\\Uros\\Source\\Repos\\P2P-webapi\\Entities\\Entities.csproj",
         "packagesPath": "C:\\Users\\Uros\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\Uros\\source\\repos\\P2PAPI\\Entities\\obj\\",
+        "outputPath": "C:\\Users\\Uros\\Source\\Repos\\P2P-webapi\\Entities\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\Uros\\AppData\\Roaming\\NuGet\\NuGet.Config",
@@ -78,14 +78,14 @@
         }
       }
     },
-    "C:\\Users\\Uros\\source\\repos\\P2PAPI\\P2P.Base.Services\\P2P.Base.Services.csproj": {
+    "C:\\Users\\Uros\\Source\\Repos\\P2P-webapi\\P2P.Base.Services\\P2P.Base.Services.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\Uros\\source\\repos\\P2PAPI\\P2P.Base.Services\\P2P.Base.Services.csproj",
+        "projectUniqueName": "C:\\Users\\Uros\\Source\\Repos\\P2P-webapi\\P2P.Base.Services\\P2P.Base.Services.csproj",
         "projectName": "P2P.Base.Services",
-        "projectPath": "C:\\Users\\Uros\\source\\repos\\P2PAPI\\P2P.Base.Services\\P2P.Base.Services.csproj",
+        "projectPath": "C:\\Users\\Uros\\Source\\Repos\\P2P-webapi\\P2P.Base.Services\\P2P.Base.Services.csproj",
         "packagesPath": "C:\\Users\\Uros\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\Uros\\source\\repos\\P2PAPI\\P2P.Base.Services\\obj\\",
+        "outputPath": "C:\\Users\\Uros\\Source\\Repos\\P2P-webapi\\P2P.Base.Services\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\Uros\\AppData\\Roaming\\NuGet\\NuGet.Config",
@@ -102,11 +102,11 @@
           "net5.0": {
             "targetAlias": "net5.0",
             "projectReferences": {
-              "C:\\Users\\Uros\\source\\repos\\P2PAPI\\Entities\\Entities.csproj": {
-                "projectPath": "C:\\Users\\Uros\\source\\repos\\P2PAPI\\Entities\\Entities.csproj"
+              "C:\\Users\\Uros\\Source\\Repos\\P2P-webapi\\Entities\\Entities.csproj": {
+                "projectPath": "C:\\Users\\Uros\\Source\\Repos\\P2P-webapi\\Entities\\Entities.csproj"
               },
-              "C:\\Users\\Uros\\source\\repos\\P2PAPI\\P2P.DTO\\P2P.DTO.csproj": {
-                "projectPath": "C:\\Users\\Uros\\source\\repos\\P2PAPI\\P2P.DTO\\P2P.DTO.csproj"
+              "C:\\Users\\Uros\\Source\\Repos\\P2P-webapi\\P2P.DTO\\P2P.DTO.csproj": {
+                "projectPath": "C:\\Users\\Uros\\Source\\Repos\\P2P-webapi\\P2P.DTO\\P2P.DTO.csproj"
               }
             }
           }
@@ -150,14 +150,14 @@
         }
       }
     },
-    "C:\\Users\\Uros\\source\\repos\\P2PAPI\\P2P.DTO\\P2P.DTO.csproj": {
+    "C:\\Users\\Uros\\Source\\Repos\\P2P-webapi\\P2P.DTO\\P2P.DTO.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\Uros\\source\\repos\\P2PAPI\\P2P.DTO\\P2P.DTO.csproj",
+        "projectUniqueName": "C:\\Users\\Uros\\Source\\Repos\\P2P-webapi\\P2P.DTO\\P2P.DTO.csproj",
         "projectName": "P2P.DTO",
-        "projectPath": "C:\\Users\\Uros\\source\\repos\\P2PAPI\\P2P.DTO\\P2P.DTO.csproj",
+        "projectPath": "C:\\Users\\Uros\\Source\\Repos\\P2P-webapi\\P2P.DTO\\P2P.DTO.csproj",
         "packagesPath": "C:\\Users\\Uros\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\Uros\\source\\repos\\P2PAPI\\P2P.DTO\\obj\\",
+        "outputPath": "C:\\Users\\Uros\\Source\\Repos\\P2P-webapi\\P2P.DTO\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\Uros\\AppData\\Roaming\\NuGet\\NuGet.Config",
@@ -211,14 +211,14 @@
         }
       }
     },
-    "C:\\Users\\Uros\\source\\repos\\P2PAPI\\P2P.Services\\P2P.Services.csproj": {
+    "C:\\Users\\Uros\\Source\\Repos\\P2P-webapi\\P2P.Services\\P2P.Services.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\Uros\\source\\repos\\P2PAPI\\P2P.Services\\P2P.Services.csproj",
+        "projectUniqueName": "C:\\Users\\Uros\\Source\\Repos\\P2P-webapi\\P2P.Services\\P2P.Services.csproj",
         "projectName": "P2P.Services",
-        "projectPath": "C:\\Users\\Uros\\source\\repos\\P2PAPI\\P2P.Services\\P2P.Services.csproj",
+        "projectPath": "C:\\Users\\Uros\\Source\\Repos\\P2P-webapi\\P2P.Services\\P2P.Services.csproj",
         "packagesPath": "C:\\Users\\Uros\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\Uros\\source\\repos\\P2PAPI\\P2P.Services\\obj\\",
+        "outputPath": "C:\\Users\\Uros\\Source\\Repos\\P2P-webapi\\P2P.Services\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\Uros\\AppData\\Roaming\\NuGet\\NuGet.Config",
@@ -235,14 +235,14 @@
           "net5.0": {
             "targetAlias": "net5.0",
             "projectReferences": {
-              "C:\\Users\\Uros\\source\\repos\\P2PAPI\\Entities\\Entities.csproj": {
-                "projectPath": "C:\\Users\\Uros\\source\\repos\\P2PAPI\\Entities\\Entities.csproj"
+              "C:\\Users\\Uros\\Source\\Repos\\P2P-webapi\\Entities\\Entities.csproj": {
+                "projectPath": "C:\\Users\\Uros\\Source\\Repos\\P2P-webapi\\Entities\\Entities.csproj"
               },
-              "C:\\Users\\Uros\\source\\repos\\P2PAPI\\P2P.Base.Services\\P2P.Base.Services.csproj": {
-                "projectPath": "C:\\Users\\Uros\\source\\repos\\P2PAPI\\P2P.Base.Services\\P2P.Base.Services.csproj"
+              "C:\\Users\\Uros\\Source\\Repos\\P2P-webapi\\P2P.Base.Services\\P2P.Base.Services.csproj": {
+                "projectPath": "C:\\Users\\Uros\\Source\\Repos\\P2P-webapi\\P2P.Base.Services\\P2P.Base.Services.csproj"
               },
-              "C:\\Users\\Uros\\source\\repos\\P2PAPI\\P2P.DTO\\P2P.DTO.csproj": {
-                "projectPath": "C:\\Users\\Uros\\source\\repos\\P2PAPI\\P2P.DTO\\P2P.DTO.csproj"
+              "C:\\Users\\Uros\\Source\\Repos\\P2P-webapi\\P2P.DTO\\P2P.DTO.csproj": {
+                "projectPath": "C:\\Users\\Uros\\Source\\Repos\\P2P-webapi\\P2P.DTO\\P2P.DTO.csproj"
               }
             }
           }
@@ -286,14 +286,14 @@
         }
       }
     },
-    "C:\\Users\\Uros\\source\\repos\\P2PAPI\\P2PAPI\\P2P.WebApi.csproj": {
+    "C:\\Users\\Uros\\Source\\Repos\\P2P-webapi\\P2PAPI\\P2P.WebApi.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\Uros\\source\\repos\\P2PAPI\\P2PAPI\\P2P.WebApi.csproj",
+        "projectUniqueName": "C:\\Users\\Uros\\Source\\Repos\\P2P-webapi\\P2PAPI\\P2P.WebApi.csproj",
         "projectName": "P2P.WebApi",
-        "projectPath": "C:\\Users\\Uros\\source\\repos\\P2PAPI\\P2PAPI\\P2P.WebApi.csproj",
+        "projectPath": "C:\\Users\\Uros\\Source\\Repos\\P2P-webapi\\P2PAPI\\P2P.WebApi.csproj",
         "packagesPath": "C:\\Users\\Uros\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\Uros\\source\\repos\\P2PAPI\\P2PAPI\\obj\\",
+        "outputPath": "C:\\Users\\Uros\\Source\\Repos\\P2P-webapi\\P2PAPI\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\Uros\\AppData\\Roaming\\NuGet\\NuGet.Config",
@@ -310,11 +310,11 @@
           "net5.0": {
             "targetAlias": "net5.0",
             "projectReferences": {
-              "C:\\Users\\Uros\\source\\repos\\P2PAPI\\Entities\\Entities.csproj": {
-                "projectPath": "C:\\Users\\Uros\\source\\repos\\P2PAPI\\Entities\\Entities.csproj"
+              "C:\\Users\\Uros\\Source\\Repos\\P2P-webapi\\Entities\\Entities.csproj": {
+                "projectPath": "C:\\Users\\Uros\\Source\\Repos\\P2P-webapi\\Entities\\Entities.csproj"
               },
-              "C:\\Users\\Uros\\source\\repos\\P2PAPI\\P2P.Services\\P2P.Services.csproj": {
-                "projectPath": "C:\\Users\\Uros\\source\\repos\\P2PAPI\\P2P.Services\\P2P.Services.csproj"
+              "C:\\Users\\Uros\\Source\\Repos\\P2P-webapi\\P2P.Services\\P2P.Services.csproj": {
+                "projectPath": "C:\\Users\\Uros\\Source\\Repos\\P2P-webapi\\P2P.Services\\P2P.Services.csproj"
               }
             }
           }

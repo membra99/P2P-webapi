@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "07K2YcFbkSPu0FiG4LL38VlWviwsTaXqZedMICF8F5LUYPoo0M8FWDWaGy4R2PenQ9H8iRBwu4GpedtI4+nFOg==",
+  "dgSpecHash": "5XOifgC5x1F4yI+nUL7+vxZekBFH0CDm5Vj0/JqNZpQ6msEb4YbaY0rWI92OnGDe3RDUYDOxdPKHt7UbRf8d1Q==",
   "success": true,
-  "projectFilePath": "C:\\Users\\Uros\\source\\repos\\P2PAPI\\Entities\\Entities.csproj",
+  "projectFilePath": "C:\\Users\\Uros\\Source\\Repos\\P2P-webapi\\Entities\\Entities.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\Uros\\.nuget\\packages\\humanizer.core\\2.8.26\\humanizer.core.2.8.26.nupkg.sha512",
     "C:\\Users\\Uros\\.nuget\\packages\\microsoft.csharp\\4.7.0\\microsoft.csharp.4.7.0.nupkg.sha512",

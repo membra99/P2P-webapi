@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "MAq/Fdy7Fuzh/v9N3RaKy+DPtuzmkBsm+HUD/5pl8L1gpX7urWVF22LWitpAXyAIXVc91scb6/mWsT1hUlu3tA==",
+  "dgSpecHash": "cBLArX3wHP5ROJ3aa3rDgRPEs8q1lrVLUMrgEvQEIAlMJEMcwVRL9PWnYFrspmwteoOh6KQjiZQWc80gQfQz2Q==",
   "success": true,
-  "projectFilePath": "C:\\Users\\Uros\\source\\repos\\P2PAPI\\P2P.DTO\\P2P.DTO.csproj",
+  "projectFilePath": "C:\\Users\\Uros\\Source\\Repos\\P2P-webapi\\P2P.DTO\\P2P.DTO.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\Uros\\.nuget\\packages\\microsoft.csharp\\4.5.0\\microsoft.csharp.4.5.0.nupkg.sha512",
     "C:\\Users\\Uros\\.nuget\\packages\\microsoft.data.sqlclient\\2.0.1\\microsoft.data.sqlclient.2.0.1.nupkg.sha512",
