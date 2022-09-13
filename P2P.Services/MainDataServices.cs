@@ -15,11 +15,13 @@ namespace P2P.Services
 {
     public class MainDataServices : BaseService
     {
-        public MainDataServices(MainContext context, IMapper mapper) : base(context, mapper) { }
+        public MainDataServices(MainContext context, IMapper mapper) : base(context, mapper)
+        {
+        }
 
         #region Testimonial
 
-        private IQueryable<TestimonialODTO> GetTestimonial(int id,string fullName)
+        private IQueryable<TestimonialODTO> GetTestimonial(int id, string fullName)
         {
             return from x in _context.Testimonials
                    .Include(x => x.Language)
@@ -28,9 +30,9 @@ namespace P2P.Services
                    select _mapper.Map<TestimonialODTO>(x);
         }
 
-        public  async Task<List<TestimonialODTO>> Get(int id)
+        public async Task<List<TestimonialODTO>> Get(int id)
         {
-            if(id != 0)
+            if (id != 0)
             {
                 return await GetTestimonial(id, null).AsNoTracking().ToListAsync();
             }
@@ -38,7 +40,6 @@ namespace P2P.Services
             {
                 return await GetTestimonial(0, null).AsNoTracking().ToListAsync();
             }
-                
         }
 
         public async Task<List<TestimonialODTO>> EditTestimonial(TestimonialIDTO testimonialIDTO)
@@ -50,7 +51,6 @@ namespace P2P.Services
             await SaveContextChangesAsync();
 
             return await Get(testimonial.TestimonialId);
-
         }
 
         public async Task<List<TestimonialODTO>> AddTest(TestimonialIDTO testimonialIDTO)
@@ -71,7 +71,7 @@ namespace P2P.Services
             return testimonialODTO;
         }
 
-        #endregion
+        #endregion Testimonial
 
         #region Language
 
@@ -85,7 +85,7 @@ namespace P2P.Services
 
         public async Task<LanguageODTO> GetLanguage(int id)
         {
-             return await GetLanguage(id, null).AsNoTracking().SingleOrDefaultAsync();
+            return await GetLanguage(id, null).AsNoTracking().SingleOrDefaultAsync();
         }
 
         public async Task<LanguageODTO> EditLanguage(LanguageIDTO languageIDTO)
@@ -97,7 +97,6 @@ namespace P2P.Services
             await SaveContextChangesAsync();
 
             return await GetLanguage(language.LanguageId);
-
         }
 
         public async Task<LanguageODTO> AddLanguage(LanguageIDTO languageIDTO)
@@ -121,9 +120,10 @@ namespace P2P.Services
             await SaveContextChangesAsync();
             return languageODTO;
         }
+
         //aaaaa
         //NOVO
 
-        #endregion
+        #endregion Language
     }
 }
