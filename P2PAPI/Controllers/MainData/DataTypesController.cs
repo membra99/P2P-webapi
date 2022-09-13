@@ -25,7 +25,7 @@ namespace P2P.WebApi.Controllers.MainData
         [HttpGet]
         public async Task<ActionResult<DataTypeODTO>> GetDataTypeById(int id)
         {
-            return await _mainDataServices.GetDataType(id);
+            return await _mainDataServices.GetDataTypeById(id);
         }
 
         //PUT: api/DataTypes

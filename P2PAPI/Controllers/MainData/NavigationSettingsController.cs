@@ -26,7 +26,7 @@ namespace P2P.WebApi.Controllers.MainData
         [HttpGet]
         public async Task<ActionResult<NavigationSettingsODTO>> GetById(int id)
         {
-            return await _mainDataServices.GetNavigationSettings(id);
+            return await _mainDataServices.GetNavigationSettingsById(id);
         }
 
         //GET: api/NavigationSettings

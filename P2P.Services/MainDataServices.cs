@@ -90,7 +90,7 @@ namespace P2P.Services
                    select _mapper.Map<LanguageODTO>(x);
         }
 
-        public async Task<LanguageODTO> GetLanguage(int id)
+        public async Task<LanguageODTO> GetLanguageById(int id)
         {
             return await GetLanguage(id, null).AsNoTracking().SingleOrDefaultAsync();
         }
@@ -103,7 +103,7 @@ namespace P2P.Services
 
             await SaveContextChangesAsync();
 
-            return await GetLanguage(language.LanguageId);
+            return await GetLanguageById(language.LanguageId);
         }
 
         public async Task<LanguageODTO> AddLanguage(LanguageIDTO languageIDTO)
@@ -114,7 +114,7 @@ namespace P2P.Services
 
             await SaveContextChangesAsync();
 
-            return await GetLanguage(language.LanguageId);
+            return await GetLanguageById(language.LanguageId);
         }
 
         public async Task<LanguageODTO> DeleteLanguage(int id)
@@ -122,7 +122,7 @@ namespace P2P.Services
             var language = await _context.Languages.FindAsync(id);
             if (language == null) return null;
 
-            var languageODTO = await GetLanguage(id);
+            var languageODTO = await GetLanguageById(id);
             _context.Languages.Remove(language);
             await SaveContextChangesAsync();
             return languageODTO;
@@ -140,7 +140,7 @@ namespace P2P.Services
                    select _mapper.Map<DataTypeODTO>(x);
         }
 
-        public async Task<DataTypeODTO> GetDataType(int id)
+        public async Task<DataTypeODTO> GetDataTypeById(int id)
         {
             return await GetDataType(id, null).AsNoTracking().SingleOrDefaultAsync();
         }
@@ -153,7 +153,7 @@ namespace P2P.Services
 
             await SaveContextChangesAsync();
 
-            return await GetDataType(dataType.DataTypeId);
+            return await GetDataTypeById(dataType.DataTypeId);
         }
 
         public async Task<DataTypeODTO> AddDataType(DataTypeIDTO dataTypeIDTO)
@@ -166,7 +166,7 @@ namespace P2P.Services
 
             await SaveContextChangesAsync();
 
-            return await GetDataType(dataType.DataTypeId);
+            return await GetDataTypeById(dataType.DataTypeId);
         }
 
         public async Task<DataTypeODTO> DeleteDataType(int id)
@@ -174,7 +174,7 @@ namespace P2P.Services
             var dataType = await _context.DataTypes.FindAsync(id);
             if (dataType == null) return null;
 
-            var dataTypeODTO = await GetDataType(id);
+            var dataTypeODTO = await GetDataTypeById(id);
             _context.DataTypes.Remove(dataType);
             await SaveContextChangesAsync();
             return dataTypeODTO;
@@ -192,7 +192,7 @@ namespace P2P.Services
                    select _mapper.Map<NavigationSettingsODTO>(x);
         }
 
-        public async Task<NavigationSettingsODTO> GetNavigationSettings(int id)
+        public async Task<NavigationSettingsODTO> GetNavigationSettingsById(int id)
         {
             return await GetNavigationSettings(id, 0).AsNoTracking().SingleOrDefaultAsync();
         }
@@ -210,7 +210,7 @@ namespace P2P.Services
 
             await SaveContextChangesAsync();
 
-            return await GetNavigationSettings(navigationSettings.NavigationSettingsId);
+            return await GetNavigationSettingsById(navigationSettings.NavigationSettingsId);
         }
 
         public async Task<NavigationSettingsODTO> AddNavigationSettings(NavigationSettingsIDTO navigationSettingsIDTO)
@@ -223,7 +223,7 @@ namespace P2P.Services
 
             await SaveContextChangesAsync();
 
-            return await GetNavigationSettings(navigationSettings.NavigationSettingsId);
+            return await GetNavigationSettingsById(navigationSettings.NavigationSettingsId);
         }
 
         public async Task<NavigationSettingsODTO> DeleteNavigationSettings(int id)
@@ -231,7 +231,7 @@ namespace P2P.Services
             var navigationSettings = await _context.NavigationSettings.FindAsync(id);
             if (navigationSettings == null) return null;
 
-            var navigationSettingsODTO = await GetNavigationSettings(id);
+            var navigationSettingsODTO = await GetNavigationSettingsById(id);
             _context.NavigationSettings.Remove(navigationSettings);
             await SaveContextChangesAsync();
             return navigationSettingsODTO;

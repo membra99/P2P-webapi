@@ -45,6 +45,7 @@ namespace Entities.Context
             {
                 entity.HasKey(x => x.DataTypeId);
             });
+
             modelBuilder.Entity<NavigationSettings>(entity =>
             {
                 entity.HasKey(x => x.NavigationSettingsId);
