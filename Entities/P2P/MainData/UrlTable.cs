@@ -8,16 +8,16 @@ using System.Threading.Tasks;
 
 namespace Entities.P2P.MainData
 {
-    [Table("DataTypes", Schema = "P2P")]
-    public class DataType
+    [Table("UrlTables", Schema = "P2P")]
+    public class UrlTable
     {
+        public int UrlTableId { get; set; }
         public int DataTypeId { get; set; }
 
         [Required]
-        [StringLength(50)]
-        public string DataTypeName { get; set; }
-
-        public ICollection<ReviewAttribute> ReviewAttributes { get; set; }
-        public ICollection<UrlTable> UrlTables { get; set; }
+        [StringLength(100)]
+        public string URL { get; set; }
+        public int TableId { get; set; }
+        public DataType DataType { get; set; }
     }
 }

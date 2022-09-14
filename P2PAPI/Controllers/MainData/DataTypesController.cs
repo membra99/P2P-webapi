@@ -6,6 +6,8 @@ using P2P.DTO.Output;
 using P2P.Services;
 using System.Threading.Tasks;
 using System;
+using System.Collections;
+using System.Collections.Generic;
 
 namespace P2P.WebApi.Controllers.MainData
 {
@@ -22,10 +24,15 @@ namespace P2P.WebApi.Controllers.MainData
         }
 
         //GET: api/DataTypes
-        [HttpGet]
+        [HttpGet("{id}")]
         public async Task<ActionResult<DataTypeODTO>> GetDataTypeById(int id)
         {
-            return await _mainDataServices.GetDataTypeById(id);
+            var dataType =  await _mainDataServices.GetDataTypeById(id);
+            if(dataType == null)
+            {
+                return NotFound();
+            }
+            return dataType;
         }
 
         //PUT: api/DataTypes

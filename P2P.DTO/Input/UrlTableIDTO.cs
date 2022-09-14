@@ -7,9 +7,11 @@ using System.Threading.Tasks;
 
 namespace P2P.DTO.Input
 {
-    public class DataTypeIDTO
+    public class UrlTableIDTO
     {
+        public int UrlTableId { get; set; }
         public int DataTypeId { get; set; }
-        public string DataTypeName { get; set; }
+        public string URL { get; set; }
+        public int TableId { get; set; }
     }
 }

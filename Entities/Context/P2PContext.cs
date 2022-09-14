@@ -19,6 +19,7 @@ namespace Entities.Context
         public DbSet<DataType> DataTypes { get; set; }
         public DbSet<NavigationSettings> NavigationSettings { get; set; }
         public DbSet<FooterSettings> FooterSettings { get; set; }
+        public DbSet<UrlTable> UrlTables { get; set; }
 
         public DbSet<Links> Links { get; set; }
 
@@ -86,7 +87,17 @@ namespace Entities.Context
                        .OnDelete(DeleteBehavior.Restrict);
             });
 
-            #endregion MainData
+            modelBuilder.Entity<UrlTable>(entity =>
+            {
+                entity.HasKey(x => x.UrlTableId);
+
+                entity.HasOne(x => x.DataType)
+                      .WithMany(x => x.UrlTables)
+                      .OnDelete(DeleteBehavior.Restrict);
+
+            });
+
+            #endregion
         }
     }
 }

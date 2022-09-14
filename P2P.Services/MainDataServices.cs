@@ -27,21 +27,14 @@ namespace P2P.Services
             return from x in _context.Testimonials
                    .Include(x => x.Language)
                    where (id == 0 || x.TestimonialId == id)
-                   && (langId == 0 || x.LanguageId == langId)
+                   && (x.LanguageId == langId)
                    && (string.IsNullOrEmpty(fullName) || x.FullName.StartsWith(fullName))
                    select _mapper.Map<TestimonialODTO>(x);
         }
 
         public async Task<List<TestimonialODTO>> Get(int id)
         {
-            if (id != 0)
-            {
                 return await GetTestimonial(id, null, 0).AsNoTracking().ToListAsync();
-            }
-            else
-            {
-                return await GetTestimonial(0, null, 0).AsNoTracking().ToListAsync();
-            }
         }
 
         public async Task<List<TestimonialODTO>> GetTestimonialByLanguage(int langId)
@@ -187,6 +180,7 @@ namespace P2P.Services
         private IQueryable<NavigationSettingsODTO> GetNavigationSettings(int id, int langId)
         {
             return from x in _context.NavigationSettings
+                   .Include(x => x.Language)
                    where (id == 0 || x.NavigationSettingsId == id)
                    && (langId == 0 || x.LanguageId == langId)
                    select _mapper.Map<NavigationSettingsODTO>(x);
@@ -202,7 +196,7 @@ namespace P2P.Services
             return await GetNavigationSettings(0, langId).ToListAsync();
         }
 
-        public async Task<NavigationSettingsODTO> EditnavigationSettings(NavigationSettingsIDTO navigationSettingsIDTO)
+        public async Task<NavigationSettingsODTO> EditNavigationSettings(NavigationSettingsIDTO navigationSettingsIDTO)
         {
             var navigationSettings = _mapper.Map<NavigationSettings>(navigationSettingsIDTO);
 
@@ -341,6 +335,65 @@ namespace P2P.Services
             await SaveContextChangesAsync();
             return reviewAttributeODTO;
         }
+        #endregion
+
+        #region UrlTable
+
+        private IQueryable<UrlTableODTO> GetUrlTable(int id, int dataTypeId)
+        {
+            return from x in _context.UrlTables
+                   .Include(x => x.DataType)
+                   where (id == 0 || x.UrlTableId == id)
+                   && (dataTypeId == 0 || x.DataTypeId == dataTypeId)
+                   select _mapper.Map<UrlTableODTO>(x);
+        }
+
+        public async Task<UrlTableODTO> GetUrlTableById(int id)
+        {
+            return await GetUrlTable(id,0).AsNoTracking().SingleOrDefaultAsync();
+        }
+
+        public async Task<List<UrlTableODTO>> GetUrlTableByDataTypeId(int dataTypeId)
+        {
+            return await GetUrlTable(0, dataTypeId).ToListAsync();
+        }
+
+        public async Task<UrlTableODTO> EditUrlTable(UrlTableIDTO urlTableIDTO)
+        {
+            var urlTable = _mapper.Map<UrlTable>(urlTableIDTO);
+
+            _context.Entry(urlTable).State = EntityState.Modified;
+
+            await SaveContextChangesAsync();
+
+            return await GetUrlTableById(urlTable.UrlTableId);
+        }
+
+        public async Task<UrlTableODTO> AddUrlTable(UrlTableIDTO urlTableIDTO)
+        {
+            var urlTable = _mapper.Map<UrlTable>(urlTableIDTO);
+
+            urlTable.UrlTableId = 0;
+
+            _context.UrlTables.Add(urlTable);
+
+            await SaveContextChangesAsync();
+
+            return await GetUrlTableById(urlTable.UrlTableId);
+        }
+
+        public async Task<UrlTableODTO> DeleteUrlTable(int id)
+        {
+            var urlTable = await _context.UrlTables.FindAsync(id);
+            if (urlTable == null) return null;
+
+            var urlTableODTO = await GetUrlTableById(id);
+            _context.UrlTables.Remove(urlTable);
+            await SaveContextChangesAsync();
+            return urlTableODTO;
+        }
+
+        #endregion
 
         #endregion ReviewAttribute
 
