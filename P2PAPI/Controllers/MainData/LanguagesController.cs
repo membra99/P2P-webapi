@@ -22,10 +22,15 @@ namespace P2P.WebApi.Controllers.MainData
         }
 
         //GET: api/Language
-        [HttpGet]
+        [HttpGet("{id}")]
         public async Task<ActionResult<LanguageODTO>> GetById(int id)
         {
-            return await _mainDataServices.GetLanguageById(id);
+            var language = await _mainDataServices.GetLanguageById(id);
+            if (language == null)
+            {
+                return NotFound();
+            }
+            return language;
         }
 
 

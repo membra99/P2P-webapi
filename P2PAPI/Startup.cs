@@ -32,6 +32,18 @@ namespace P2PAPI
             services.AddControllers();
 
             services.Configure<AppSettings>(Configuration.GetSection("AppSettings"));
+
+            services.AddCors(options => options.AddPolicy("CorsPolicy",
+                builder =>
+                {
+                    builder
+                        .AllowAnyMethod()
+                        .AllowAnyHeader()
+                        .WithOrigins(Configuration["AppSettings:Origins"].Split(","))
+                        .AllowCredentials()
+                        .SetPreflightMaxAge(TimeSpan.FromMinutes(60));
+                }));
+
             services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
             services.AddScoped<MainDataServices>();
 
@@ -52,11 +64,8 @@ namespace P2PAPI
             }
 
             app.UseHttpsRedirection();
-
             app.UseRouting();
-
             app.UseCors("CorsPolicy");
-
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>

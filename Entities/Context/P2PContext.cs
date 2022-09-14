@@ -19,7 +19,7 @@ namespace Entities.Context
         public DbSet<DataType> DataTypes { get; set; }
         public DbSet<NavigationSettings> NavigationSettings { get; set; }
         public DbSet<FooterSettings> FooterSettings { get; set; }
-
+        public DbSet<UrlTable> UrlTables { get; set; }
         public DbSet<Links> Links { get; set; }
 
         #endregion MainData
@@ -66,6 +66,31 @@ namespace Entities.Context
                       .WithMany(x => x.FooterSettings)
                       .OnDelete(DeleteBehavior.Restrict);
 
+                entity.HasOne(x => x.FS_FacebookUrl)
+                      .WithMany(x => x.FacebookUrls)
+                      .HasForeignKey(x => x.FacebookLink)
+                      .OnDelete(DeleteBehavior.Restrict);
+
+                entity.HasOne(x => x.FS_LinkedInUrl)
+                      .WithMany(x => x.LinkedInUrls)
+                      .HasForeignKey(x => x.LinkedInLink)
+                      .OnDelete(DeleteBehavior.Restrict);
+
+                entity.HasOne(x => x.FS_PodcastUrl)
+                      .WithMany(x => x.PodcastUrls)
+                      .HasForeignKey(x => x.PodcastLink)
+                      .OnDelete(DeleteBehavior.Restrict);
+
+                entity.HasOne(x => x.FS_TwitterUrl)
+                      .WithMany(x => x.TwitterUrls)
+                      .HasForeignKey(x => x.TwitterLink)
+                      .OnDelete(DeleteBehavior.Restrict);
+
+                entity.HasOne(x => x.FS_YoutubeUrl)
+                      .WithMany(x => x.YoutubeUrls)
+                      .HasForeignKey(x => x.YoutubeLink)
+                      .OnDelete(DeleteBehavior.Restrict);
+
             });
 
             modelBuilder.Entity<ReviewAttribute>(entity =>
@@ -84,9 +109,23 @@ namespace Entities.Context
                 entity.HasOne(x => x.Language)
                        .WithMany(x => x.Links)
                        .OnDelete(DeleteBehavior.Restrict);
+
+                entity.HasOne(x => x.UrlTable)
+                       .WithMany(x => x.Links)
+                       .OnDelete(DeleteBehavior.Restrict);
             });
 
-            #endregion MainData
+            modelBuilder.Entity<UrlTable>(entity =>
+            {
+                entity.HasKey(x => x.UrlTableId);
+
+                entity.HasOne(x => x.DataType)
+                      .WithMany(x => x.UrlTables)
+                      .OnDelete(DeleteBehavior.Restrict);
+
+            });
+
+            #endregion
         }
     }
 }

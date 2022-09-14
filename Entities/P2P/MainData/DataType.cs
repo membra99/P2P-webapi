@@ -18,5 +18,6 @@ namespace Entities.P2P.MainData
         public string DataTypeName { get; set; }
 
         public ICollection<ReviewAttribute> ReviewAttributes { get; set; }
+        public ICollection<UrlTable> UrlTables { get; set; }
     }
 }
