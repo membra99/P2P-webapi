@@ -27,7 +27,6 @@ namespace P2P.Base.Services.Mapping
             CreateMap<DataType, DataTypeODTO>();
             CreateMap<DataTypeIDTO, DataType>();
 
-            
             CreateMap<NavigationSettings, NavigationSettingsODTO>()
                 .ForMember(dest => dest.LanguageName, source => source.MapFrom(m => m.Language.LanguageName));
             CreateMap<NavigationSettingsIDTO, NavigationSettings>();
@@ -35,7 +34,12 @@ namespace P2P.Base.Services.Mapping
             CreateMap<ReviewAttribute, ReviewAttributeODTO>()
                 .ForMember(dest => dest.DataTypeName, source => source.MapFrom(m => m.DataType.DataTypeName));
             CreateMap<ReviewAttributeIDTO, ReviewAttribute>();
-            #endregion
+
+            CreateMap<Links, LinkODTO>()
+                .ForMember(dest => dest.LanguageName, source => source.MapFrom(m => m.Language.LanguageName));
+            CreateMap<LinkIDTO, LinkODTO>();
+
+            #endregion MainData
         }
     }
 }

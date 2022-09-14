@@ -1,0 +1,75 @@
+﻿using Microsoft.AspNetCore.Cors;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using P2P.DTO.Input;
+using P2P.DTO.Output;
+using P2P.Services;
+using System.Threading.Tasks;
+using System;
+
+namespace P2P.WebApi.Controllers.MainData
+{
+    [Route("[controller]")]
+    [ApiController]
+    [EnableCors("CorsPolicy")]
+    public class LinksController : ControllerBase
+    {
+        private readonly MainDataServices _mainDataServices;
+
+        public LinksController(MainDataServices mainServices)
+        {
+            _mainDataServices = mainServices;
+        }
+
+        //GET: api/Link
+        [HttpGet("{id}")]
+        public async Task<ActionResult<LinkODTO>> GetById(int id)
+        {
+            return await _mainDataServices.GetLinkById(id);
+        }
+
+        //PUT: api/Link
+        [HttpPut]
+        public async Task<ActionResult<LinkODTO>> PutLinks(LinkIDTO LinkIDTO)
+        {
+            try
+            {
+                return await _mainDataServices.EditLink(LinkIDTO);
+            }
+            catch (Exception e)
+            {
+                throw new Exception(e.Message);
+            }
+        }
+
+        //POST: api/Link
+        [HttpPost]
+        public async Task<ActionResult<LinkODTO>> PostLink(LinkIDTO LinkIDTO)
+        {
+            try
+            {
+                return await _mainDataServices.AddLink(LinkIDTO);
+            }
+            catch (Exception e)
+            {
+                throw new Exception(e.Message);
+            }
+        }
+
+        //DELETE: api/Link/1
+        [HttpDelete("{id}")]
+        public async Task<ActionResult<LinkODTO>> DeleteLink(int id)
+        {
+            try
+            {
+                var links = await _mainDataServices.DeleteLink(id);
+                if (links == null) return NotFound();
+                return links;
+            }
+            catch (Exception e)
+            {
+                throw new Exception(e.Message);
+            }
+        }
+    }
+}

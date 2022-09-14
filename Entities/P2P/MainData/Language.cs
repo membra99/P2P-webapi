@@ -5,7 +5,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Entities.P2P.MainData
 {
-    [Table("Languages", Schema = "P2P")]  
+    [Table("Languages", Schema = "P2P")]
     public class Language
     {
         public int LanguageId { get; set; }
@@ -16,5 +16,6 @@ namespace Entities.P2P.MainData
 
         public ICollection<Testimonial> Testimonials { get; set; }
         public ICollection<NavigationSettings> NavigationSettings { get; set; }
+        public ICollection<Links> Links { get; set; }
     }
 }

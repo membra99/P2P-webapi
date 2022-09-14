@@ -188,7 +188,7 @@ namespace P2P.Services
         {
             return from x in _context.NavigationSettings
                    where (id == 0 || x.NavigationSettingsId == id)
-                   && (langId ==0 || x.LanguageId == langId)
+                   && (langId == 0 || x.LanguageId == langId)
                    select _mapper.Map<NavigationSettingsODTO>(x);
         }
 
@@ -237,9 +237,10 @@ namespace P2P.Services
             return navigationSettingsODTO;
         }
 
-        #endregion
+        #endregion NavigationSettings
 
         #region ReviewAttribute
+
         private IQueryable<ReviewAttributeODTO> GetReviewAttr(int id)
         {
             return from x in _context.ReviewAttributes
@@ -284,6 +285,56 @@ namespace P2P.Services
             await SaveContextChangesAsync();
             return reviewAttributeODTO;
         }
-        #endregion
+
+        #endregion ReviewAttribute
+
+        #region Links
+
+        private IQueryable<LinkODTO> GetLinks(int id)
+        {
+            return from x in _context.Links
+                   where (id == 0 || x.LinkId == id)
+                   select _mapper.Map<LinkODTO>(x);
+        }
+
+        public async Task<LinkODTO> GetLinkById(int id)
+        {
+            return await GetLinks(id).AsNoTracking().SingleOrDefaultAsync();
+        }
+
+        public async Task<LinkODTO> EditLink(LinkIDTO linkIDTO)
+        {
+            var links = _mapper.Map<Links>(linkIDTO);
+
+            _context.Entry(links).State = EntityState.Modified;
+
+            await SaveContextChangesAsync();
+
+            return await GetLinkById(links.LinkId);
+        }
+
+        public async Task<LinkODTO> AddLink(LinkIDTO linkIDTO)
+        {
+            var links = _mapper.Map<Links>(linkIDTO);
+            links.LinkId = 0;
+            _context.Links.Add(links);
+
+            await SaveContextChangesAsync();
+
+            return await GetLinkById(links.LinkId);
+        }
+
+        public async Task<LinkODTO> DeleteLink(int id)
+        {
+            var links = await _context.Links.FindAsync(id);
+            if (links == null) return null;
+
+            var LinkODTO = await GetLinkById(id);
+            _context.Links.Remove(links);
+            await SaveContextChangesAsync();
+            return LinkODTO;
+        }
+
+        #endregion Links
     }
 }

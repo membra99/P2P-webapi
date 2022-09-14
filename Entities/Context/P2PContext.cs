@@ -19,6 +19,8 @@ namespace Entities.Context
         public DbSet<DataType> DataTypes { get; set; }
         public DbSet<NavigationSettings> NavigationSettings { get; set; }
 
+        public DbSet<Links> Links { get; set; }
+
         #endregion MainData
 
         private void P2PModelCreating(ModelBuilder modelBuilder)
@@ -53,7 +55,6 @@ namespace Entities.Context
                 entity.HasOne(x => x.Language)
                       .WithMany(x => x.NavigationSettings)
                       .OnDelete(DeleteBehavior.Restrict);
-
             });
 
             modelBuilder.Entity<ReviewAttribute>(entity =>
@@ -63,10 +64,18 @@ namespace Entities.Context
                 entity.HasOne(x => x.DataType)
                       .WithMany(x => x.ReviewAttributes)
                       .OnDelete(DeleteBehavior.Restrict);
-
             });
 
-            #endregion
+            modelBuilder.Entity<Links>(entity =>
+            {
+                entity.HasKey(x => x.LinkId);
+
+                entity.HasOne(x => x.Language)
+                       .WithMany(x => x.Links)
+                       .OnDelete(DeleteBehavior.Restrict);
+            });
+
+            #endregion MainData
         }
     }
 }
