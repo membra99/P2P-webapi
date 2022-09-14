@@ -34,7 +34,7 @@ namespace P2P.Services
 
         public async Task<List<TestimonialODTO>> Get(int id)
         {
-                return await GetTestimonial(id, null, 0).AsNoTracking().ToListAsync();
+            return await GetTestimonial(id, null, 0).AsNoTracking().ToListAsync();
         }
 
         public async Task<List<TestimonialODTO>> GetTestimonialByLanguage(int langId)
@@ -233,7 +233,8 @@ namespace P2P.Services
 
         #endregion NavigationSettings
 
-        #region FooterSettings 
+        #region FooterSettings
+
         private IQueryable<FooterSettings> GetFooterSettings(int id, int langId)
         {
             return from x in _context.FooterSettings
@@ -249,7 +250,7 @@ namespace P2P.Services
 
         public async Task<List<FooterSettingsODTO>> GetFooterSettingsByLangId(int langId)
         {
-            return await _mapper.ProjectTo<FooterSettingsODTO> (GetFooterSettings(0, langId)).ToListAsync();
+            return await _mapper.ProjectTo<FooterSettingsODTO>(GetFooterSettings(0, langId)).ToListAsync();
         }
 
         public async Task<FooterSettingsODTO> EditFooterSettings(FooterSettingsIDTO footerSettingsIDTO)
@@ -286,7 +287,7 @@ namespace P2P.Services
             return footerSettingsODTO;
         }
 
-        #endregion
+        #endregion FooterSettings
 
         #region ReviewAttribute
 
@@ -334,7 +335,8 @@ namespace P2P.Services
             await SaveContextChangesAsync();
             return reviewAttributeODTO;
         }
-        #endregion
+
+        #endregion ReviewAttribute
 
         #region UrlTable
 
@@ -349,7 +351,7 @@ namespace P2P.Services
 
         public async Task<UrlTableODTO> GetUrlTableById(int id)
         {
-            return await GetUrlTable(id,0).AsNoTracking().SingleOrDefaultAsync();
+            return await GetUrlTable(id, 0).AsNoTracking().SingleOrDefaultAsync();
         }
 
         public async Task<List<UrlTableODTO>> GetUrlTableByDataTypeId(int dataTypeId)
@@ -392,7 +394,7 @@ namespace P2P.Services
             return urlTableODTO;
         }
 
-        #endregion
+        #endregion UrlTable
 
         #region Links
 
@@ -444,5 +446,67 @@ namespace P2P.Services
         }
 
         #endregion Links
+
+        #region Routes
+
+        private IQueryable<RoutesODTO> GetRoutes(int id, int languageId)
+        {
+            return from x in _context.Routes
+                   where (id == 0 || x.RoutesId == id)
+                   && (languageId == 0 || x.LanguageId == id)
+                   select _mapper.Map<RoutesODTO>(x);
+        }
+
+        public async Task<RoutesODTO> GetRoutesById(int id)
+        {
+            return await GetRoutes(id, 0).AsNoTracking().SingleOrDefaultAsync();
+        }
+
+        public async Task<List<RoutesODTO>> GetRoutesByLanguageId(int langId)
+        {
+            return await GetRoutes(0, langId).ToListAsync();
+        }
+
+        public async Task<List<RoutesODTO>> GetAllRoutes()
+        {
+            return await GetRoutes(0, 0).ToListAsync();
+        }
+
+        public async Task<RoutesODTO> EditRoute(RoutesIDTO routesIDTO)
+        {
+            var routes = _mapper.Map<Routes>(routesIDTO);
+
+            _context.Entry(routes).State = EntityState.Modified;
+
+            await SaveContextChangesAsync();
+
+            return await GetRoutesById(routes.RoutesId);
+        }
+
+        public async Task<RoutesODTO> AddRoute(RoutesIDTO RoutesIDTO)
+        {
+            var routes = _mapper.Map<Routes>(RoutesIDTO);
+            routes.RoutesId = 0;
+            _context.Routes.Add(routes);
+
+            await SaveContextChangesAsync();
+
+            return await GetRoutesById(routes.RoutesId);
+        }
+
+        public async Task<RoutesODTO> DeleteRoute(int id)
+        {
+            var routes = await _context.Routes.FindAsync(id);
+            if (routes == null) return null;
+
+            var routesODTO = await GetRoutesById(id);
+            _context.Routes.Remove(routes);
+            await SaveContextChangesAsync();
+            return routesODTO;
+        }
+
+        //TODO GetDropdownValues, GetDropdownValuesLocale
+
+        #endregion Routes
     }
 }

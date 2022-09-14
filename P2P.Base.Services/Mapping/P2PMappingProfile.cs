@@ -49,13 +49,18 @@ namespace P2P.Base.Services.Mapping
                 .ForMember(dest => dest.Url, source => source.MapFrom(m => m.UrlTable.URL));
             CreateMap<LinkIDTO, Links>();
 
-            
-
             CreateMap<UrlTable, UrlTableODTO>()
                 .ForMember(dest => dest.DataTypeName, source => source.MapFrom(m => m.DataType.DataTypeName));
             CreateMap<UrlTableIDTO, UrlTable>();
 
-            #endregion
+            CreateMap<Routes, RoutesODTO>()
+              .ForMember(dest => dest.DataTypeName, source => source.MapFrom(m => m.DataType.DataTypeName))
+              .ForMember(dest => dest.LanguageName, source => source.MapFrom(m => m.Language.LanguageName))
+              .ForMember(dest => dest.URL, source => source.MapFrom(m => m.UrlTable.URL));
+
+            CreateMap<RoutesIDTO, Routes>();
+
+            #endregion MainData
         }
     }
 }

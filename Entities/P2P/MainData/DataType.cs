@@ -19,5 +19,6 @@ namespace Entities.P2P.MainData
 
         public ICollection<ReviewAttribute> ReviewAttributes { get; set; }
         public ICollection<UrlTable> UrlTables { get; set; }
+        public ICollection<Routes> Routes { get; set; }
     }
 }

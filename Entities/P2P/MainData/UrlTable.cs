@@ -18,6 +18,7 @@ namespace Entities.P2P.MainData
         [Required]
         [StringLength(100)]
         public string URL { get; set; }
+
         public int TableId { get; set; }
         public DataType DataType { get; set; }
 
@@ -28,5 +29,6 @@ namespace Entities.P2P.MainData
         public ICollection<FooterSettings> PodcastUrls { get; set; }
         public ICollection<FooterSettings> TwitterUrls { get; set; }
         public ICollection<FooterSettings> YoutubeUrls { get; set; }
+        public ICollection<Routes> Routes { get; set; }
     }
 }

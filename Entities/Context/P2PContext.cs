@@ -21,6 +21,7 @@ namespace Entities.Context
         public DbSet<FooterSettings> FooterSettings { get; set; }
         public DbSet<UrlTable> UrlTables { get; set; }
         public DbSet<Links> Links { get; set; }
+        public DbSet<Routes> Routes { get; set; }
 
         #endregion MainData
 
@@ -90,7 +91,6 @@ namespace Entities.Context
                       .WithMany(x => x.YoutubeUrls)
                       .HasForeignKey(x => x.YoutubeLink)
                       .OnDelete(DeleteBehavior.Restrict);
-
             });
 
             modelBuilder.Entity<ReviewAttribute>(entity =>
@@ -122,10 +122,27 @@ namespace Entities.Context
                 entity.HasOne(x => x.DataType)
                       .WithMany(x => x.UrlTables)
                       .OnDelete(DeleteBehavior.Restrict);
-
             });
 
-            #endregion
+            modelBuilder.Entity<Routes>(entity =>
+            {
+                entity.HasKey(x => x.RoutesId);
+
+                entity.HasOne(x => x.UrlTable)
+                    .WithMany(x => x.Routes)
+                    .OnDelete(DeleteBehavior.Restrict);
+
+                entity.HasOne(x => x.Language)
+                    .WithMany(x => x.Routes)
+                    .OnDelete(DeleteBehavior.Restrict);
+
+                entity.HasOne(x => x.DataType)
+                    .WithMany(x => x.Routes)
+                    .OnDelete(DeleteBehavior.Restrict);
+            });
+            //TODO dodati review
+
+            #endregion MainData
         }
     }
 }
