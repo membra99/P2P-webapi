@@ -239,6 +239,62 @@ namespace P2P.Services
 
         #endregion NavigationSettings
 
+        #region FooterSettings 
+        private IQueryable<FooterSettingsODTO> GetFooterSettings(int id, int langId)
+        {
+            return from x in _context.FooterSettings
+                   where (id == 0 || x.FooterSettingsId == id)
+                   && (langId == 0 || x.LanguageId == langId)
+                   select _mapper.Map<FooterSettingsODTO>(x);
+        }
+
+        public async Task<FooterSettingsODTO> GetFooterSettingsById(int id)
+        {
+            return await GetFooterSettings(id, 0).AsNoTracking().SingleOrDefaultAsync();
+        }
+
+        public async Task<List<FooterSettingsODTO>> GetFooterSettingsByLangId(int langId)
+        {
+            return await GetFooterSettings(0, langId).ToListAsync();
+        }
+
+        public async Task<FooterSettingsODTO> EditFooterSettings(FooterSettingsIDTO footerSettingsIDTO)
+        {
+            var footerSettings = _mapper.Map<FooterSettings>(footerSettingsIDTO);
+            footerSettings.FooterSettingsId = 0;
+            _context.Entry(footerSettings).State = EntityState.Modified;
+
+            await SaveContextChangesAsync();
+
+            return await GetFooterSettingsById(footerSettings.FooterSettingsId);
+        }
+
+        public async Task<FooterSettingsODTO> AddFooterSettings(FooterSettingsIDTO footerSettingsIDTO)
+        {
+            var footerSettings = _mapper.Map<FooterSettings>(footerSettingsIDTO);
+
+            footerSettings.FooterSettingsId = 0;
+
+            _context.FooterSettings.Add(footerSettings);
+
+            await SaveContextChangesAsync();
+
+            return await GetFooterSettingsById(footerSettings.FooterSettingsId);
+        }
+
+        public async Task<FooterSettingsODTO> DeleteFooterSettings(int id)
+        {
+            var footerSettings = await _context.FooterSettings.FindAsync(id);
+            if (footerSettings == null) return null;
+
+            var footerSettingsODTO = await GetFooterSettingsById(id);
+            _context.FooterSettings.Remove(footerSettings);
+            await SaveContextChangesAsync();
+            return footerSettingsODTO;
+        }
+
+        #endregion
+
         #region ReviewAttribute
 
         private IQueryable<ReviewAttributeODTO> GetReviewAttr(int id)

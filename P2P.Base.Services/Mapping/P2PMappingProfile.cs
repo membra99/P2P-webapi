@@ -31,6 +31,10 @@ namespace P2P.Base.Services.Mapping
                 .ForMember(dest => dest.LanguageName, source => source.MapFrom(m => m.Language.LanguageName));
             CreateMap<NavigationSettingsIDTO, NavigationSettings>();
 
+            CreateMap<FooterSettings, FooterSettingsODTO>()
+               .ForMember(dest => dest.LanguageName, source => source.MapFrom(m => m.Language.LanguageName));
+            CreateMap<FooterSettingsIDTO, FooterSettings>();
+
             CreateMap<ReviewAttribute, ReviewAttributeODTO>()
                 .ForMember(dest => dest.DataTypeName, source => source.MapFrom(m => m.DataType.DataTypeName));
             CreateMap<ReviewAttributeIDTO, ReviewAttribute>();
