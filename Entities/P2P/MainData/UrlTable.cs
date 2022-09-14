@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Entities.P2P.MainData.Settings;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -19,5 +20,13 @@ namespace Entities.P2P.MainData
         public string URL { get; set; }
         public int TableId { get; set; }
         public DataType DataType { get; set; }
+
+        public ICollection<Links> Links { get; set; }
+
+        public ICollection<FooterSettings> FacebookUrls { get; set; }
+        public ICollection<FooterSettings> LinkedInUrls { get; set; }
+        public ICollection<FooterSettings> PodcastUrls { get; set; }
+        public ICollection<FooterSettings> TwitterUrls { get; set; }
+        public ICollection<FooterSettings> YoutubeUrls { get; set; }
     }
 }

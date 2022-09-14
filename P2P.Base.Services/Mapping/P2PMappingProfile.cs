@@ -32,7 +32,12 @@ namespace P2P.Base.Services.Mapping
             CreateMap<NavigationSettingsIDTO, NavigationSettings>();
 
             CreateMap<FooterSettings, FooterSettingsODTO>()
-               .ForMember(dest => dest.LanguageName, source => source.MapFrom(m => m.Language.LanguageName));
+               .ForMember(dest => dest.LanguageName, source => source.MapFrom(m => m.Language.LanguageName))
+               .ForMember(dest => dest.FacebookUrl, source => source.MapFrom(m => m.FS_FacebookUrl.URL))
+               .ForMember(dest => dest.LinkedInUrl, source => source.MapFrom(m => m.FS_LinkedInUrl.URL))
+               .ForMember(dest => dest.PodcastUrl, source => source.MapFrom(m => m.FS_PodcastUrl.URL))
+               .ForMember(dest => dest.TwitterUrl, source => source.MapFrom(m => m.FS_TwitterUrl.URL))
+               .ForMember(dest => dest.YoutubeUrl, source => source.MapFrom(m => m.FS_YoutubeUrl.URL));
             CreateMap<FooterSettingsIDTO, FooterSettings>();
 
             CreateMap<ReviewAttribute, ReviewAttributeODTO>()
@@ -40,7 +45,8 @@ namespace P2P.Base.Services.Mapping
             CreateMap<ReviewAttributeIDTO, ReviewAttribute>();
 
             CreateMap<Links, LinkODTO>()
-                .ForMember(dest => dest.LanguageName, source => source.MapFrom(m => m.Language.LanguageName));
+                .ForMember(dest => dest.LanguageName, source => source.MapFrom(m => m.Language.LanguageName))
+                .ForMember(dest => dest.Url, source => source.MapFrom(m => m.UrlTable.URL));
             CreateMap<LinkIDTO, LinkODTO>();
 
             

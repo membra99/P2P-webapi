@@ -45,7 +45,7 @@ namespace P2P.WebApi.Controllers.MainData
         {
             try
             {
-                return await _mainDataServices.EditnavigationSettings(navigationSettingsIDTO);
+                return await _mainDataServices.EditNavigationSettings(navigationSettingsIDTO);
             }
             catch (Exception e)
             {

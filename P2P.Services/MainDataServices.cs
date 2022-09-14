@@ -395,8 +395,6 @@ namespace P2P.Services
 
         #endregion
 
-        #endregion ReviewAttribute
-
         #region Links
 
         private IQueryable<LinkODTO> GetLinks(int id)

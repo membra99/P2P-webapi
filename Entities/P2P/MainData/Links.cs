@@ -13,7 +13,7 @@ namespace Entities.P2P.MainData
     {
         public int LinkId { get; set; }
 
-        //public int UrlTableId { get; set; }
+        public int UrlTableId { get; set; }
         [Required]
         public int LanguageId { get; set; }
 
@@ -22,6 +22,6 @@ namespace Entities.P2P.MainData
 
         public Language Language { get; set; }
 
-        //public UrlTable UrlTable { get; set; }
+        public UrlTable UrlTable { get; set; }
     }
 }

@@ -10,10 +10,8 @@ namespace P2P.DTO.Input
     public class LinkIDTO
     {
         public int LinkId { get; set; }
-
-        //public int UrlTableId { get; set; }
+        public int UrlTableId { get; set; }
         public int LanguageId { get; set; }
-
         public string Key { get; set; }
     }
 }

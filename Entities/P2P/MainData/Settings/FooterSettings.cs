@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Entities.P2P.MainData.Settings
 {
-    [Table("FooterSettings", Schema = "P2P")]
+    [Table("FooterSettings", Schema = "Settings")]
     public class FooterSettings
     {
         public int FooterSettingsId { get; set; }
@@ -21,6 +21,11 @@ namespace Entities.P2P.MainData.Settings
         public string FooterNote { get; set; }
 
         public Language Language { get; set; }
-        //public UrlTable UrlTable { get; set; }
+
+        public UrlTable FS_FacebookUrl { get; set; }
+        public UrlTable FS_LinkedInUrl { get; set; }
+        public UrlTable FS_PodcastUrl { get; set; }
+        public UrlTable FS_TwitterUrl { get; set; }
+        public UrlTable FS_YoutubeUrl { get; set; }
     }
 }

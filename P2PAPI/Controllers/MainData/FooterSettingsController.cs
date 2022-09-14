@@ -12,12 +12,18 @@ namespace P2P.WebApi.Controllers.MainData
     [Route("[controller]")]
     [ApiController]
     [EnableCors("CorsPolicy")]
-    public class FooterSettingsController : Controller
+    public class FooterSettingsController : ControllerBase
     {
         private readonly MainDataServices _mainDataServices;
 
+        public FooterSettingsController(MainDataServices mainDataServices)
+        {
+            _mainDataServices = mainDataServices;
+        }
+
+
         //GET: api/FooterSettings
-        [HttpGet]
+        [HttpGet("{id}")]
         public async Task<ActionResult<FooterSettingsODTO>> GetById(int id)
         {
             return await _mainDataServices.GetFooterSettingsById(id);
