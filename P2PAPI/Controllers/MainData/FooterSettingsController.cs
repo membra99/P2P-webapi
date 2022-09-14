@@ -26,7 +26,9 @@ namespace P2P.WebApi.Controllers.MainData
         [HttpGet("{id}")]
         public async Task<ActionResult<FooterSettingsODTO>> GetById(int id)
         {
-            return await _mainDataServices.GetFooterSettingsById(id);
+            var footer = await _mainDataServices.GetFooterSettingsById(id);
+            if(footer == null) return NotFound();
+            return footer;
         }
 
         //GET: api/FooterSettings

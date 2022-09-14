@@ -25,7 +25,9 @@ namespace P2P.WebApi.Controllers.MainData
         [HttpGet("{id}")]
         public async Task<ActionResult<UrlTableODTO>> GetById(int id)
         {
-            return await _mainDataServices.GetUrlTableById(id);
+            var url = await _mainDataServices.GetUrlTableById(id);
+            if(url == null) return NotFound();
+            return url;
         }
 
         //GET: api/UrlTables

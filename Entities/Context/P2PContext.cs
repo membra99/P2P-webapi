@@ -21,6 +21,7 @@ namespace Entities.Context
         public DbSet<FooterSettings> FooterSettings { get; set; }
         public DbSet<UrlTable> UrlTables { get; set; }
         public DbSet<Links> Links { get; set; }
+        public DbSet<CashBack> CashBacks { get; set; }
         public DbSet<Routes> Routes { get; set; }
 
         #endregion MainData
@@ -132,13 +133,6 @@ namespace Entities.Context
                     .WithMany(x => x.Routes)
                     .OnDelete(DeleteBehavior.Restrict);
 
-                entity.HasOne(x => x.Language)
-                    .WithMany(x => x.Routes)
-                    .OnDelete(DeleteBehavior.Restrict);
-
-                entity.HasOne(x => x.DataType)
-                    .WithMany(x => x.Routes)
-                    .OnDelete(DeleteBehavior.Restrict);
             });
             //TODO dodati review
 

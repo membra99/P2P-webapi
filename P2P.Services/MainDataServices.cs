@@ -7,7 +7,9 @@ using Microsoft.EntityFrameworkCore;
 using P2P.Base.Services;
 using P2P.DTO.Input;
 using P2P.DTO.Output;
+using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Xml.Linq;
@@ -446,6 +448,104 @@ namespace P2P.Services
         }
 
         #endregion Links
+
+        #region CashBack
+
+        private IQueryable<CashBackODTO> GetCashBack(int id, int langId)
+        {
+            return from x in _context.CashBacks
+                   .Include(x => x.Language)
+                   where (id == 0 || x.CashBackId == id)
+                   && (langId == 0 || x.LanguageId == langId)
+                   select _mapper.Map<CashBackODTO>(x);
+        }
+
+        public async Task<List<CashBackODTO>> GetCashBackByLangId(int langId)
+        {
+            return await GetCashBack(0, langId).ToListAsync();
+        }
+
+        public async Task<CashBackODTO> GetCashBackById(int id)
+        {
+            return await GetCashBack(id, 0).AsNoTracking().SingleOrDefaultAsync();
+        }
+
+        public async Task<CashBackODTO> EditCashBack(CashBackIDTO cashBackIDTO)
+        {
+            var cashBack = _mapper.Map<CashBack>(cashBackIDTO);
+            if (cashBack.IsCampaign)
+            {
+                if (cashBack.Valid_Until != null && cashBack.Valid_Until > DateTime.Now)
+                {
+                    cashBack.Exclusive = null;
+                }
+                else
+                {
+                    throw new System.Exception("Vreme mora biti popunjeno i vece od trenutnog.");
+                }
+            }
+            else
+            {
+                if (cashBack.Exclusive != null)
+                {
+                    cashBack.Valid_Until = null;
+                }
+                else
+                {
+                    throw new NoNullAllowedException();
+                }
+            }
+            _context.Entry(cashBack).State = EntityState.Modified;
+
+            await SaveContextChangesAsync();
+
+            return await GetCashBackById(cashBack.CashBackId);
+        }
+
+        public async Task<CashBackODTO> AddCashBack(CashBackIDTO cashBackIDTO)
+        {
+            var cashBack = _mapper.Map<CashBack>(cashBackIDTO);
+            if (cashBack.IsCampaign)
+            {
+                if (cashBack.Valid_Until != null && cashBack.Valid_Until > DateTime.Now)
+                {
+                    cashBack.Exclusive = null;
+                }
+                else
+                {
+                    throw new System.Exception("Vreme mora biti popunjeno i vece od trenutnog.");
+                }
+            }
+            else
+            {
+                if (cashBack.Exclusive != null)
+                {
+                    cashBack.Valid_Until = null;
+                }
+                else
+                {
+                    throw new NoNullAllowedException();
+                }
+            }
+            cashBack.CashBackId = 0;
+            _context.CashBacks.Add(cashBack);
+
+            await SaveContextChangesAsync();
+
+            return await GetCashBackById(cashBack.CashBackId);
+        }
+
+        public async Task<CashBackODTO> DeleteCashBack(int id)
+        {
+            var cashBack = await _context.CashBacks.FindAsync(id);
+            if (cashBack == null) return null;
+
+            var cashBackODTO = await GetCashBackById(id);
+            _context.CashBacks.Remove(cashBack);
+            await SaveContextChangesAsync();
+            return cashBackODTO;
+        }
+        #endregion
 
         #region Routes
 
