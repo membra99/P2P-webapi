@@ -23,7 +23,7 @@ namespace P2P.WebApi.Controllers.MainData
         }
 
         //GET: api/Routes
-        [HttpGet]
+        [HttpGet("AllRoutes")]
         public async Task<ActionResult<IEnumerable<RoutesODTO>>> GetAllRoutes()
         {
             return await _mainDataServices.GetAllRoutes();
@@ -42,7 +42,7 @@ namespace P2P.WebApi.Controllers.MainData
         }
 
         //GET: api/Routes
-        [HttpGet("ByLanguageId/{id}")]
+        [HttpGet("ByLanguageId/{langId}")]
         public async Task<ActionResult<IEnumerable<RoutesODTO>>> GetAllRoutesByLanguageId(int langId)
         {
             var routes = await _mainDataServices.GetRoutesByLanguageId(langId);

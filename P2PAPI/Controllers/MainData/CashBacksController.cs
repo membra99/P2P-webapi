@@ -25,7 +25,9 @@ namespace P2P.WebApi.Controllers.MainData
         [HttpGet("{id}")]
         public async Task<ActionResult<CashBackODTO>> GetById(int id)
         {
-            return await _mainDataServices.GetCashBackById(id);
+            var cashback = await _mainDataServices.GetCashBackById(id);
+            if(cashback == null) return NotFound();
+            return cashback;
         }
 
         //GET: api/CashBack

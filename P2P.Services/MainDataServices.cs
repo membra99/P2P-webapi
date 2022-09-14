@@ -552,8 +552,11 @@ namespace P2P.Services
         private IQueryable<RoutesODTO> GetRoutes(int id, int languageId)
         {
             return from x in _context.Routes
+                   .Include(x => x.Language)
+                   .Include(x => x.DataType)
+                   .Include(x => x.UrlTable)
                    where (id == 0 || x.RoutesId == id)
-                   && (languageId == 0 || x.LanguageId == id)
+                   && (languageId == 0 || x.LanguageId == languageId)
                    select _mapper.Map<RoutesODTO>(x);
         }
 
