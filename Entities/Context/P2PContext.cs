@@ -18,6 +18,7 @@ namespace Entities.Context
         public DbSet<ReviewAttribute> ReviewAttributes { get; set; }
         public DbSet<DataType> DataTypes { get; set; }
         public DbSet<NavigationSettings> NavigationSettings { get; set; }
+        public DbSet<FooterSettings> FooterSettings { get; set; }
 
         #endregion MainData
 
@@ -52,6 +53,16 @@ namespace Entities.Context
 
                 entity.HasOne(x => x.Language)
                       .WithMany(x => x.NavigationSettings)
+                      .OnDelete(DeleteBehavior.Restrict);
+
+            });
+
+            modelBuilder.Entity<FooterSettings>(entity =>
+            {
+                entity.HasKey(x => x.FooterSettingsId);
+
+                entity.HasOne(x => x.Language)
+                      .WithMany(x => x.FooterSettings)
                       .OnDelete(DeleteBehavior.Restrict);
 
             });

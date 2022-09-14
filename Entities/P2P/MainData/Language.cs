@@ -16,5 +16,6 @@ namespace Entities.P2P.MainData
 
         public ICollection<Testimonial> Testimonials { get; set; }
         public ICollection<NavigationSettings> NavigationSettings { get; set; }
+        public ICollection<FooterSettings> FooterSettings { get; set; }
     }
 }
