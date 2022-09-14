@@ -47,7 +47,7 @@ namespace P2P.Base.Services.Mapping
             CreateMap<Links, LinkODTO>()
                 .ForMember(dest => dest.LanguageName, source => source.MapFrom(m => m.Language.LanguageName))
                 .ForMember(dest => dest.Url, source => source.MapFrom(m => m.UrlTable.URL));
-            CreateMap<LinkIDTO, LinkODTO>();
+            CreateMap<LinkIDTO, Links>();
 
             
 

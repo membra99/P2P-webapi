@@ -234,28 +234,27 @@ namespace P2P.Services
         #endregion NavigationSettings
 
         #region FooterSettings 
-        private IQueryable<FooterSettingsODTO> GetFooterSettings(int id, int langId)
+        private IQueryable<FooterSettings> GetFooterSettings(int id, int langId)
         {
             return from x in _context.FooterSettings
                    where (id == 0 || x.FooterSettingsId == id)
                    && (langId == 0 || x.LanguageId == langId)
-                   select _mapper.Map<FooterSettingsODTO>(x);
+                   select x;
         }
 
         public async Task<FooterSettingsODTO> GetFooterSettingsById(int id)
         {
-            return await GetFooterSettings(id, 0).AsNoTracking().SingleOrDefaultAsync();
+            return await _mapper.ProjectTo<FooterSettingsODTO>(GetFooterSettings(id, 0)).AsNoTracking().SingleOrDefaultAsync();
         }
 
         public async Task<List<FooterSettingsODTO>> GetFooterSettingsByLangId(int langId)
         {
-            return await GetFooterSettings(0, langId).ToListAsync();
+            return await _mapper.ProjectTo<FooterSettingsODTO> (GetFooterSettings(0, langId)).ToListAsync();
         }
 
         public async Task<FooterSettingsODTO> EditFooterSettings(FooterSettingsIDTO footerSettingsIDTO)
         {
             var footerSettings = _mapper.Map<FooterSettings>(footerSettingsIDTO);
-            footerSettings.FooterSettingsId = 0;
             _context.Entry(footerSettings).State = EntityState.Modified;
 
             await SaveContextChangesAsync();
@@ -400,6 +399,8 @@ namespace P2P.Services
         private IQueryable<LinkODTO> GetLinks(int id)
         {
             return from x in _context.Links
+                   .Include(x => x.UrlTable)
+                   .Include(x => x.Language)
                    where (id == 0 || x.LinkId == id)
                    select _mapper.Map<LinkODTO>(x);
         }

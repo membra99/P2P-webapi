@@ -9,7 +9,7 @@ namespace P2P.DTO.Input
 {
     public class LanguageIDTO
     {
-        public int LangId { get; set; }
+        public int LanguageId { get; set; }
         public string LanguageName { get; set; }
     }
 }

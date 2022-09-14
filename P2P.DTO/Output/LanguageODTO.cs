@@ -8,7 +8,7 @@ namespace P2P.DTO.Output
 {
     public class LanguageODTO
     {
-        public int LangId { get; set; }
+        public int LanguageId { get; set; }
         public string LanguageName { get; set; }
     }
 }
