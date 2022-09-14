@@ -30,5 +30,13 @@ namespace Entities.P2P.MainData
         public ICollection<FooterSettings> TwitterUrls { get; set; }
         public ICollection<FooterSettings> YoutubeUrls { get; set; }
         public ICollection<Routes> Routes { get; set; }
+        public ICollection<Review> Rev_FacebookUrls { get; set; }
+        public ICollection<Review> Rev_LinkedIdUrls { get; set; }
+        public ICollection<Review> Rev_TwitterUrls { get; set; }
+        public ICollection<Review> Rev_YoutubeUrls { get; set; }
+        public ICollection<Review> Rev_InstagramUrls { get; set; }
+        public ICollection<Review> Rev_ReportLinks { get; set; }
+
+        //public ICollection<Serp> Serps { get; set; }
     }
 }

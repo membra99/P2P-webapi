@@ -23,6 +23,7 @@ namespace Entities.Context
         public DbSet<Links> Links { get; set; }
         public DbSet<CashBack> CashBacks { get; set; }
         public DbSet<Routes> Routes { get; set; }
+        public DbSet<Review> Review { get; set; }
 
         #endregion MainData
 
@@ -101,6 +102,10 @@ namespace Entities.Context
                 entity.HasOne(x => x.DataType)
                       .WithMany(x => x.ReviewAttributes)
                       .OnDelete(DeleteBehavior.Restrict);
+
+                entity.HasOne(x => x.Review)
+                      .WithMany(x => x.ReviewAttribute)
+                      .OnDelete(DeleteBehavior.Restrict);
             });
 
             modelBuilder.Entity<Links>(entity =>
@@ -133,8 +138,23 @@ namespace Entities.Context
                     .WithMany(x => x.Routes)
                     .OnDelete(DeleteBehavior.Restrict);
 
+                entity.HasOne(x => x.Review)
+                    .WithMany(x => x.Routes)
+                    .OnDelete(DeleteBehavior.Restrict);
             });
-            //TODO dodati review
+
+            modelBuilder.Entity<CashBack>(entity =>
+            {
+                entity.HasKey(x => x.CashBackId);
+
+                entity.HasOne(x => x.Review)
+                    .WithMany(x => x.CashBacks)
+                    .OnDelete(DeleteBehavior.Restrict);
+
+                entity.HasOne(x => x.Language)
+                    .WithMany(x => x.CashBacks)
+                    .OnDelete(DeleteBehavior.Restrict);
+            });
 
             #endregion MainData
         }
