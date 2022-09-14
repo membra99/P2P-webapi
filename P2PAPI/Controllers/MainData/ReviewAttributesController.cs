@@ -24,7 +24,9 @@ namespace P2P.WebApi.Controllers.MainData
         [HttpGet]
         public async Task<ActionResult<ReviewAttributeODTO>> GetById(int id)
         {
-            return await _mainDataServices.GetReviewAttribute(id);
+            var review = await _mainDataServices.GetReviewAttribute(id);
+            if(review == null) return NotFound();
+            return review;
         }
 
 

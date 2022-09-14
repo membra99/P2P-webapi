@@ -25,7 +25,9 @@ namespace P2P.WebApi.Controllers.MainData
         [HttpGet("{id}")]
         public async Task<ActionResult<LinkODTO>> GetById(int id)
         {
-            return await _mainDataServices.GetLinkById(id);
+            var link = await _mainDataServices.GetLinkById(id);
+            if(link == null) return NotFound();
+            return link;
         }
 
         //PUT: api/Link
