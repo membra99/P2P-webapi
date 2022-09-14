@@ -18,6 +18,8 @@ namespace Entities.P2P.MainData
         public string CashBack_terms { get; set; }
         public DateTime? Valid_Until { get; set; } //If IsCampaign is true - Valid Until is filled, Exclusive is null
         public bool? Exclusive { get; set; } //If IsCampaign is false - Exclusive is filled, Valid Until is null
+
+        [Required]
         public bool IsCampaign { get; set; }
 
         public Language Language { get; set; }

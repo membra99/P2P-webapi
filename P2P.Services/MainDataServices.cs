@@ -481,7 +481,7 @@ namespace P2P.Services
                 }
                 else
                 {
-                    throw new System.Exception("Vreme mora biti popunjeno i vece od trenutnog.");
+                    throw new System.Exception("Polje Valid_until mora biti popunjeno i vece od trenutnog vremena.");
                 }
             }
             else

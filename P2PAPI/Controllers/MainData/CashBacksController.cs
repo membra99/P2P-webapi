@@ -12,7 +12,7 @@ namespace P2P.WebApi.Controllers.MainData
     [Route("[controller]")]
     [ApiController]
     [EnableCors("CorsPolicy")]
-    public class CashBacksController : Controller
+    public class CashBacksController : ControllerBase
     {
         private readonly MainDataServices _mainDataServices;
 
