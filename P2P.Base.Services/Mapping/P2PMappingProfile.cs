@@ -68,6 +68,10 @@ namespace P2P.Base.Services.Mapping
                .ForMember(dest => dest.Name, source => source.MapFrom(m => m.Review.Name));
             CreateMap<CashBackIDTO, CashBack>();
 
+            CreateMap<Serp, SerpODTO>()
+               .ForMember(dest => dest.DataTypeName, source => source.MapFrom(m => m.DataType.DataTypeName));
+            CreateMap<SerpIDTO, Serp>();
+
             CreateMap<Review, ReviewODTO>()
                .ForMember(dest => dest.Languagename, source => source.MapFrom(m => m.Language.LanguageName))
                .ForMember(dest => dest.FacebookUrl, source => source.MapFrom(m => m.Rev_FacebookUrl.Rev_FacebookUrls))

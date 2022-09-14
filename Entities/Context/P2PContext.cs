@@ -23,6 +23,7 @@ namespace Entities.Context
         public DbSet<Links> Links { get; set; }
         public DbSet<CashBack> CashBacks { get; set; }
         public DbSet<Routes> Routes { get; set; }
+        public DbSet<Serp> Serps { get; set; }
         public DbSet<Review> Review { get; set; }
 
         #endregion MainData
@@ -154,6 +155,15 @@ namespace Entities.Context
                 entity.HasOne(x => x.Language)
                     .WithMany(x => x.CashBacks)
                     .OnDelete(DeleteBehavior.Restrict);
+            });
+
+            modelBuilder.Entity<Serp>(entity =>
+            {
+                entity.HasKey(x => x.SerpId);
+
+                entity.HasOne(x => x.DataType)
+                      .WithMany(x => x.Serps)
+                      .OnDelete(DeleteBehavior.Restrict);
             });
 
             #endregion MainData
