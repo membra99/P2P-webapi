@@ -23,6 +23,7 @@ namespace Entities.Context
         public DbSet<Links> Links { get; set; }
         public DbSet<CashBack> CashBacks { get; set; }
         public DbSet<Routes> Routes { get; set; }
+        public DbSet<Serp> Serps { get; set; }
 
         #endregion MainData
 
@@ -135,6 +136,15 @@ namespace Entities.Context
 
             });
             //TODO dodati review
+
+            modelBuilder.Entity<Serp>(entity =>
+            {
+                entity.HasKey(x => x.SerpId);
+
+                entity.HasOne(x => x.DataType)
+                      .WithMany(x => x.Serps)
+                      .OnDelete(DeleteBehavior.Restrict);
+            });
 
             #endregion MainData
         }
