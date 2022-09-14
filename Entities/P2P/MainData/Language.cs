@@ -19,5 +19,6 @@ namespace Entities.P2P.MainData
 
         public ICollection<Links> Links { get; set; }
         public ICollection<FooterSettings> FooterSettings { get; set; }
+        public ICollection<CashBack> CashBacks { get; set; }
     }
 }

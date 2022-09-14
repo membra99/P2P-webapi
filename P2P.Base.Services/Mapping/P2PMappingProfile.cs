@@ -55,6 +55,10 @@ namespace P2P.Base.Services.Mapping
                 .ForMember(dest => dest.DataTypeName, source => source.MapFrom(m => m.DataType.DataTypeName));
             CreateMap<UrlTableIDTO, UrlTable>();
 
+            CreateMap<CashBack, CashBackODTO>()
+               .ForMember(dest => dest.LanguageName, source => source.MapFrom(m => m.Language.LanguageName));
+            CreateMap<CashBackIDTO, CashBack>();
+
             #endregion
         }
     }

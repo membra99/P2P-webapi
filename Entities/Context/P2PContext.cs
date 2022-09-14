@@ -21,6 +21,7 @@ namespace Entities.Context
         public DbSet<FooterSettings> FooterSettings { get; set; }
         public DbSet<UrlTable> UrlTables { get; set; }
         public DbSet<Links> Links { get; set; }
+        public DbSet<CashBack> CashBacks { get; set; }
 
         #endregion MainData
 
@@ -123,6 +124,15 @@ namespace Entities.Context
                       .WithMany(x => x.UrlTables)
                       .OnDelete(DeleteBehavior.Restrict);
 
+            });
+
+            modelBuilder.Entity<CashBack>(entity =>
+            {
+                entity.HasKey(x => x.CashBackId);
+
+                entity.HasOne(x => x.Language)
+                       .WithMany(x => x.CashBacks)
+                       .OnDelete(DeleteBehavior.Restrict);
             });
 
             #endregion
