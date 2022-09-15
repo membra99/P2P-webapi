@@ -11,8 +11,8 @@ namespace Entities.P2P.MainData
     {
         public int ReviewId { get; set; }
 
-        //[Required]
-        //public int SerpId { get; set; }
+        [Required]
+        public int SerpId { get; set; }
 
         [Required]
         public int LanguageId { get; set; }
@@ -201,7 +201,7 @@ namespace Entities.P2P.MainData
         public UrlTable Rev_InstagramUrl { get; set; }
         public UrlTable Rev_ReportLink { get; set; }
 
-        //public Serp Serp { get; set; }
+        public Serp Serp { get; set; }
         public ICollection<Routes> Routes { get; set; }
 
         public ICollection<ReviewAttribute> ReviewAttribute { get; set; }

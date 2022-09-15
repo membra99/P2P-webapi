@@ -74,6 +74,7 @@ namespace P2P.Base.Services.Mapping
 
             CreateMap<Review, ReviewODTO>()
                .ForMember(dest => dest.Languagename, source => source.MapFrom(m => m.Language.LanguageName))
+               .ForMember(dest => dest.SerpTitle, source => source.MapFrom(m => m.Serp.SerpTitle))
                .ForMember(dest => dest.FacebookUrl, source => source.MapFrom(m => m.Rev_FacebookUrl.Rev_FacebookUrls))
                .ForMember(dest => dest.InstagramUrl, source => source.MapFrom(m => m.Rev_InstagramUrl.Rev_InstagramUrls))
                .ForMember(dest => dest.LinkedInUrl, source => source.MapFrom(m => m.Rev_LinkedInUrl.Rev_LinkedIdUrls))

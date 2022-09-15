@@ -13,7 +13,7 @@ namespace P2P.DTO.Input
     {
         public int ReviewId { get; set; }
 
-        //public int SerpId { get; set; }
+        public int SerpId { get; set; }
         public int LanguageId { get; set; }
 
         public int? FacebookUrl { get; set; } //Url Table

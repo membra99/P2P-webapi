@@ -9,10 +9,9 @@ namespace P2P.DTO.Output
     public class ReviewODTO
     {
         public int ReviewId { get; set; }
-
-        //public int SerpId { get; set; }
+        public int SerpId { get; set; }
+        public int SerpTitle { get; set; }
         public int LanguageId { get; set; }
-
         public string Languagename { get; set; }
         public int? FacebookUrl { get; set; } //Url Table
         public string FacebookUrlName { get; set; }

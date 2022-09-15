@@ -166,6 +166,43 @@ namespace Entities.Context
                       .OnDelete(DeleteBehavior.Restrict);
             });
 
+            modelBuilder.Entity<Review>(entity =>
+            {
+                entity.HasKey(x => x.ReviewId);
+
+                entity.HasOne(x => x.Language)
+                    .WithMany(x => x.Reviews)
+                    .OnDelete(DeleteBehavior.Restrict);
+
+                entity.HasOne(x => x.Rev_FacebookUrl)
+                    .WithMany(x => x.Rev_FacebookUrls)
+                    .OnDelete(DeleteBehavior.Restrict);
+
+                entity.HasOne(x => x.Rev_InstagramUrl)
+                    .WithMany(x => x.Rev_InstagramUrls)
+                    .OnDelete(DeleteBehavior.Restrict);
+
+                entity.HasOne(x => x.Rev_LinkedInUrl)
+                    .WithMany(x => x.Rev_LinkedIdUrls)
+                    .OnDelete(DeleteBehavior.Restrict);
+
+                entity.HasOne(x => x.Rev_TwitterUrl)
+                    .WithMany(x => x.Rev_TwitterUrls)
+                    .OnDelete(DeleteBehavior.Restrict);
+
+                entity.HasOne(x => x.Rev_YoutubeUrl)
+                    .WithMany(x => x.Rev_YoutubeUrls)
+                    .OnDelete(DeleteBehavior.Restrict);
+
+                entity.HasOne(x => x.Rev_ReportLink)
+                    .WithMany(x => x.Rev_ReportLinks)
+                    .OnDelete(DeleteBehavior.Restrict);
+
+                entity.HasOne(x => x.Serp)
+                   .WithMany(x => x.Reviews)
+                   .OnDelete(DeleteBehavior.Restrict);
+            });
+
             #endregion MainData
         }
     }
