@@ -20,5 +20,6 @@ namespace Entities.P2P.MainData
         public ICollection<FooterSettings> FooterSettings { get; set; }
         public ICollection<Routes> Routes { get; set; }
         public ICollection<CashBack> CashBacks { get; set; }
+        public ICollection<Page> Pages { get; set; }
     }
 }

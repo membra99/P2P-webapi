@@ -611,5 +611,173 @@ namespace P2P.Services
         //TODO GetDropdownValues, GetDropdownValuesLocale
 
         #endregion Routes
+
+        #region FaqTitle
+
+        private IQueryable<FaqTitleODTO> GetFaqTitle(int id, int pageId)
+        {
+            return from x in _context.FaqTitles
+                   .Include(x => x.Page)
+                   where (id == 0 || x.FaqPageTitleId == id)
+                   && (id == 0 || x.PageId == pageId)
+                   select _mapper.Map<FaqTitleODTO>(x);
+        }    
+
+        public async Task<FaqTitleODTO> GetFaqTitleById(int id)
+        {
+            return await GetFaqTitle(id, 0).AsNoTracking().SingleOrDefaultAsync();
+        }
+        public async Task<List<FaqTitleODTO>> GetFaqTitleByPageId(int id)
+        {
+            return await GetFaqTitle(0, id).ToListAsync();
+        }
+
+        public async Task<FaqTitleODTO> EditFaqTitle(FaqTitleIDTO faqTitleIDTO)
+        {
+            var faqTitle = _mapper.Map<FaqTitle>(faqTitleIDTO);
+            
+            _context.Entry(faqTitle).State = EntityState.Modified;
+
+            await SaveContextChangesAsync();
+
+            return await GetFaqTitleById(faqTitle.FaqPageTitleId);
+        }
+
+        public async Task<FaqTitleODTO> AddFaqTitle(FaqTitleIDTO faqTitleIDTO)
+        {
+            var faqTitle = _mapper.Map<FaqTitle>(faqTitleIDTO);
+
+            faqTitle.FaqPageTitleId = 0;
+            _context.FaqTitles.Add(faqTitle);
+
+            await SaveContextChangesAsync();
+
+            return await GetFaqTitleById(faqTitle.FaqPageTitleId);
+        }
+
+        public async Task<FaqTitleODTO> DeleteFaqTitle(int id)
+        {
+            var faqTitle = await _context.FaqTitles.FindAsync(id);
+            if (faqTitle == null) return null;
+
+            var faqTitleODTO = await GetFaqTitleById(id);
+            _context.FaqTitles.Remove(faqTitle);
+            await SaveContextChangesAsync();
+            return faqTitleODTO;
+        }
+        #endregion
+
+        #region FaqList
+
+        private IQueryable<FaqListODTO> GetFaqList(int id)
+        {
+            return from x in _context.FaqLists
+                   .Include(x => x.FaqTitle)
+                   where (id == 0 || x.FaqPageListId == id)
+                   select _mapper.Map<FaqListODTO>(x);
+        }
+
+        public async Task<FaqListODTO> GetFaqListById(int id)
+        {
+            return await GetFaqList(id).AsNoTracking().SingleOrDefaultAsync();
+        }
+
+        public async Task<FaqListODTO> EditFaqList(FaqListIDTO faqListIDTO)
+        {
+            var faqList = _mapper.Map<FaqList>(faqListIDTO);
+
+            _context.Entry(faqList).State = EntityState.Modified;
+
+            await SaveContextChangesAsync();
+
+            return await GetFaqListById(faqList.FaqPageListId);
+        }
+
+        public async Task<FaqListODTO> AddFaqList(FaqListIDTO faqListIDTO)
+        {
+            var faqList = _mapper.Map<FaqList>(faqListIDTO);
+
+            faqList.FaqPageTitleId = 0;
+            _context.FaqLists.Add(faqList);
+
+            await SaveContextChangesAsync();
+
+            return await GetFaqListById(faqList.FaqPageListId);
+        }
+
+        public async Task<FaqListODTO> DeleteFaqList(int id)
+        {
+            var faqList = await _context.FaqLists.FindAsync(id);
+            if (faqList == null) return null;
+
+            var faqListODTO = await GetFaqListById(id);
+            _context.FaqLists.Remove(faqList);
+            await SaveContextChangesAsync();
+            return faqListODTO;
+        }
+        #endregion
+
+        #region Page
+
+        private IQueryable<PageODTO> GetPage(int id, int languageId, int dataTypeId)
+        {
+            return from x in _context.Pages
+                   .Include(x => x.Language)
+                   .Include(x => x.DataType)
+                   where (id == 0 || x.PageId == id) 
+                   && (languageId == 0 && x.LanguageId == languageId)
+                   && (dataTypeId == 0 && x.DataTypeId == languageId)
+                   select _mapper.Map<PageODTO>(x);
+        }
+
+        public async Task<PageODTO> GetPageById(int id)
+        {
+            return await GetPage(id, 0, 0).AsNoTracking().SingleOrDefaultAsync();
+        }
+
+        public async Task<List<PageODTO>> GetPageByLanguageId(int id) 
+        {
+            return await GetPage(0, id, 0).ToListAsync();
+        }
+
+        public async Task<List<PageODTO>> GetPageByDataTypeId(int id)
+        {
+            return await GetPage(0, 0, id).ToListAsync();
+        }
+
+        public async Task<PageODTO> EditPage(PageIDTO pageIDTO)
+        {
+            var page = _mapper.Map<Page>(pageIDTO);
+
+            _context.Entry(page).State = EntityState.Modified;
+
+            await SaveContextChangesAsync();
+
+            return await GetPageById(page.PageId);
+        }
+
+        public async Task<PageODTO> AddPage(PageIDTO pageIDTO)
+        {
+            var page = _mapper.Map<Page>(pageIDTO);
+
+            page.PageId = 0;
+            _context.Pages.Add(page);
+
+            await SaveContextChangesAsync();
+
+            return await GetPageById(page.PageId);
+        }
+
+        public async Task<PageODTO> DeletePage(int id)
+        {
+            var page = await _context.Pages.FindAsync(id);
+            if (page == null) return null;
+
+            var pageODTO = await GetPageById(id);
+            _context.Pages.Remove(page);
+            await SaveContextChangesAsync();
+            return pageODTO;
+        }
+        #endregion
     }
 }

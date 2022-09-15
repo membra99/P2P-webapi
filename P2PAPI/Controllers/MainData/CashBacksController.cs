@@ -40,7 +40,7 @@ namespace P2P.WebApi.Controllers.MainData
 
         //PUT: api/CashBack
         [HttpPut]
-        public async Task<ActionResult<CashBackODTO>> PutFooterSettings(CashBackIDTO cashBackIDTO)
+        public async Task<ActionResult<CashBackODTO>> PutCashBack(CashBackIDTO cashBackIDTO)
         {
             try
             {
@@ -55,7 +55,7 @@ namespace P2P.WebApi.Controllers.MainData
 
         //POST: api/CashBack
         [HttpPost]
-        public async Task<ActionResult<CashBackODTO>> PostFooterSettings(CashBackIDTO cashBackIDTO)
+        public async Task<ActionResult<CashBackODTO>> PostCashBack(CashBackIDTO cashBackIDTO)
         {
             try
             {
@@ -69,7 +69,7 @@ namespace P2P.WebApi.Controllers.MainData
 
         //DELETE: api/CashBack/1
         [HttpDelete("{id}")]
-        public async Task<ActionResult<CashBackODTO>> DeleteFooterSettings(int id)
+        public async Task<ActionResult<CashBackODTO>> DeleteCashBack(int id)
         {
             try
             {
