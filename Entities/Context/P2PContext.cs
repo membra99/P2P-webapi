@@ -25,6 +25,9 @@ namespace Entities.Context
         public DbSet<Routes> Routes { get; set; }
         public DbSet<Serp> Serps { get; set; }
         public DbSet<Review> Review { get; set; }
+        public DbSet<FaqTitle> FaqTitles { get; set; }
+        public DbSet<FaqList> FaqLists { get; set; }
+        public DbSet<Page> Pages { get; set; }
 
         #endregion MainData
 
@@ -157,6 +160,26 @@ namespace Entities.Context
                     .OnDelete(DeleteBehavior.Restrict);
             });
 
+            });
+
+            modelBuilder.Entity<FaqTitle>(entity =>
+            {
+                entity.HasKey(x => x.FaqPageTitleId);    
+                
+                entity.HasOne(x => x.Page)
+                      .WithMany(x => x.FaqTitles)
+                      .OnDelete(DeleteBehavior.Restrict);
+            });
+
+            modelBuilder.Entity<FaqList>(entity =>
+            {
+                entity.HasKey(x => x.FaqPageListId);
+
+                entity.HasOne(x => x.FaqTitle)
+                    .WithMany(x => x.FaqLists)
+                    .OnDelete(DeleteBehavior.Restrict);
+            });
+
             modelBuilder.Entity<Serp>(entity =>
             {
                 entity.HasKey(x => x.SerpId);
@@ -164,6 +187,17 @@ namespace Entities.Context
                 entity.HasOne(x => x.DataType)
                       .WithMany(x => x.Serps)
                       .OnDelete(DeleteBehavior.Restrict);
+            modelBuilder.Entity<Page>(entity =>
+            {
+                entity.HasKey(x => x.PageId);
+
+                entity.HasOne(x => x.Language)
+                    .WithMany(x => x.Pages)
+                    .OnDelete(DeleteBehavior.Restrict);
+
+                entity.HasOne(x => x.DataType)
+                    .WithMany(x => x.Pages)
+                    .OnDelete(DeleteBehavior.Restrict);
             });
 
             modelBuilder.Entity<Review>(entity =>
