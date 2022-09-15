@@ -24,5 +24,7 @@ namespace Entities.P2P.MainData
         public string Subtitle { get; set; }
         public int TableId { get; set; }
         public DataType DataType { get; set; }
+
+        public ICollection<Review> Reviews { get; set; }
     }
 }
