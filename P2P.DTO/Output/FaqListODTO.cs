@@ -10,7 +10,7 @@ namespace P2P.DTO.Output
     {
         public int FaqPageListId { get; set; }
         public int FaqPageTitleId { get; set; }
-        public string FaqPageTitle { get; set; }
+        public string Title { get; set; }
         public string Qestion { get; set; }
         public string Answer { get; set; }
         public int Position { get; set; }

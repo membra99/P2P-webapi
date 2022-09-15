@@ -12,19 +12,20 @@ namespace Entities.P2P.MainData
     public class Page
     {
         public int PageId { get; set; }
-        //public int SerpId { get; set; }
-        //public int ReviewId { get; set; }
+        public int SerpId { get; set; }
+        public int ReviewId { get; set; }
         public int DataTypeId { get; set; }
         public int LanguageId { get; set; }
         [StringLength(100)]
-        public string Page_Title { get; set; }
+        public string PageTitle { get; set; }
         public string Content { get; set; }
 
-        public ICollection<FaqTitle> FaqTitles { get; set; }
+        
         public Language Language { get; set; }
         public DataType DataType { get; set; }
-        //public Serp Serp { get; set; }
-        //public Review Review { get; set; }
+        public Serp Serp { get; set; }
+        public Review Review { get; set; }
+        public ICollection<FaqTitle> FaqTitles { get; set; }
 
     }
 }

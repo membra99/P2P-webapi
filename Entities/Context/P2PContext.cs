@@ -160,13 +160,15 @@ namespace Entities.Context
                     .OnDelete(DeleteBehavior.Restrict);
             });
 
-            });
-
             modelBuilder.Entity<FaqTitle>(entity =>
             {
-                entity.HasKey(x => x.FaqPageTitleId);    
-                
+                entity.HasKey(x => x.FaqPageTitleId);
+
                 entity.HasOne(x => x.Page)
+                      .WithMany(x => x.FaqTitles)
+                      .OnDelete(DeleteBehavior.Restrict);
+
+                entity.HasOne(x => x.Review)
                       .WithMany(x => x.FaqTitles)
                       .OnDelete(DeleteBehavior.Restrict);
             });
@@ -187,6 +189,8 @@ namespace Entities.Context
                 entity.HasOne(x => x.DataType)
                       .WithMany(x => x.Serps)
                       .OnDelete(DeleteBehavior.Restrict);
+            });
+
             modelBuilder.Entity<Page>(entity =>
             {
                 entity.HasKey(x => x.PageId);

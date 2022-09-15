@@ -85,16 +85,17 @@ namespace P2P.Base.Services.Mapping
             CreateMap<ReviewIDTO, Review>();
 
             CreateMap<FaqTitle, FaqTitleODTO>()
-            //ForMember Review
-            .ForMember(dest => dest.Page_Title, source => source.MapFrom(m => m.Page.Page_Title));
+                .ForMember(dest => dest.Page_Title, source => source.MapFrom(m => m.Page.PageTitle))
+                .ForMember(dest => dest.Name, source => source.MapFrom(m => m.Review.Name));
             CreateMap<FaqTitleIDTO, FaqTitle>();
 
             CreateMap<FaqList, FaqListODTO>()
-                .ForMember(dest => dest.FaqPageTitle, source => source.MapFrom(m => m.FaqTitle.Title));
+                .ForMember(dest => dest.Title, source => source.MapFrom(m => m.FaqTitle.Title));
             CreateMap<FaqListIDTO, FaqList>();
 
             CreateMap<Page, PageODTO>()
                 .ForMember(dest => dest.LanguageName, source => source.MapFrom(m => m.Language.LanguageName))
+                .ForMember(dest => dest.Name, source => source.MapFrom(m => m.Review.Name))
                 .ForMember(dest => dest.DataTypeName, source => source.MapFrom(m => m.DataType.DataTypeName));
             CreateMap<PageIDTO, Page>();
 

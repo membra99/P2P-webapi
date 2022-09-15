@@ -13,7 +13,11 @@ namespace Entities.P2P.MainData
     {
         public int FaqPageListId { get; set; }
         public int FaqPageTitleId { get; set; }
+
+        [StringLength(500)]
         public string Qestion { get; set; }
+
+        [StringLength(500)]
         public string Answer { get; set; }
         [Required]
         public int Position { get; set; }
