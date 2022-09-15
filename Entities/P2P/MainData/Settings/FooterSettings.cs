@@ -21,7 +21,6 @@ namespace Entities.P2P.MainData.Settings
         public string FooterNote { get; set; }
 
         public Language Language { get; set; }
-
         public UrlTable FS_FacebookUrl { get; set; }
         public UrlTable FS_LinkedInUrl { get; set; }
         public UrlTable FS_PodcastUrl { get; set; }

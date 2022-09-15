@@ -16,12 +16,16 @@ namespace Entities.P2P.MainData
         [Required]
         public int DataTypeId { get; set; }
 
-        //public int ReviewId { get; set; }
+        [Required]
+        public int ReviewId { get; set; }
+
         public int? Index { get; set; }
 
         [StringLength(100)]
         public string Value { get; set; }
 
         public DataType DataType { get; set; }
+
+        public Review Review { get; set; }
     }
 }

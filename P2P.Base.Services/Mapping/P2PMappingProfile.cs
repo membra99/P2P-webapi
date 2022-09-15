@@ -41,7 +41,9 @@ namespace P2P.Base.Services.Mapping
             CreateMap<FooterSettingsIDTO, FooterSettings>();
 
             CreateMap<ReviewAttribute, ReviewAttributeODTO>()
-                .ForMember(dest => dest.DataTypeName, source => source.MapFrom(m => m.DataType.DataTypeName));
+                .ForMember(dest => dest.DataTypeName, source => source.MapFrom(m => m.DataType.DataTypeName))
+                .ForMember(dest => dest.Name, source => source.MapFrom(m => m.Review.Name));
+
             CreateMap<ReviewAttributeIDTO, ReviewAttribute>();
 
             CreateMap<Links, LinkODTO>()
@@ -56,12 +58,30 @@ namespace P2P.Base.Services.Mapping
             CreateMap<Routes, RoutesODTO>()
               .ForMember(dest => dest.DataTypeName, source => source.MapFrom(m => m.DataType.DataTypeName))
               .ForMember(dest => dest.LanguageName, source => source.MapFrom(m => m.Language.LanguageName))
-              .ForMember(dest => dest.URL, source => source.MapFrom(m => m.UrlTable.URL));
+              .ForMember(dest => dest.URL, source => source.MapFrom(m => m.UrlTable.URL))
+              .ForMember(dest => dest.Name, source => source.MapFrom(m => m.Review.Name));
+
             CreateMap<RoutesIDTO, Routes>();
-            
+
             CreateMap<CashBack, CashBackODTO>()
-               .ForMember(dest => dest.LanguageName, source => source.MapFrom(m => m.Language.LanguageName));
+               .ForMember(dest => dest.LanguageName, source => source.MapFrom(m => m.Language.LanguageName))
+               .ForMember(dest => dest.Name, source => source.MapFrom(m => m.Review.Name));
             CreateMap<CashBackIDTO, CashBack>();
+
+            CreateMap<Serp, SerpODTO>()
+               .ForMember(dest => dest.DataTypeName, source => source.MapFrom(m => m.DataType.DataTypeName));
+            CreateMap<SerpIDTO, Serp>();
+
+            CreateMap<Review, ReviewODTO>()
+               .ForMember(dest => dest.Languagename, source => source.MapFrom(m => m.Language.LanguageName))
+               .ForMember(dest => dest.FacebookUrl, source => source.MapFrom(m => m.Rev_FacebookUrl.Rev_FacebookUrls))
+               .ForMember(dest => dest.InstagramUrl, source => source.MapFrom(m => m.Rev_InstagramUrl.Rev_InstagramUrls))
+               .ForMember(dest => dest.LinkedInUrl, source => source.MapFrom(m => m.Rev_LinkedInUrl.Rev_LinkedIdUrls))
+               .ForMember(dest => dest.TwitterUrl, source => source.MapFrom(m => m.Rev_TwitterUrl.Rev_TwitterUrls))
+               .ForMember(dest => dest.YoutubeUrl, source => source.MapFrom(m => m.Rev_YoutubeUrl.Rev_YoutubeUrls))
+               .ForMember(dest => dest.ReportLink, source => source.MapFrom(m => m.Rev_ReportLink.Rev_ReportLinks));
+
+            CreateMap<ReviewIDTO, Review>();
 
             CreateMap<FaqTitle, FaqTitleODTO>()
             //ForMember Review

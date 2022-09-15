@@ -22,12 +22,12 @@ namespace Entities.P2P.MainData
         [Required]
         public int LanguageId { get; set; }
 
-        //public int ReviewId { get; set; }
+        public int ReviewId { get; set; }
 
         public DataType DataType { get; set; }
         public UrlTable UrlTable { get; set; }
         public Language Language { get; set; }
 
-        //public Review Review { get; set; }
+        public Review Review { get; set; }
     }
 }

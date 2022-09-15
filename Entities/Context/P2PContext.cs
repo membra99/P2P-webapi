@@ -23,6 +23,8 @@ namespace Entities.Context
         public DbSet<Links> Links { get; set; }
         public DbSet<CashBack> CashBacks { get; set; }
         public DbSet<Routes> Routes { get; set; }
+        public DbSet<Serp> Serps { get; set; }
+        public DbSet<Review> Review { get; set; }
         public DbSet<FaqTitle> FaqTitles { get; set; }
         public DbSet<FaqList> FaqLists { get; set; }
         public DbSet<Page> Pages { get; set; }
@@ -104,6 +106,10 @@ namespace Entities.Context
                 entity.HasOne(x => x.DataType)
                       .WithMany(x => x.ReviewAttributes)
                       .OnDelete(DeleteBehavior.Restrict);
+
+                entity.HasOne(x => x.Review)
+                      .WithMany(x => x.ReviewAttribute)
+                      .OnDelete(DeleteBehavior.Restrict);
             });
 
             modelBuilder.Entity<Links>(entity =>
@@ -136,6 +142,24 @@ namespace Entities.Context
                     .WithMany(x => x.Routes)
                     .OnDelete(DeleteBehavior.Restrict);
 
+                entity.HasOne(x => x.Review)
+                    .WithMany(x => x.Routes)
+                    .OnDelete(DeleteBehavior.Restrict);
+            });
+
+            modelBuilder.Entity<CashBack>(entity =>
+            {
+                entity.HasKey(x => x.CashBackId);
+
+                entity.HasOne(x => x.Review)
+                    .WithMany(x => x.CashBacks)
+                    .OnDelete(DeleteBehavior.Restrict);
+
+                entity.HasOne(x => x.Language)
+                    .WithMany(x => x.CashBacks)
+                    .OnDelete(DeleteBehavior.Restrict);
+            });
+
             });
 
             modelBuilder.Entity<FaqTitle>(entity =>
@@ -156,6 +180,13 @@ namespace Entities.Context
                     .OnDelete(DeleteBehavior.Restrict);
             });
 
+            modelBuilder.Entity<Serp>(entity =>
+            {
+                entity.HasKey(x => x.SerpId);
+
+                entity.HasOne(x => x.DataType)
+                      .WithMany(x => x.Serps)
+                      .OnDelete(DeleteBehavior.Restrict);
             modelBuilder.Entity<Page>(entity =>
             {
                 entity.HasKey(x => x.PageId);
@@ -168,7 +199,6 @@ namespace Entities.Context
                     .WithMany(x => x.Pages)
                     .OnDelete(DeleteBehavior.Restrict);
             });
-            //TODO dodati review
 
             #endregion MainData
         }

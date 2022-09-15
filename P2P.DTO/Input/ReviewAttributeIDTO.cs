@@ -11,7 +11,7 @@ namespace P2P.DTO.Input
     {
         public int ReviewAttributeId { get; set; }
         public int DataTypeId { get; set; }
-        //public int ReviewId { get; set; }
+        public int ReviewId { get; set; }
         public int? Index { get; set; }
         public string Value { get; set; }
     }

@@ -11,7 +11,7 @@ namespace P2P.DTO.Input
     {
         public int CashBackId { get; set; }
         public int LanguageId { get; set; }
-        //public int ReviewId { get; set; }
+        public int ReviewId { get; set; }
         public string CashBack_ca { get; set; }
         public string CashBack_terms { get; set; }
         public DateTime? Valid_Until { get; set; } //If IsCampaign is true - Valid Until is filled, Exclusive is null

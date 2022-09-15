@@ -586,9 +586,9 @@ namespace P2P.Services
             return await GetRoutesById(routes.RoutesId);
         }
 
-        public async Task<RoutesODTO> AddRoute(RoutesIDTO RoutesIDTO)
+        public async Task<RoutesODTO> AddRoute(RoutesIDTO routesIDTO)
         {
-            var routes = _mapper.Map<Routes>(RoutesIDTO);
+            var routes = _mapper.Map<Routes>(routesIDTO);
             routes.RoutesId = 0;
             _context.Routes.Add(routes);
 
@@ -611,6 +611,61 @@ namespace P2P.Services
         //TODO GetDropdownValues, GetDropdownValuesLocale
 
         #endregion Routes
+
+        #region Serp
+
+        private IQueryable<SerpODTO> GetSerp(int id, int dataTypeId)
+        {
+            return from x in _context.Serps
+                   where (id == 0 || x.SerpId == id)
+                   && (dataTypeId == 0 || x.DataTypeId == dataTypeId)
+                   select _mapper.Map<SerpODTO>(x);
+        }
+
+        public async Task<SerpODTO> GetSerpById(int id)
+        {
+            return await GetSerp(id, 0).AsNoTracking().SingleOrDefaultAsync();
+        }
+
+        public async Task<List<SerpODTO>> GetByDataTypeId(int dataTypeId)
+        {
+            return await GetSerp(0, dataTypeId).ToListAsync();
+        }
+
+        public async Task<SerpODTO> EditSerp(SerpIDTO serpIDTO)
+        {
+            var serp = _mapper.Map<Serp>(serpIDTO);
+
+            _context.Entry(serp).State = EntityState.Modified;
+
+            await SaveContextChangesAsync();
+
+            return await GetSerpById(serp.SerpId);
+        }
+
+        public async Task<SerpODTO> AddSerp(SerpIDTO serpIDTO)
+        {
+            var serp = _mapper.Map<Serp>(serpIDTO);
+            serp.SerpId = 0;
+            _context.Serps.Add(serp);
+
+            await SaveContextChangesAsync();
+
+            return await GetSerpById(serp.SerpId);
+        }
+
+        public async Task<SerpODTO> DeleteSerp(int id)
+        {
+            var serp = await _context.Serps.FindAsync(id);
+            if (serp == null) return null;
+
+            var serpODTO = await GetSerpById(id);
+            _context.Serps.Remove(serp);
+            await SaveContextChangesAsync();
+            return serpODTO;
+        }
+
+        #endregion
 
         #region FaqTitle
 
