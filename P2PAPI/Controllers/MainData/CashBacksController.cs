@@ -27,7 +27,7 @@ namespace P2P.WebApi.Controllers.MainData
         public async Task<ActionResult<CashBackODTO>> GetById(int id)
         {
             var cashback = await _mainDataServices.GetCashBackById(id);
-            if(cashback == null) return NotFound();
+            if (cashback == null) return NotFound();
             return cashback;
         }
 
@@ -47,6 +47,15 @@ namespace P2P.WebApi.Controllers.MainData
             return cashback;
         }
 
+        //GET: api/CashBack
+        [HttpGet("CashbackBonus")]
+        public async Task<ActionResult<IEnumerable<GetCashbackCampaignBonusODTO>>> GetCashbackBonus(int langId, bool isCampaign)
+        {
+            var cashback = await _mainDataServices.GetCashbackCampaign(langId, isCampaign);
+            if (cashback == null) return NotFound();
+            return cashback;
+        }
+
         //PUT: api/CashBack
         [HttpPut]
         public async Task<ActionResult<CashBackODTO>> PutCashBack(CashBackIDTO cashBackIDTO)
@@ -59,7 +68,6 @@ namespace P2P.WebApi.Controllers.MainData
             {
                 throw new Exception(e.Message);
             }
-
         }
 
         //POST: api/CashBack
@@ -90,7 +98,6 @@ namespace P2P.WebApi.Controllers.MainData
             {
                 throw new Exception(e.Message);
             }
-
         }
     }
 }

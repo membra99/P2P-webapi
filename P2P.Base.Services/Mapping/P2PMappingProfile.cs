@@ -71,7 +71,7 @@ namespace P2P.Base.Services.Mapping
 
             CreateMap<CashBack, GetCashbackCampOfferODTO>()
                 .ForMember(dest => dest.LanguageName, source => source.MapFrom(m => m.Language.LanguageName))
-                .ForMember(dest => dest.Name, source => source.MapFrom(m => m.Review.Name)); 
+                .ForMember(dest => dest.Name, source => source.MapFrom(m => m.Review.Name));
 
             CreateMap<Serp, SerpODTO>()
                .ForMember(dest => dest.DataTypeName, source => source.MapFrom(m => m.DataType.DataTypeName));
@@ -106,6 +106,9 @@ namespace P2P.Base.Services.Mapping
                 .ForMember(dest => dest.Name, source => source.MapFrom(m => m.Review.Name))
                 .ForMember(dest => dest.DataTypeName, source => source.MapFrom(m => m.DataType.DataTypeName));
             CreateMap<PageIDTO, Page>();
+
+            CreateMap<Page, GetPageListODTO>()
+                .ForMember(dest => dest.DataTypeName, source => source.MapFrom(m => m.DataType.DataTypeName));
 
             #endregion MainData
         }

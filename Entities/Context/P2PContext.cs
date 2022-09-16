@@ -209,26 +209,32 @@ namespace Entities.Context
 
                 entity.HasOne(x => x.Rev_FacebookUrl)
                     .WithMany(x => x.Rev_FacebookUrls)
+                    .HasForeignKey(x => x.FacebookUrl)
                     .OnDelete(DeleteBehavior.Restrict);
 
                 entity.HasOne(x => x.Rev_InstagramUrl)
                     .WithMany(x => x.Rev_InstagramUrls)
+                    .HasForeignKey(x => x.InstagramUrl)
                     .OnDelete(DeleteBehavior.Restrict);
 
                 entity.HasOne(x => x.Rev_LinkedInUrl)
                     .WithMany(x => x.Rev_LinkedIdUrls)
+                    .HasForeignKey(x => x.LinkedInUrl)
                     .OnDelete(DeleteBehavior.Restrict);
 
                 entity.HasOne(x => x.Rev_TwitterUrl)
                     .WithMany(x => x.Rev_TwitterUrls)
+                    .HasForeignKey(x => x.TwitterUrl)
                     .OnDelete(DeleteBehavior.Restrict);
 
                 entity.HasOne(x => x.Rev_YoutubeUrl)
                     .WithMany(x => x.Rev_YoutubeUrls)
+                    .HasForeignKey(x => x.YoutubeUrl)
                     .OnDelete(DeleteBehavior.Restrict);
 
                 entity.HasOne(x => x.Rev_ReportLink)
                     .WithMany(x => x.Rev_ReportLinks)
+                    .HasForeignKey(x => x.ReportLink)
                     .OnDelete(DeleteBehavior.Restrict);
 
                 entity.HasOne(x => x.Serp)

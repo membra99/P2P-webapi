@@ -7,13 +7,13 @@ using P2P.Services;
 using System.Threading.Tasks;
 using System;
 using System.Collections.Generic;
+using P2P.DTO.Output.EndPointODTO;
 
 namespace P2P.WebApi.Controllers.MainData
 {
     [Route("api/[controller]")]
     [ApiController]
     [EnableCors("CorsPolicy")]
-
     public class PagesController : ControllerBase
     {
         private readonly MainDataServices _mainDataServices;
@@ -48,6 +48,14 @@ namespace P2P.WebApi.Controllers.MainData
             return page;
         }
 
+        [HttpGet("GetList/{langId}")]
+        public async Task<ActionResult<IEnumerable<GetPageListODTO>>> GetList(int langId)
+        {
+            var page = await _mainDataServices.GetList(langId);
+            if (page == null) return NotFound();
+            return page;
+        }
+
         //PUT: api/Page
         [HttpPut]
         public async Task<ActionResult<PageODTO>> PutPage(PageIDTO pageIDTO)
@@ -60,7 +68,6 @@ namespace P2P.WebApi.Controllers.MainData
             {
                 throw new Exception(e.Message);
             }
-
         }
 
         //POST: api/Page

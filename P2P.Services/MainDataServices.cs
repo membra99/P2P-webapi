@@ -4,6 +4,7 @@ using Entities.P2P;
 using Entities.P2P.MainData;
 using Entities.P2P.MainData.Settings;
 using Microsoft.EntityFrameworkCore;
+using NetTopologySuite.Noding;
 using P2P.Base.Services;
 using P2P.DTO.Input;
 using P2P.DTO.Output;
@@ -24,6 +25,8 @@ namespace P2P.Services
         {
         }
 
+        #region GlobalFunctions
+
         private async Task<List<ReviewContentDropdownODTO>> ListOfReviews()
         {
             return _context.Review.Select(r => new ReviewContentDropdownODTO
@@ -31,9 +34,10 @@ namespace P2P.Services
                 Value = r.ReviewId,
                 Label = r.Name,
                 Rating = r.RatingCalculated
-
             }).OrderByDescending(e => e.Rating).ToList();
         }
+
+        #endregion GlobalFunctions
 
         #region Testimonial
 
@@ -498,28 +502,54 @@ namespace P2P.Services
 
             try
             {
-                 cashback = await (from x in _context.CashBacks
-                                   .Include(x => x.Language)
-                                   .Include(x => x.Review)
-                                      where (id == 0 || x.CashBackId == id)
-                                      && x.IsCampaign == isCampaign
-                                      select _mapper.Map<GetCashbackCampOfferODTO>(x)).SingleOrDefaultAsync();
+                cashback = await (from x in _context.CashBacks
+                                  .Include(x => x.Language)
+                                  .Include(x => x.Review)
+                                  where (id == 0 || x.CashBackId == id)
+                                  && x.IsCampaign == isCampaign
+                                  select _mapper.Map<GetCashbackCampOfferODTO>(x)).SingleOrDefaultAsync();
 
                 if (cashback != null)
                 {
                     cashback.reviews = new List<ReviewContentDropdownODTO>();
                     cashback.reviews = reviewsList;
                 }
-
-
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 throw new Exception(e.Message);
             }
-            
 
             return cashback;
+        }
+
+        public async Task<List<GetCashbackCampaignBonusODTO>> GetCashbackCampaign(int langId, bool isCampaign)
+        {
+            var cashbacks = new List<GetCashbackCampaignBonusODTO>();
+            if (isCampaign)
+            {
+                cashbacks = await (from x in _context.CashBacks
+                                   where x.LanguageId == langId && x.IsCampaign == isCampaign
+                                   select new GetCashbackCampaignBonusODTO
+                                   {
+                                       ReviewId = x.ReviewId,
+                                       CashBackId = x.CashBackId,
+                                       Valid_Until = x.Valid_Until
+                                   }).OrderByDescending(x => x.Valid_Until).ToListAsync();
+            }
+            else
+            {
+                cashbacks = await (from x in _context.CashBacks
+                                   where x.LanguageId == langId && x.IsCampaign == isCampaign
+                                   join r in _context.Review on x.ReviewId equals r.ReviewId
+                                   select new GetCashbackCampaignBonusODTO
+                                   {
+                                       ReviewId = x.ReviewId,
+                                       CashBackId = x.CashBackId,
+                                       RatingCalculated = r.RatingCalculated
+                                   }).OrderByDescending(x => x.CashBackId).ToListAsync();
+            }
+            return cashbacks;
         }
 
         public async Task<CashBackODTO> EditCashBack(CashBackIDTO cashBackIDTO)
@@ -597,7 +627,8 @@ namespace P2P.Services
             await SaveContextChangesAsync();
             return cashBackODTO;
         }
-        #endregion
+
+        #endregion CashBack
 
         #region Routes
 
@@ -717,7 +748,7 @@ namespace P2P.Services
             return serpODTO;
         }
 
-        #endregion
+        #endregion Serp
 
         #region FaqTitle
 
@@ -728,7 +759,7 @@ namespace P2P.Services
                    where (id == 0 || x.FaqTitleId == id)
                    && (pageId == 0 || x.PageId == pageId)
                    select _mapper.Map<FaqTitleODTO>(x);
-        }    
+        }
 
         public async Task<FaqTitleODTO> GetFaqTitleById(int id)
         {
@@ -737,10 +768,10 @@ namespace P2P.Services
 
         public async Task<List<GetFaqTitleByReviewIdODTO>> GetFaqTitleByReviewId(int reviewId)
         {
-            return await(from x in _context.FaqTitles
-                    where (reviewId ==0 || x.ReviewId == reviewId)
-                    && x.ReviewId != null
-                    select _mapper.Map<GetFaqTitleByReviewIdODTO>(x)).ToListAsync();
+            return await (from x in _context.FaqTitles
+                          where (reviewId == 0 || x.ReviewId == reviewId)
+                          && x.ReviewId != null
+                          select _mapper.Map<GetFaqTitleByReviewIdODTO>(x)).ToListAsync();
         }
 
         public async Task<List<GetFaqTitleByPageIdODTO>> GetFaqTitleByPageId(int pageId)
@@ -754,7 +785,7 @@ namespace P2P.Services
         public async Task<FaqTitleODTO> EditFaqTitle(FaqTitleIDTO faqTitleIDTO)
         {
             var faqTitle = _mapper.Map<FaqTitle>(faqTitleIDTO);
-            
+
             _context.Entry(faqTitle).State = EntityState.Modified;
 
             await SaveContextChangesAsync();
@@ -784,7 +815,8 @@ namespace P2P.Services
             await SaveContextChangesAsync();
             return faqTitleODTO;
         }
-        #endregion
+
+        #endregion FaqTitle
 
         #region FaqList
 
@@ -840,7 +872,8 @@ namespace P2P.Services
             await SaveContextChangesAsync();
             return faqListODTO;
         }
-        #endregion
+
+        #endregion FaqList
 
         #region Page
 
@@ -849,7 +882,7 @@ namespace P2P.Services
             return from x in _context.Pages
                    .Include(x => x.Language)
                    .Include(x => x.DataType)
-                   where (id == 0 || x.PageId == id) 
+                   where (id == 0 || x.PageId == id)
                    && (languageId == 0 && x.LanguageId == languageId)
                    && (dataTypeId == 0 && x.DataTypeId == languageId)
                    select _mapper.Map<PageODTO>(x);
@@ -887,6 +920,23 @@ namespace P2P.Services
         //    return retVal;
         //}
 
+        public async Task<List<GetPageListODTO>> GetList(int langId)
+        {
+            var pages = new List<GetPageListODTO>();
+
+            pages = await (from x in _context.Pages
+                           .Include(x => x.DataType)
+                           where x.LanguageId == langId
+                           select new GetPageListODTO
+                           {
+                               PageId = x.PageId,
+                               Page_Title = x.PageTitle,
+                               DataTypeId = x.DataTypeId
+                           }).OrderByDescending(x => x.PageId).ToListAsync();
+
+            return pages;
+        }
+
         public async Task<GetPageODTO> GetItemContent(int? id, int urlId, int langId)
         {
             try
@@ -910,8 +960,6 @@ namespace P2P.Services
                                        && x.UrlTableId == urlId
                                        select x).FirstOrDefaultAsync();
 
-
-
                     if (route.ReviewId == null) throw new Exception("No data available.");
                     var pd = _context.Pages.FirstOrDefault(e => e.ReviewId == route.RoutesId);
                     var retVal = new GetPageODTO
@@ -928,7 +976,7 @@ namespace P2P.Services
             }
         }
 
-        public async Task<List<PageODTO>> GetPageByLanguageId(int id) 
+        public async Task<List<PageODTO>> GetPageByLanguageId(int id)
         {
             return await GetPage(0, id, 0).ToListAsync();
         }
@@ -981,6 +1029,94 @@ namespace P2P.Services
             await SaveContextChangesAsync();
             return pageODTO;
         }
-        #endregion
+
+        #endregion Page
+
+        #region Review
+
+        private IQueryable<ReviewODTO> GetReview(int id)
+        {
+            return from x in _context.Review
+                   where (id == 0 || x.ReviewId == id)
+                   select _mapper.Map<ReviewODTO>(x);
+        }
+
+        public async Task<ReviewODTO> GetReviewById(int id)
+        {
+            return await GetReview(id).AsNoTracking().SingleOrDefaultAsync();
+        }
+
+        public async Task<List<ReviewContentDropdownODTO>> GetListOfReviews()
+        {
+            List<ReviewContentDropdownODTO> reviews = await ListOfReviews();
+            return reviews;
+        }
+
+        public async Task AddCount(string name)
+        {
+            var reviewCount = await _context.Review.Where(x => x.Name.ToLower() == name.ToLower()).SingleOrDefaultAsync();
+
+            if (reviewCount != null)
+            {
+                if (reviewCount.Count != null)
+                {
+                    reviewCount.Count += 1;
+                }
+                else
+                {
+                    reviewCount.Count = 1;
+                }
+                _context.Entry(reviewCount).State = EntityState.Modified;
+                await SaveContextChangesAsync();
+            }
+        }
+
+        public async Task<List<ReviewContentDropdownODTO>> GetListOfReviewsByLang(int langId)
+        {
+            List<ReviewContentDropdownODTO> reviews = await (from x in _context.Review
+                                                             where x.LanguageId == langId
+                                                             select new ReviewContentDropdownODTO
+                                                             {
+                                                                 Value = x.ReviewId,
+                                                                 Label = x.Name,
+                                                                 Rating = x.RatingCalculated
+                                                             }).OrderByDescending(x => x.Rating).ToListAsync();
+            return reviews;
+        }
+
+        public async Task<ReviewODTO> EditReview(ReviewIDTO reviewIDTO)
+        {
+            var review = _mapper.Map<Review>(reviewIDTO);
+
+            _context.Entry(review).State = EntityState.Modified;
+
+            await SaveContextChangesAsync();
+
+            return await GetReviewById(review.ReviewId);
+        }
+
+        public async Task<ReviewODTO> AddReview(ReviewIDTO reviewIDTO)
+        {
+            var review = _mapper.Map<Review>(reviewIDTO);
+            review.ReviewId = 0;
+            _context.Review.Add(review);
+
+            await SaveContextChangesAsync();
+
+            return await GetReviewById(review.ReviewId);
+        }
+
+        public async Task<ReviewODTO> DeleteReview(int id)
+        {
+            var review = await _context.Review.FindAsync(id);
+            if (review == null) return null;
+
+            var reviewODTO = await GetReviewById(id);
+            _context.Review.Remove(review);
+            await SaveContextChangesAsync();
+            return reviewODTO;
+        }
+
+        #endregion Review
     }
 }
