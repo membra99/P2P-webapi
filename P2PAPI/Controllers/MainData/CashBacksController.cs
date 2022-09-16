@@ -48,8 +48,8 @@ namespace P2P.WebApi.Controllers.MainData
         }
 
         //GET: api/CashBack
-        [HttpGet("CashbackBonus")]
-        public async Task<ActionResult<IEnumerable<GetCashbackCampaignBonusODTO>>> GetCashbackBonus(int langId, bool isCampaign)
+        [HttpGet("CashbackList")]
+        public async Task<ActionResult<IEnumerable<CashbackListODTO>>> CashbackList(int langId, bool isCampaign)
         {
             var cashback = await _mainDataServices.GetCashbackCampaign(langId, isCampaign);
             if (cashback == null) return NotFound();

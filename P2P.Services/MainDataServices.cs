@@ -523,16 +523,17 @@ namespace P2P.Services
             return cashback;
         }
 
-        public async Task<List<GetCashbackCampaignBonusODTO>> GetCashbackCampaign(int langId, bool isCampaign)
+        public async Task<List<CashbackListODTO>> CashbackList(int langId, bool isCampaign)
         {
-            var cashbacks = new List<GetCashbackCampaignBonusODTO>();
+            var cashbacks = new List<CashbackListODTO>();
             if (isCampaign)
             {
                 cashbacks = await (from x in _context.CashBacks
                                    where x.LanguageId == langId && x.IsCampaign == isCampaign
-                                   select new GetCashbackCampaignBonusODTO
+                                   select new CashbackListODTO
                                    {
                                        ReviewId = x.ReviewId,
+                                       Name = x.Review.Name,
                                        CashBackId = x.CashBackId,
                                        Valid_Until = x.Valid_Until
                                    }).OrderByDescending(x => x.Valid_Until).ToListAsync();
@@ -542,9 +543,10 @@ namespace P2P.Services
                 cashbacks = await (from x in _context.CashBacks
                                    where x.LanguageId == langId && x.IsCampaign == isCampaign
                                    join r in _context.Review on x.ReviewId equals r.ReviewId
-                                   select new GetCashbackCampaignBonusODTO
+                                   select new CashbackListODTO
                                    {
                                        ReviewId = x.ReviewId,
+                                       Name = x.Review.Name,
                                        CashBackId = x.CashBackId,
                                        RatingCalculated = r.RatingCalculated
                                    }).OrderByDescending(x => x.CashBackId).ToListAsync();
@@ -931,7 +933,8 @@ namespace P2P.Services
                            {
                                PageId = x.PageId,
                                Page_Title = x.PageTitle,
-                               DataTypeId = x.DataTypeId
+                               DataTypeId = x.DataTypeId,
+                               DataTypeName = x.DataType.DataTypeName
                            }).OrderByDescending(x => x.PageId).ToListAsync();
 
             return pages;

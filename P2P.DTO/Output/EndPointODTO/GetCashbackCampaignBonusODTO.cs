@@ -6,10 +6,12 @@ using System.Threading.Tasks;
 
 namespace P2P.DTO.Output.EndPointODTO
 {
-    public class GetCashbackCampaignBonusODTO
+    public class CashbackListODTO
     {
         public int CashBackId { get; set; }
         public int? ReviewId { get; set; }
+
+        public string Name { get; set; }
         public DateTime? Valid_Until { get; set; } //If IsCampaign is true - Valid Until is filled, Exclusive is null
         public decimal? RatingCalculated { get; set; }
         public bool? Exclusive { get; set; } //If IsCampaign is false - Exclusive is filled, Valid Until is null
