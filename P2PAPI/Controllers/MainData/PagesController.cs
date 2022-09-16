@@ -40,10 +40,10 @@ namespace P2P.WebApi.Controllers.MainData
             return page;
         }
 
-        [HttpGet("ByDataTypeId/{langId}")]
-        public async Task<ActionResult<IEnumerable<PageODTO>>> GetPagesByDataTypeId(int langId)
+        [HttpGet("ByDataTypeId/{dataTypeId}")]
+        public async Task<ActionResult<IEnumerable<PageODTO>>> GetPagesByDataTypeId(int dataTypeId)
         {
-            var page = await _mainDataServices.GetPageByDataTypeId(langId);
+            var page = await _mainDataServices.GetPageByDataTypeId(dataTypeId);
             if (page == null) return NotFound();
             return page;
         }

@@ -7,10 +7,12 @@ using Microsoft.EntityFrameworkCore;
 using P2P.Base.Services;
 using P2P.DTO.Input;
 using P2P.DTO.Output;
+using P2P.DTO.Output.EndPointODTO;
 using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
+using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
 using System.Xml.Linq;
 
@@ -20,6 +22,17 @@ namespace P2P.Services
     {
         public MainDataServices(MainContext context, IMapper mapper) : base(context, mapper)
         {
+        }
+
+        private async Task<List<ReviewContentDropdownODTO>> ListOfReviews()
+        {
+            return _context.Review.Select(r => new ReviewContentDropdownODTO
+            {
+                Value = r.ReviewId,
+                Label = r.Name,
+                Rating = r.RatingCalculated
+
+            }).OrderByDescending(e => e.Rating).ToList();
         }
 
         #region Testimonial
@@ -400,18 +413,25 @@ namespace P2P.Services
 
         #region Links
 
-        private IQueryable<LinkODTO> GetLinks(int id)
+        private IQueryable<LinkODTO> GetLinks(int id, string key, int langId)
         {
             return from x in _context.Links
                    .Include(x => x.UrlTable)
                    .Include(x => x.Language)
                    where (id == 0 || x.LinkId == id)
+                   && (string.IsNullOrEmpty(key) || x.Key.StartsWith(key))
+                   && (langId == 0 || x.LanguageId == langId)
                    select _mapper.Map<LinkODTO>(x);
         }
 
         public async Task<LinkODTO> GetLinkById(int id)
         {
-            return await GetLinks(id).AsNoTracking().SingleOrDefaultAsync();
+            return await GetLinks(id, null, 0).AsNoTracking().SingleOrDefaultAsync();
+        }
+
+        public async Task<List<LinkODTO>> GetLinkByKeyAndLang(string key, int langId)
+        {
+            return await GetLinks(0, key, langId).ToListAsync();
         }
 
         public async Task<LinkODTO> EditLink(LinkIDTO linkIDTO)
@@ -468,6 +488,38 @@ namespace P2P.Services
         public async Task<CashBackODTO> GetCashBackById(int id)
         {
             return await GetCashBack(id, 0).AsNoTracking().SingleOrDefaultAsync();
+        }
+
+        public async Task<GetCashbackCampOfferODTO> Get(int id, bool isCampaign)
+        {
+            List<ReviewContentDropdownODTO> reviewsList = await ListOfReviews();
+
+            var cashback = new GetCashbackCampOfferODTO();
+
+            try
+            {
+                 cashback = await (from x in _context.CashBacks
+                                   .Include(x => x.Language)
+                                   .Include(x => x.Review)
+                                      where (id == 0 || x.CashBackId == id)
+                                      && x.IsCampaign == isCampaign
+                                      select _mapper.Map<GetCashbackCampOfferODTO>(x)).SingleOrDefaultAsync();
+
+                if (cashback != null)
+                {
+                    cashback.reviews = new List<ReviewContentDropdownODTO>();
+                    cashback.reviews = reviewsList;
+                }
+
+
+            }
+            catch(Exception e)
+            {
+                throw new Exception(e.Message);
+            }
+            
+
+            return cashback;
         }
 
         public async Task<CashBackODTO> EditCashBack(CashBackIDTO cashBackIDTO)
@@ -673,8 +725,8 @@ namespace P2P.Services
         {
             return from x in _context.FaqTitles
                    .Include(x => x.Page)
-                   where (id == 0 || x.FaqPageTitleId == id)
-                   && (id == 0 || x.PageId == pageId)
+                   where (id == 0 || x.FaqTitleId == id)
+                   && (pageId == 0 || x.PageId == pageId)
                    select _mapper.Map<FaqTitleODTO>(x);
         }    
 
@@ -682,9 +734,21 @@ namespace P2P.Services
         {
             return await GetFaqTitle(id, 0).AsNoTracking().SingleOrDefaultAsync();
         }
-        public async Task<List<FaqTitleODTO>> GetFaqTitleByPageId(int id)
+
+        public async Task<List<GetFaqTitleByReviewIdODTO>> GetFaqTitleByReviewId(int reviewId)
         {
-            return await GetFaqTitle(0, id).ToListAsync();
+            return await(from x in _context.FaqTitles
+                    where (reviewId ==0 || x.ReviewId == reviewId)
+                    && x.ReviewId != null
+                    select _mapper.Map<GetFaqTitleByReviewIdODTO>(x)).ToListAsync();
+        }
+
+        public async Task<List<GetFaqTitleByPageIdODTO>> GetFaqTitleByPageId(int pageId)
+        {
+            return await (from x in _context.FaqTitles
+                          where (pageId == 0 || x.ReviewId == pageId)
+                          && x.PageId != null
+                          select _mapper.Map<GetFaqTitleByPageIdODTO>(x)).ToListAsync();
         }
 
         public async Task<FaqTitleODTO> EditFaqTitle(FaqTitleIDTO faqTitleIDTO)
@@ -695,19 +759,19 @@ namespace P2P.Services
 
             await SaveContextChangesAsync();
 
-            return await GetFaqTitleById(faqTitle.FaqPageTitleId);
+            return await GetFaqTitleById(faqTitle.FaqTitleId);
         }
 
         public async Task<FaqTitleODTO> AddFaqTitle(FaqTitleIDTO faqTitleIDTO)
         {
             var faqTitle = _mapper.Map<FaqTitle>(faqTitleIDTO);
 
-            faqTitle.FaqPageTitleId = 0;
+            faqTitle.FaqTitleId = 0;
             _context.FaqTitles.Add(faqTitle);
 
             await SaveContextChangesAsync();
 
-            return await GetFaqTitleById(faqTitle.FaqPageTitleId);
+            return await GetFaqTitleById(faqTitle.FaqTitleId);
         }
 
         public async Task<FaqTitleODTO> DeleteFaqTitle(int id)
@@ -724,17 +788,23 @@ namespace P2P.Services
 
         #region FaqList
 
-        private IQueryable<FaqListODTO> GetFaqList(int id)
+        private IQueryable<FaqListODTO> GetFaqList(int id, int faqTitleId)
         {
             return from x in _context.FaqLists
                    .Include(x => x.FaqTitle)
                    where (id == 0 || x.FaqPageListId == id)
+                   && (faqTitleId == 0 || x.FaqTitleId == faqTitleId)
                    select _mapper.Map<FaqListODTO>(x);
         }
 
         public async Task<FaqListODTO> GetFaqListById(int id)
         {
-            return await GetFaqList(id).AsNoTracking().SingleOrDefaultAsync();
+            return await GetFaqList(id, 0).AsNoTracking().SingleOrDefaultAsync();
+        }
+
+        public async Task<List<FaqListODTO>> GetFaqListByFaqTitleId(int faqTitleId)
+        {
+            return await GetFaqList(0, faqTitleId).ToListAsync();
         }
 
         public async Task<FaqListODTO> EditFaqList(FaqListIDTO faqListIDTO)
@@ -752,7 +822,7 @@ namespace P2P.Services
         {
             var faqList = _mapper.Map<FaqList>(faqListIDTO);
 
-            faqList.FaqPageTitleId = 0;
+            faqList.FaqPageListId = 0;
             _context.FaqLists.Add(faqList);
 
             await SaveContextChangesAsync();
@@ -790,6 +860,74 @@ namespace P2P.Services
             return await GetPage(id, 0, 0).AsNoTracking().SingleOrDefaultAsync();
         }
 
+        //TODO KADA SE ZAVRSI AKADEMIJA
+        //public async Task<GetPageODTO> GetItem(int id)
+        //{
+        //    List<ReviewContentDropdownODTO> reviews = await ListOfReviews();
+        //    var page = await _context.Pages.FirstOrDefaultAsync(e => e.PageId == id);
+        //    var popularArticles = _context..Select(e => new
+        //    {
+        //        value = e.AcademyID,
+        //        label = e.title,
+
+        //    }).ToList();
+
+        //    var retVal = new GetPageODTO
+        //    {
+        //         PageId = page.PageId,
+        //        Page_Title = page.PageTitle,
+        //        SerpId = page.SerpId,
+        //        DataTypeId = page.DataTypeId,
+        //        ReviewContentDropdowns = reviews,
+        //        ReviewId = (int)page.ReviewId,
+        //        PopularArticles = popularArticles,
+        //        SelectedPopularArticles = _context.tbl_Page_Articles.Where(e => e.PageId == page.id).Select(e => e.AcademyId).ToList(),
+        //    };
+
+        //    return retVal;
+        //}
+
+        public async Task<GetPageODTO> GetItemContent(int? id, int urlId, int langId)
+        {
+            try
+            {
+                if (id != null)
+                {
+                    var page = _context.Pages.FirstOrDefault(e => e.PageId == id);
+
+                    var retVal = new GetPageODTO
+                    {
+                        PageId = page.PageId,
+                        Content = page.Content,
+                    };
+
+                    return retVal;
+                }
+                else
+                {
+                    var route = await (from x in _context.Routes
+                                       where x.LanguageId == langId
+                                       && x.UrlTableId == urlId
+                                       select x).FirstOrDefaultAsync();
+
+
+
+                    if (route.ReviewId == null) throw new Exception("No data available.");
+                    var pd = _context.Pages.FirstOrDefault(e => e.ReviewId == route.RoutesId);
+                    var retVal = new GetPageODTO
+                    {
+                        PageId = pd.PageId,
+                        Content = pd.Content,
+                    };
+                    return retVal;
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+        }
+
         public async Task<List<PageODTO>> GetPageByLanguageId(int id) 
         {
             return await GetPage(0, id, 0).ToListAsync();
@@ -825,6 +963,16 @@ namespace P2P.Services
 
         public async Task<PageODTO> DeletePage(int id)
         {
+            //TODO Kada bude PageAtrical i academy prepraviti brisanje
+            //var pageArtical = await _context.PageArticles.Where(x => x.PageId == id).Select(x => x.Id).ToListAsync();
+
+            //foreach (var item in pageArtical)
+            //{
+            //    var pageart = await _context.PagesArtical.FindAsync(item.PageId);
+            //    _context.PagesArtic.Remove(pageart);
+
+            //}
+
             var page = await _context.Pages.FindAsync(id);
             if (page == null) return null;
 

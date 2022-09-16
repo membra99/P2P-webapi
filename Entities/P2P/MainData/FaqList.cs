@@ -12,10 +12,10 @@ namespace Entities.P2P.MainData
     public class FaqList
     {
         public int FaqPageListId { get; set; }
-        public int FaqPageTitleId { get; set; }
+        public int FaqTitleId { get; set; }
 
         [StringLength(500)]
-        public string Qestion { get; set; }
+        public string Question { get; set; }
 
         [StringLength(500)]
         public string Answer { get; set; }

@@ -7,6 +7,7 @@ using P2P.Services;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System;
+using P2P.DTO.Output.EndPointODTO;
 
 namespace P2P.WebApi.Controllers.MainData
 {
@@ -33,10 +34,19 @@ namespace P2P.WebApi.Controllers.MainData
         }
 
         //GET: api/FaqTitle
-        [HttpGet("ByPageId/{id}")]
-        public async Task<ActionResult<IEnumerable<FaqTitleODTO>>> GetByPageId(int id)
+        [HttpGet("ByReviewId")]
+        public async Task<ActionResult<IEnumerable<GetFaqTitleByReviewIdODTO>>> GetGetFaqTitleByReview(int reviewId)
         {
-            var faqTitles = await _mainDataServices.GetFaqTitleByPageId(id);
+            var faqTitles = await _mainDataServices.GetFaqTitleByReviewId(reviewId);
+            if (faqTitles == null) return NotFound();
+            return faqTitles;
+        }
+
+        //GET: api/FaqTitle
+        [HttpGet("ByPageId")]
+        public async Task<ActionResult<IEnumerable<GetFaqTitleByPageIdODTO>>> GetGetFaqTitleByPage(int pageId)
+        {
+            var faqTitles = await _mainDataServices.GetFaqTitleByPageId(pageId);
             if (faqTitles == null) return NotFound();
             return faqTitles;
         }

@@ -134,19 +134,6 @@ namespace Entities.Context
                       .OnDelete(DeleteBehavior.Restrict);
             });
 
-            modelBuilder.Entity<Routes>(entity =>
-            {
-                entity.HasKey(x => x.RoutesId);
-
-                entity.HasOne(x => x.UrlTable)
-                    .WithMany(x => x.Routes)
-                    .OnDelete(DeleteBehavior.Restrict);
-
-                entity.HasOne(x => x.Review)
-                    .WithMany(x => x.Routes)
-                    .OnDelete(DeleteBehavior.Restrict);
-            });
-
             modelBuilder.Entity<CashBack>(entity =>
             {
                 entity.HasKey(x => x.CashBackId);
@@ -162,7 +149,7 @@ namespace Entities.Context
 
             modelBuilder.Entity<FaqTitle>(entity =>
             {
-                entity.HasKey(x => x.FaqPageTitleId);
+                entity.HasKey(x => x.FaqTitleId);
 
                 entity.HasOne(x => x.Page)
                       .WithMany(x => x.FaqTitles)
@@ -202,6 +189,14 @@ namespace Entities.Context
                 entity.HasOne(x => x.DataType)
                     .WithMany(x => x.Pages)
                     .OnDelete(DeleteBehavior.Restrict);
+
+                entity.HasOne(x => x.Review)
+                    .WithMany(x => x.Pages)
+                    .OnDelete(DeleteBehavior.Restrict);
+
+                entity.HasOne(x => x.Serp)
+                    .WithMany(x => x.Pages)
+                    .OnDelete(DeleteBehavior.Restrict);
             });
 
             modelBuilder.Entity<Review>(entity =>
@@ -239,6 +234,19 @@ namespace Entities.Context
                 entity.HasOne(x => x.Serp)
                    .WithMany(x => x.Reviews)
                    .OnDelete(DeleteBehavior.Restrict);
+            });
+
+            modelBuilder.Entity<Routes>(entity =>
+            {
+                entity.HasKey(x => x.RoutesId);
+
+                entity.HasOne(x => x.UrlTable)
+                    .WithMany(x => x.Routes)
+                    .OnDelete(DeleteBehavior.Restrict);
+
+                entity.HasOne(x => x.Review)
+                    .WithMany(x => x.Routes)
+                    .OnDelete(DeleteBehavior.Restrict);
             });
 
             #endregion MainData

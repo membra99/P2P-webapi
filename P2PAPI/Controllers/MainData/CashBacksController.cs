@@ -6,6 +6,7 @@ using P2P.Services;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System;
+using P2P.DTO.Output.EndPointODTO;
 
 namespace P2P.WebApi.Controllers.MainData
 {
@@ -37,6 +38,14 @@ namespace P2P.WebApi.Controllers.MainData
             return await _mainDataServices.GetCashBackByLangId(langId);
         }
 
+        //GET: api/CashBack
+        [HttpGet]
+        public async Task<ActionResult<GetCashbackCampOfferODTO>> Get(int id, bool isCampaign)
+        {
+            var cashback = await _mainDataServices.Get(id, isCampaign);
+            if (cashback == null) return NotFound();
+            return cashback;
+        }
 
         //PUT: api/CashBack
         [HttpPut]

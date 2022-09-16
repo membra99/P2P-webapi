@@ -6,6 +6,8 @@ using P2P.DTO.Output;
 using P2P.Services;
 using System.Threading.Tasks;
 using System;
+using System.Collections;
+using System.Collections.Generic;
 
 namespace P2P.WebApi.Controllers.MainData
 {
@@ -27,6 +29,15 @@ namespace P2P.WebApi.Controllers.MainData
         {
             var link = await _mainDataServices.GetLinkById(id);
             if(link == null) return NotFound();
+            return link;
+        }
+
+        //GET: api/Link
+        [HttpGet("ByKeyAndLanguageId")]
+        public async Task<ActionResult<IEnumerable<LinkODTO>>> GetByKeyAndLanguageId(string key, int langId)
+        {
+            var link = await _mainDataServices.GetLinkByKeyAndLang(key,langId);
+            if (link == null) return NotFound();
             return link;
         }
 

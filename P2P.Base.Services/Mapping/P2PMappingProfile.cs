@@ -3,6 +3,7 @@ using Entities.P2P.MainData;
 using Entities.P2P.MainData.Settings;
 using P2P.DTO.Input;
 using P2P.DTO.Output;
+using P2P.DTO.Output.EndPointODTO;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -68,6 +69,10 @@ namespace P2P.Base.Services.Mapping
                .ForMember(dest => dest.Name, source => source.MapFrom(m => m.Review.Name));
             CreateMap<CashBackIDTO, CashBack>();
 
+            CreateMap<CashBack, GetCashbackCampOfferODTO>()
+                .ForMember(dest => dest.LanguageName, source => source.MapFrom(m => m.Language.LanguageName))
+                .ForMember(dest => dest.Name, source => source.MapFrom(m => m.Review.Name)); 
+
             CreateMap<Serp, SerpODTO>()
                .ForMember(dest => dest.DataTypeName, source => source.MapFrom(m => m.DataType.DataTypeName));
             CreateMap<SerpIDTO, Serp>();
@@ -88,6 +93,9 @@ namespace P2P.Base.Services.Mapping
                 .ForMember(dest => dest.Page_Title, source => source.MapFrom(m => m.Page.PageTitle))
                 .ForMember(dest => dest.Name, source => source.MapFrom(m => m.Review.Name));
             CreateMap<FaqTitleIDTO, FaqTitle>();
+
+            CreateMap<FaqTitle, GetFaqTitleByReviewIdODTO>();
+            CreateMap<FaqTitle, GetFaqTitleByPageIdODTO>();
 
             CreateMap<FaqList, FaqListODTO>()
                 .ForMember(dest => dest.Title, source => source.MapFrom(m => m.FaqTitle.Title));

@@ -11,7 +11,7 @@ namespace Entities.P2P.MainData
     [Table("FaqTitles", Schema = "P2P")]
     public class FaqTitle
     {
-        public int FaqPageTitleId { get; set; }
+        public int FaqTitleId { get; set; }
         public int? PageId { get; set; }
         public int? ReviewId { get; set; }
         [StringLength(50)]

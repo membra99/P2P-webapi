@@ -6,6 +6,9 @@ using P2P.DTO.Output;
 using P2P.Services;
 using System.Threading.Tasks;
 using System;
+using Microsoft.AspNetCore.Cors.Infrastructure;
+using System.Collections;
+using System.Collections.Generic;
 
 namespace P2P.WebApi.Controllers.MainData
 {
@@ -27,6 +30,15 @@ namespace P2P.WebApi.Controllers.MainData
         public async Task<ActionResult<FaqListODTO>> GetById(int id)
         {
             var faqList = await _mainDataServices.GetFaqListById(id);
+            if (faqList == null) return NotFound();
+            return faqList;
+        }
+
+        //GET: api/FaqList
+        [HttpGet("ByFaqTitleId")]
+        public async Task<ActionResult<IEnumerable<FaqListODTO>>> GetByFaqTitleId(int faqTitleId)
+        {
+            var faqList = await _mainDataServices.GetFaqListByFaqTitleId(faqTitleId);
             if (faqList == null) return NotFound();
             return faqList;
         }
