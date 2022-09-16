@@ -134,13 +134,7 @@ namespace Entities.Migrations
                     OfficeAddress = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
                     RiskAndReturn = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     Availability = table.Column<int>(type: "int", nullable: true),
-                    Count = table.Column<int>(type: "int", nullable: true),
-                    Rev_FacebookUrlUrlTableId = table.Column<int>(type: "int", nullable: true),
-                    Rev_TwitterUrlUrlTableId = table.Column<int>(type: "int", nullable: true),
-                    Rev_LinkedInUrlUrlTableId = table.Column<int>(type: "int", nullable: true),
-                    Rev_YoutubeUrlUrlTableId = table.Column<int>(type: "int", nullable: true),
-                    Rev_InstagramUrlUrlTableId = table.Column<int>(type: "int", nullable: true),
-                    Rev_ReportLinkUrlTableId = table.Column<int>(type: "int", nullable: true)
+                    Count = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -160,43 +154,43 @@ namespace Entities.Migrations
                         principalColumn: "SerpId",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_Review_UrlTables_Rev_FacebookUrlUrlTableId",
-                        column: x => x.Rev_FacebookUrlUrlTableId,
+                        name: "FK_Review_UrlTables_FacebookUrl",
+                        column: x => x.FacebookUrl,
                         principalSchema: "P2P",
                         principalTable: "UrlTables",
                         principalColumn: "UrlTableId",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_Review_UrlTables_Rev_InstagramUrlUrlTableId",
-                        column: x => x.Rev_InstagramUrlUrlTableId,
+                        name: "FK_Review_UrlTables_InstagramUrl",
+                        column: x => x.InstagramUrl,
                         principalSchema: "P2P",
                         principalTable: "UrlTables",
                         principalColumn: "UrlTableId",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_Review_UrlTables_Rev_LinkedInUrlUrlTableId",
-                        column: x => x.Rev_LinkedInUrlUrlTableId,
+                        name: "FK_Review_UrlTables_LinkedInUrl",
+                        column: x => x.LinkedInUrl,
                         principalSchema: "P2P",
                         principalTable: "UrlTables",
                         principalColumn: "UrlTableId",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_Review_UrlTables_Rev_ReportLinkUrlTableId",
-                        column: x => x.Rev_ReportLinkUrlTableId,
+                        name: "FK_Review_UrlTables_ReportLink",
+                        column: x => x.ReportLink,
                         principalSchema: "P2P",
                         principalTable: "UrlTables",
                         principalColumn: "UrlTableId",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_Review_UrlTables_Rev_TwitterUrlUrlTableId",
-                        column: x => x.Rev_TwitterUrlUrlTableId,
+                        name: "FK_Review_UrlTables_TwitterUrl",
+                        column: x => x.TwitterUrl,
                         principalSchema: "P2P",
                         principalTable: "UrlTables",
                         principalColumn: "UrlTableId",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_Review_UrlTables_Rev_YoutubeUrlUrlTableId",
-                        column: x => x.Rev_YoutubeUrlUrlTableId,
+                        name: "FK_Review_UrlTables_YoutubeUrl",
+                        column: x => x.YoutubeUrl,
                         principalSchema: "P2P",
                         principalTable: "UrlTables",
                         principalColumn: "UrlTableId",
@@ -211,7 +205,7 @@ namespace Entities.Migrations
                     PageId = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     SerpId = table.Column<int>(type: "int", nullable: false),
-                    ReviewId = table.Column<int>(type: "int", nullable: false),
+                    ReviewId = table.Column<int>(type: "int", nullable: true),
                     DataTypeId = table.Column<int>(type: "int", nullable: false),
                     LanguageId = table.Column<int>(type: "int", nullable: false),
                     PageTitle = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
@@ -365,52 +359,52 @@ namespace Entities.Migrations
                 column: "SerpId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Review_FacebookUrl",
+                schema: "P2P",
+                table: "Review",
+                column: "FacebookUrl");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Review_InstagramUrl",
+                schema: "P2P",
+                table: "Review",
+                column: "InstagramUrl");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Review_LanguageId",
                 schema: "P2P",
                 table: "Review",
                 column: "LanguageId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Review_Rev_FacebookUrlUrlTableId",
+                name: "IX_Review_LinkedInUrl",
                 schema: "P2P",
                 table: "Review",
-                column: "Rev_FacebookUrlUrlTableId");
+                column: "LinkedInUrl");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Review_Rev_InstagramUrlUrlTableId",
+                name: "IX_Review_ReportLink",
                 schema: "P2P",
                 table: "Review",
-                column: "Rev_InstagramUrlUrlTableId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Review_Rev_LinkedInUrlUrlTableId",
-                schema: "P2P",
-                table: "Review",
-                column: "Rev_LinkedInUrlUrlTableId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Review_Rev_ReportLinkUrlTableId",
-                schema: "P2P",
-                table: "Review",
-                column: "Rev_ReportLinkUrlTableId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Review_Rev_TwitterUrlUrlTableId",
-                schema: "P2P",
-                table: "Review",
-                column: "Rev_TwitterUrlUrlTableId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Review_Rev_YoutubeUrlUrlTableId",
-                schema: "P2P",
-                table: "Review",
-                column: "Rev_YoutubeUrlUrlTableId");
+                column: "ReportLink");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Review_SerpId",
                 schema: "P2P",
                 table: "Review",
                 column: "SerpId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Review_TwitterUrl",
+                schema: "P2P",
+                table: "Review",
+                column: "TwitterUrl");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Review_YoutubeUrl",
+                schema: "P2P",
+                table: "Review",
+                column: "YoutubeUrl");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Serps_DataTypeId",
