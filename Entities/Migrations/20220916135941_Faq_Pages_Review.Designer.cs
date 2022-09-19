@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Entities.Migrations
 {
     [DbContext(typeof(MainContext))]
-    [Migration("20220915071601_Faq_Pages_Review")]
+    [Migration("20220916135941_Faq_Pages_Review")]
     partial class Faq_Pages_Review
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -196,7 +196,7 @@ namespace Entities.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
-                    b.Property<int>("ReviewId")
+                    b.Property<int?>("ReviewId")
                         .HasColumnType("int");
 
                     b.Property<int>("SerpId")
@@ -393,24 +393,6 @@ namespace Entities.Migrations
                     b.Property<int?>("ReportLink")
                         .HasColumnType("int");
 
-                    b.Property<int?>("Rev_FacebookUrlUrlTableId")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("Rev_InstagramUrlUrlTableId")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("Rev_LinkedInUrlUrlTableId")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("Rev_ReportLinkUrlTableId")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("Rev_TwitterUrlUrlTableId")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("Rev_YoutubeUrlUrlTableId")
-                        .HasColumnType("int");
-
                     b.Property<string>("ReviewContent")
                         .HasMaxLength(500)
                         .HasColumnType("nvarchar(500)");
@@ -464,21 +446,21 @@ namespace Entities.Migrations
 
                     b.HasKey("ReviewId");
 
+                    b.HasIndex("FacebookUrl");
+
+                    b.HasIndex("InstagramUrl");
+
                     b.HasIndex("LanguageId");
 
-                    b.HasIndex("Rev_FacebookUrlUrlTableId");
+                    b.HasIndex("LinkedInUrl");
 
-                    b.HasIndex("Rev_InstagramUrlUrlTableId");
-
-                    b.HasIndex("Rev_LinkedInUrlUrlTableId");
-
-                    b.HasIndex("Rev_ReportLinkUrlTableId");
-
-                    b.HasIndex("Rev_TwitterUrlUrlTableId");
-
-                    b.HasIndex("Rev_YoutubeUrlUrlTableId");
+                    b.HasIndex("ReportLink");
 
                     b.HasIndex("SerpId");
+
+                    b.HasIndex("TwitterUrl");
+
+                    b.HasIndex("YoutubeUrl");
 
                     b.ToTable("Review", "P2P");
                 });
@@ -813,8 +795,7 @@ namespace Entities.Migrations
                     b.HasOne("Entities.P2P.MainData.Review", "Review")
                         .WithMany("Pages")
                         .HasForeignKey("ReviewId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("Entities.P2P.MainData.Serp", "Serp")
                         .WithMany("Pages")
@@ -833,40 +814,30 @@ namespace Entities.Migrations
 
             modelBuilder.Entity("Entities.P2P.MainData.Review", b =>
                 {
+                    b.HasOne("Entities.P2P.MainData.UrlTable", "Rev_FacebookUrl")
+                        .WithMany("Rev_FacebookUrls")
+                        .HasForeignKey("FacebookUrl")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("Entities.P2P.MainData.UrlTable", "Rev_InstagramUrl")
+                        .WithMany("Rev_InstagramUrls")
+                        .HasForeignKey("InstagramUrl")
+                        .OnDelete(DeleteBehavior.Restrict);
+
                     b.HasOne("Entities.P2P.MainData.Language", "Language")
                         .WithMany("Reviews")
                         .HasForeignKey("LanguageId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("Entities.P2P.MainData.UrlTable", "Rev_FacebookUrl")
-                        .WithMany("Rev_FacebookUrls")
-                        .HasForeignKey("Rev_FacebookUrlUrlTableId")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.HasOne("Entities.P2P.MainData.UrlTable", "Rev_InstagramUrl")
-                        .WithMany("Rev_InstagramUrls")
-                        .HasForeignKey("Rev_InstagramUrlUrlTableId")
-                        .OnDelete(DeleteBehavior.Restrict);
-
                     b.HasOne("Entities.P2P.MainData.UrlTable", "Rev_LinkedInUrl")
                         .WithMany("Rev_LinkedIdUrls")
-                        .HasForeignKey("Rev_LinkedInUrlUrlTableId")
+                        .HasForeignKey("LinkedInUrl")
                         .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("Entities.P2P.MainData.UrlTable", "Rev_ReportLink")
                         .WithMany("Rev_ReportLinks")
-                        .HasForeignKey("Rev_ReportLinkUrlTableId")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.HasOne("Entities.P2P.MainData.UrlTable", "Rev_TwitterUrl")
-                        .WithMany("Rev_TwitterUrls")
-                        .HasForeignKey("Rev_TwitterUrlUrlTableId")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.HasOne("Entities.P2P.MainData.UrlTable", "Rev_YoutubeUrl")
-                        .WithMany("Rev_YoutubeUrls")
-                        .HasForeignKey("Rev_YoutubeUrlUrlTableId")
+                        .HasForeignKey("ReportLink")
                         .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("Entities.P2P.MainData.Serp", "Serp")
@@ -874,6 +845,16 @@ namespace Entities.Migrations
                         .HasForeignKey("SerpId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
+
+                    b.HasOne("Entities.P2P.MainData.UrlTable", "Rev_TwitterUrl")
+                        .WithMany("Rev_TwitterUrls")
+                        .HasForeignKey("TwitterUrl")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("Entities.P2P.MainData.UrlTable", "Rev_YoutubeUrl")
+                        .WithMany("Rev_YoutubeUrls")
+                        .HasForeignKey("YoutubeUrl")
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.Navigation("Language");
 
