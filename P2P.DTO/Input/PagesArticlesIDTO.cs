@@ -13,3 +13,4 @@ namespace P2P.DTO.Input
         public int PageId { get; set; }
         public int AcademyId { get; set; }
     }
+}
