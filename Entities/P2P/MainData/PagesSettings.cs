@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Entities.P2P.MainData
 {
-    [Table("PagesSettings", Schema = "P2P")]
+    [Table("PagesSettings", Schema = "Settings")]
     public class PagesSettings
     {
         public int PagesSettingsId { get; set; }
