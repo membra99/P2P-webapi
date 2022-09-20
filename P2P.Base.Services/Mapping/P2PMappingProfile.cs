@@ -122,14 +122,14 @@ namespace P2P.Base.Services.Mapping
               .ForMember(dest => dest.Name, source => source.MapFrom(m => m.Review.Name))
               .ForMember(dest => dest.DataTypeName, source => source.MapFrom(m => m.DataType.DataTypeName));
 
-            CreateMap<PagesSettingsODTO, PagesSettings>();
+            CreateMap<PagesSettingsIDTO, PagesSettings>();
 
             CreateMap<NewsFeed, NewsFeedODTO>()
              .ForMember(dest => dest.LanguageName, source => source.MapFrom(m => m.Language.LanguageName))
              .ForMember(dest => dest.URL, source => source.MapFrom(m => m.UrlTable.URL))
              .ForMember(dest => dest.Name, source => source.MapFrom(m => m.Review.Name));
 
-            CreateMap<NewsFeedODTO, NewsFeedIDTO>();
+            CreateMap<NewsFeedIDTO, NewsFeed>();
 
             CreateMap<PageArticles, PageArticlesODTO>()
             .ForMember(dest => dest.Title, source => source.MapFrom(m => m.Academy.Title))

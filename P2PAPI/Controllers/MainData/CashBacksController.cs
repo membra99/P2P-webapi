@@ -56,6 +56,15 @@ namespace P2P.WebApi.Controllers.MainData
             return cashback;
         }
 
+        //GET: api/CashBack
+        [HttpGet("CashbackCampaignBonus")]
+        public async Task<ActionResult<CampaignBonusODTO>> CashbackCampaignBonus(int langId)
+        {
+            var cashback = await _mainDataServices.GetCampaignBonus(langId);
+            if (cashback == null) return NotFound();
+            return cashback;
+        }
+
         //PUT: api/CashBack
         [HttpPut]
         public async Task<ActionResult<CashBackODTO>> PutCashBack(CashBackIDTO cashBackIDTO)

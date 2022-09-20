@@ -56,6 +56,22 @@ namespace P2P.WebApi.Controllers.MainData
             return page;
         }
 
+        [HttpGet("GetPage/{Id}")]
+        public async Task<ActionResult<GetPageODTO>> GetItem(int Id)
+        {
+            var page = await _mainDataServices.GetItem(Id);
+            if (page == null) return NotFound();
+            return page;
+        }
+
+        [HttpGet("GetItemContent")]
+        public async Task<ActionResult<GetItemContentODTO>> GetItemContent(int? id, int urlId, int langId)
+        {
+            var page = await _mainDataServices.GetItemContent(id, urlId, langId);
+            //if (page == null) return NotFound();
+            return page;
+        }
+
         //PUT: api/Page
         [HttpPut]
         public async Task<ActionResult<PageODTO>> PutPage(PageIDTO pageIDTO)

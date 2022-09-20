@@ -6,6 +6,9 @@ using P2P.DTO.Output;
 using P2P.Services;
 using System.Threading.Tasks;
 using System;
+using P2P.DTO.Output.EndPointODTO;
+using System.Collections;
+using System.Collections.Generic;
 
 namespace P2P.WebApi.Controllers.MainData
 {
@@ -26,6 +29,28 @@ namespace P2P.WebApi.Controllers.MainData
         public async Task<ActionResult<NewsFeedODTO>> GetNewsFeedById(int id)
         {
             var newsFeed = await _mainDataServices.GetNewsFeedById(id);
+            if (newsFeed == null)
+            {
+                return NotFound();
+            }
+            return newsFeed;
+        }
+
+        [HttpGet("GetList/{langId}")]
+        public async Task<ActionResult<IEnumerable<GetNewsFeedListODTO>>> GetListNewsFeedByLangId(int langId)
+        {
+            var newsFeed = await _mainDataServices.GetListNewsFeedByLangId(langId);
+            if (newsFeed == null)
+            {
+                return NotFound();
+            }
+            return newsFeed;
+        }
+
+        [HttpGet("GetAllNews")]
+        public async Task<ActionResult<IEnumerable<GetNewsFeedListODTO>>> GetAllNews(int Id)
+        {
+            var newsFeed = await _mainDataServices.GetAllNews(Id);
             if (newsFeed == null)
             {
                 return NotFound();

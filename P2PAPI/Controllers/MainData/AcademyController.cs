@@ -6,6 +6,9 @@ using P2P.DTO.Output;
 using P2P.Services;
 using System.Threading.Tasks;
 using System;
+using System.Collections;
+using P2P.DTO.Output.EndPointODTO;
+using System.Collections.Generic;
 
 namespace P2P.WebApi.Controllers.MainData
 {
@@ -26,6 +29,18 @@ namespace P2P.WebApi.Controllers.MainData
         public async Task<ActionResult<AcademyODTO>> GetById(int id)
         {
             var academy = await _mainDataServices.GetAcademyById(id);
+            if (academy == null)
+            {
+                return NotFound();
+            }
+            return academy;
+        }
+
+        //GET: api/Academy
+        [HttpGet("GetAcademy/{langId}")]
+        public async Task<ActionResult<IEnumerable<AcademyODTO>>> GetAcademyByLangId(int langId)
+        {
+            var academy = await _mainDataServices.GetAcademyByLangId(langId);
             if (academy == null)
             {
                 return NotFound();

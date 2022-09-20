@@ -559,6 +559,83 @@ namespace P2P.Services
             return cashbacks;
         }
 
+        public async Task<CampaignBonusODTO> GetCampaignBonus(int langId)
+        {
+            int language = await _context.Languages.Where(x => x.LanguageId == langId).Select(x => x.LanguageId).FirstOrDefaultAsync();
+            var offer = await (from x in _context.CashBacks
+                               join r in _context.Review on x.ReviewId equals r.ReviewId into a
+                               from d in a.DefaultIfEmpty()
+                               where d.LanguageId == language && x.IsCampaign == false
+                               select new GetCampaignBonusODTO
+                               {
+                                   CashBackId = x.CashBackId,
+                                   ReviewId = d.ReviewId,
+                                   Exclusive = x.Exclusive,
+                                   Name = d.Name,
+                                   Logo = d.Logo,
+                                   Count = d.Count,
+                                   CashbackCta = x.CashBack_ca,
+                                   Stars = (decimal)(((d.RiskAndReturn != null ? d.RiskAndReturn : 0) + (d.Usability != null ? d.Usability : 0) +
+                                               (d.Liquidity != null ? d.Liquidity : 0) + (d.Support != null ? d.Support : 0)) / 4),
+                                   ExternalLinkKey = d.Name.ToLower(),
+                                   //datatype treba biti 'review'
+                                   ReviewUrlId = _context.Routes.FirstOrDefault(e => e.DataTypeId == 1 && e.ReviewId == d.ReviewId).UrlTableId,
+                                   Terms = x.CashBack_terms,
+                                   ReviewBoxThree = new List<ReviewBoxThreeODTO> { new ReviewBoxThreeODTO
+                             {
+                                 BuybackGuarantee=d.BuybackGuarantee,
+                                 AutoInvest=d.AutoInvest,
+                                 Secondarymarket=d.SecondaryMarket,
+                                 Cashback=d.CashbackBonus,
+                                 Promotion=d.Promotion
+                             } },
+                                   ReviewBoxFour = new List<ReviewBoxFourODTO> { new ReviewBoxFourODTO
+                             {
+                                 MinInvestment=d.DiversificationMinInvest,
+                                 Country=d.Countries,
+                                 LoanOriginators=d.LoanOriginators,
+                                 LoanType=d.LoanType,
+                                 LoanPeriod=string.Format("{0} - {1}", d.MinLoanPerion, d.MaxLoanPerion),
+                                 Interest=d.InterestRange,
+                                 Currency=d.StatisticsCurrency
+                             } },
+                                   //      ReviewBoxFive = new List<ReviewBoxFiveODTO> { new ReviewBoxFiveODTO
+                                   //{
+                                   //    //TODO pros=> BILO JE VISE Benefita sad su to ReviewAttr
+                                   //    //TODO cons=> BILO JE VISE Disadvantage sad su to ReviewAttr
+                                   //} }
+                               }).OrderByDescending(e => e.Stars).ToListAsync();
+
+            var campaign = await (from x in _context.CashBacks
+                                  join r in _context.Review on x.ReviewId equals r.ReviewId into a
+                                  from d in a.DefaultIfEmpty()
+                                  where d.LanguageId == language && x.IsCampaign == true
+                                  select new GetCampaignBonusODTO
+                                  {
+                                      CashBackId = x.CashBackId,
+                                      ReviewId = d.ReviewId,
+                                      Exclusive = x.Exclusive,
+                                      Name = d.Name,
+                                      Logo = d.Logo,
+                                      Count = d.Count,
+                                      CashbackCta = x.CashBack_ca,
+                                      Stars = (decimal)(((d.RiskAndReturn != null ? d.RiskAndReturn : 0) + (d.Usability != null ? d.Usability : 0) +
+                                         (d.Liquidity != null ? d.Liquidity : 0) + (d.Support != null ? d.Support : 0)) / 4),
+                                      ExternalLinkKey = d.Name.ToLower(),
+                                      //datatype treba biti 'review'
+                                      ReviewUrlId = _context.Routes.FirstOrDefault(e => e.DataTypeId == 1 && e.ReviewId == d.ReviewId).UrlTableId,
+                                      Terms = x.CashBack_terms,
+                                  }).OrderByDescending(e => e.Stars).ToListAsync();
+
+            var cashback = new CampaignBonusODTO
+            {
+                CashBackOffer = offer,
+                CashBackCampaign = campaign
+            };
+
+            return cashback;
+        }
+
         public async Task<CashBackODTO> EditCashBack(CashBackIDTO cashBackIDTO)
         {
             var cashBack = _mapper.Map<CashBack>(cashBackIDTO);
@@ -925,9 +1002,10 @@ namespace P2P.Services
             return from x in _context.Pages
                    .Include(x => x.Language)
                    .Include(x => x.DataType)
+                   .Include(x => x.Review)
                    where (id == 0 || x.PageId == id)
-                   && (languageId == 0 && x.LanguageId == languageId)
-                   && (dataTypeId == 0 && x.DataTypeId == languageId)
+                   && (languageId == 0 || x.LanguageId == languageId)
+                   && (dataTypeId == 0 || x.DataTypeId == dataTypeId)
                    select _mapper.Map<PageODTO>(x);
         }
 
@@ -936,32 +1014,31 @@ namespace P2P.Services
             return await GetPage(id, 0, 0).AsNoTracking().SingleOrDefaultAsync();
         }
 
-        //TODO KADA SE ZAVRSI AKADEMIJA
-        //public async Task<GetPageODTO> GetItem(int id)
-        //{
-        //    List<ReviewContentDropdownODTO> reviews = await ListOfReviews();
-        //    var page = await _context.Pages.FirstOrDefaultAsync(e => e.PageId == id);
-        //    var popularArticles = _context..Select(e => new
-        //    {
-        //        value = e.AcademyID,
-        //        label = e.title,
+        public async Task<GetPageODTO> GetItem(int id)
+        {
+            List<ReviewContentDropdownODTO> reviews = await ListOfReviews();
+            var page = await _context.Pages.FirstOrDefaultAsync(e => e.PageId == id);
+            var popularArticles = _context.Academies.Select(e => new PopularArticlesODTO
+            {
+                Value = e.AcademyId,
+                Label = e.Title
+            }).ToList();
 
-        //    }).ToList();
+            var retVal = new GetPageODTO
+            {
+                PageId = page.PageId,
+                Page_Title = page.PageTitle,
+                SerpId = page.SerpId,
+                DataTypeId = page.DataTypeId,
+                ReviewContentDropdowns = reviews,
+                ReviewId = (int)page.ReviewId,
+                PopularArticles = popularArticles,
+                SelectedLanguage = page.LanguageId,
+                SelectedPopularArticles = _context.PageArticles.Where(e => e.PageId == page.PageId).Select(e => e.AcademyId).ToList(),
+            };
 
-        //    var retVal = new GetPageODTO
-        //    {
-        //         PageId = page.PageId,
-        //        Page_Title = page.PageTitle,
-        //        SerpId = page.SerpId,
-        //        DataTypeId = page.DataTypeId,
-        //        ReviewContentDropdowns = reviews,
-        //        ReviewId = (int)page.ReviewId,
-        //        PopularArticles = popularArticles,
-        //        SelectedPopularArticles = _context.tbl_Page_Articles.Where(e => e.PageId == page.id).Select(e => e.AcademyId).ToList(),
-        //    };
-
-        //    return retVal;
-        //}
+            return retVal;
+        }
 
         public async Task<List<GetPageListODTO>> GetList(int langId)
         {
@@ -981,7 +1058,7 @@ namespace P2P.Services
             return pages;
         }
 
-        public async Task<GetPageODTO> GetItemContent(int? id, int urlId, int langId)
+        public async Task<GetItemContentODTO> GetItemContent(int? id, int urlId, int langId)
         {
             try
             {
@@ -989,7 +1066,7 @@ namespace P2P.Services
                 {
                     var page = _context.Pages.FirstOrDefault(e => e.PageId == id);
 
-                    var retVal = new GetPageODTO
+                    var retVal = new GetItemContentODTO
                     {
                         PageId = page.PageId,
                         Content = page.Content,
@@ -1006,7 +1083,7 @@ namespace P2P.Services
 
                     if (route.ReviewId == null) throw new Exception("No data available.");
                     var pd = _context.Pages.FirstOrDefault(e => e.ReviewId == route.RoutesId);
-                    var retVal = new GetPageODTO
+                    var retVal = new GetItemContentODTO
                     {
                         PageId = pd.PageId,
                         Content = pd.Content,
@@ -1020,6 +1097,7 @@ namespace P2P.Services
             }
         }
 
+        //TODO /Pages/GetPageContent
         public async Task<List<PageODTO>> GetPageByLanguageId(int id)
         {
             return await GetPage(0, id, 0).ToListAsync();
@@ -1302,6 +1380,9 @@ namespace P2P.Services
         private IQueryable<AcademyODTO> GetAcademy(int id, int langId)
         {
             return from x in _context.Academies
+                   .Include(x => x.Language)
+                   .Include(x => x.Serp)
+                   .Include(x => x.UrlTable)
                    where (id == 0 || x.AcademyId == id)
                    && (langId == 0 || x.LanguageId == langId)
                    select _mapper.Map<AcademyODTO>(x);
@@ -1310,6 +1391,11 @@ namespace P2P.Services
         public async Task<AcademyODTO> GetAcademyById(int id)
         {
             return await GetAcademy(id, 0).AsNoTracking().SingleOrDefaultAsync();
+        }
+
+        public async Task<List<AcademyODTO>> GetAcademyByLangId(int langId)
+        {
+            return await GetAcademy(0, langId).ToListAsync();
         }
 
         public async Task<AcademyODTO> EditAcademy(AcademyIDTO academyIDTO)
@@ -1356,6 +1442,10 @@ namespace P2P.Services
         private IQueryable<PagesSettingsODTO> GetPagesSettings(int id, int langId)
         {
             return from x in _context.PagesSettings
+                   .Include(x => x.DataType)
+                   .Include(x => x.Language)
+                   .Include(x => x.Review)
+                   .Include(x => x.Serp)
                    where (id == 0 || x.PagesSettingsId == id)
                    && (langId == 0 || x.LanguageId == langId)
                    select _mapper.Map<PagesSettingsODTO>(x);
@@ -1406,6 +1496,9 @@ namespace P2P.Services
         private IQueryable<NewsFeedODTO> GetNewsFeed(int id, int langId)
         {
             return from x in _context.NewsFeeds
+                   .Include(x => x.Review)
+                   .Include(x => x.Language)
+                   .Include(x => x.UrlTable)
                    where (id == 0 || x.NewsFeedId == id)
                    && (langId == 0 || x.LanguageId == langId)
                    select _mapper.Map<NewsFeedODTO>(x);
@@ -1414,6 +1507,69 @@ namespace P2P.Services
         public async Task<NewsFeedODTO> GetNewsFeedById(int id)
         {
             return await GetNewsFeed(id, 0).AsNoTracking().SingleOrDefaultAsync();
+        }
+
+        public async Task<List<GetNewsFeedListODTO>> GetListNewsFeedByLangId(int languageId)
+        {
+            var newsFeed = _context.NewsFeeds.Where(x => x.LanguageId == languageId).Select(x => new GetNewsFeedListODTO
+            {
+                Name = _context.Review.Where(e => e.ReviewId == x.ReviewId).Select(x => x.Name).FirstOrDefault(),
+                NewsText = x.NewsText,
+                CreatedDate = x.CreatedDate,
+                NewsFeedId = x.NewsFeedId,
+                Market = x.Market,
+                TagLine = x.TagLine,
+                UrlTableId = x.UrlTableId,
+                URL = x.UrlTable.URL,
+                RedFlag = x.RedFlag,
+                //TODO DataType treba da bude 'review'
+                Route = _context.Routes.Where(e => e.DataTypeId == 1 && e.ReviewId == x.ReviewId).Select(e => e.UrlTableId).FirstOrDefault(),
+                Logo = _context.Review.Where(e => e.ReviewId == x.ReviewId).Select(e => e.Logo).FirstOrDefault()
+            }).OrderBy(x => x.CreatedDate).ToListAsync();
+
+            return await newsFeed;
+        }
+
+        public async Task<List<GetNewsFeedListODTO>> GetAllNews(int Id)
+        {
+            if (Id != null)
+            {
+                return await (from x in _context.NewsFeeds
+                              select new GetNewsFeedListODTO
+                              {
+                                  //TODO DataType treba da bude 'review' i proveriti kakac where uslov treab da bude
+                                  Route = _context.Routes.Where(e => e.DataTypeId == 1 && e.ReviewId == x.ReviewId).Select(e => e.UrlTableId).FirstOrDefault(),
+                                  NewsText = x.NewsText,
+                                  CreatedDate = x.CreatedDate,
+                                  NewsFeedId = x.NewsFeedId,
+                                  Name = _context.Review.Where(e => e.ReviewId == x.ReviewId).Select(x => x.Name).FirstOrDefault(),
+                                  Market = x.Market,
+                                  TagLine = x.TagLine,
+                                  RedFlag = x.RedFlag,
+                                  UrlTableId = x.UrlTableId,
+                                  URL = x.UrlTable.URL,
+                              }).OrderByDescending(x => x.CreatedDate).ToListAsync();
+            }
+            else
+            {
+                return await (from x in _context.NewsFeeds
+                                  //TODO DataType treba da bude 'review' i proveriti kakac where uslov treab da bude
+                              join r in _context.Routes.Where(e => e.DataTypeId == 1) on x.ReviewId equals r.ReviewId into c
+                              from b in c.DefaultIfEmpty()
+                              select new GetNewsFeedListODTO
+                              {
+                                  NewsText = x.NewsText,
+                                  CreatedDate = x.CreatedDate,
+                                  NewsFeedId = x.NewsFeedId,
+                                  Name = x.Review.Name,
+                                  Route = b.UrlTableId,
+                                  Market = x.Market,
+                                  TagLine = x.TagLine,
+                                  RedFlag = x.RedFlag,
+                                  UrlTableId = x.UrlTableId,
+                                  URL = x.UrlTable.URL
+                              }).OrderByDescending(x => x.CreatedDate).ToListAsync();
+            }
         }
 
         public async Task<NewsFeedODTO> EditNewsFeed(NewsFeedIDTO newsFeedIDTO)
@@ -1456,6 +1612,8 @@ namespace P2P.Services
         private IQueryable<PageArticlesODTO> GetPageArticles(int id)
         {
             return from x in _context.PageArticles
+                   .Include(x => x.Academy)
+                   .Include(x => x.Page)
                    where (id == 0 || x.PageArticleId == id)
                    select _mapper.Map<PageArticlesODTO>(x);
         }
@@ -1467,7 +1625,7 @@ namespace P2P.Services
 
         public async Task<PageArticlesODTO> EditPageArticles(PagesArticlesIDTO pageArticlesIDTO)
         {
-            var pageArticles = _mapper.Map<PageArticles>(pageArticlesIDTO); ;
+            var pageArticles = _mapper.Map<PageArticles>(pageArticlesIDTO);
 
             _context.Entry(pageArticles).State = EntityState.Modified;
 
