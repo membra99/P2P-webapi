@@ -31,6 +31,7 @@ namespace Entities.Context
         public DbSet<Academy> Academies { get; set; }
         public DbSet<PagesSettings> PagesSettings { get; set; }
         public DbSet<NewsFeed> NewsFeeds { get; set; }
+        public DbSet<PageArticles> PageArticles { get; set; }
 
         #endregion MainData
 
@@ -311,6 +312,18 @@ namespace Entities.Context
                 entity.HasOne(x => x.Review)
                        .WithMany(x => x.NewsFeeds)
                        .OnDelete(DeleteBehavior.Restrict);
+            });
+            modelBuilder.Entity<PageArticles>(entity =>
+            {
+                entity.HasKey(x => x.PageArticleId);
+
+                entity.HasOne(x => x.Academy)
+                    .WithMany(x => x.PageArticles)
+                    .OnDelete(DeleteBehavior.Restrict);
+
+                entity.HasOne(x => x.Page)
+                        .WithMany(x => x.PageArticles)
+                        .OnDelete(DeleteBehavior.Restrict);
             });
 
             #endregion MainData

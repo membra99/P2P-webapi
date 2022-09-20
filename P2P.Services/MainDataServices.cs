@@ -1450,5 +1450,54 @@ namespace P2P.Services
         }
 
         #endregion NewsFeed
+
+        #region PageArticles
+
+        private IQueryable<PageArticlesODTO> GetPageArticles(int id)
+        {
+            return from x in _context.PageArticles
+                   where (id == 0 || x.PageArticleId == id)
+                   select _mapper.Map<PageArticlesODTO>(x);
+        }
+
+        public async Task<PageArticlesODTO> GetPageArticlesById(int id)
+        {
+            return await GetPageArticles(id).AsNoTracking().SingleOrDefaultAsync();
+        }
+
+        public async Task<PageArticlesODTO> EditPageArticles(PagesArticlesIDTO pageArticlesIDTO)
+        {
+            var pageArticles = _mapper.Map<PageArticles>(pageArticlesIDTO); ;
+
+            _context.Entry(pageArticles).State = EntityState.Modified;
+
+            await SaveContextChangesAsync();
+
+            return await GetPageArticlesById(pageArticles.PageArticleId);
+        }
+
+        public async Task<PageArticlesODTO> AddPageArticles(PagesArticlesIDTO pageArticlesIDTO)
+        {
+            var pageArticles = _mapper.Map<PageArticles>(pageArticlesIDTO);
+            pageArticles.PageArticleId = 0;
+            _context.PageArticles.Add(pageArticles);
+
+            await SaveContextChangesAsync();
+
+            return await GetPageArticlesById(pageArticles.PageArticleId);
+        }
+
+        public async Task<PageArticlesODTO> DeletePageArticles(int id)
+        {
+            var pageArticles = await _context.PageArticles.FindAsync(id);
+            if (pageArticles == null) return null;
+
+            var pageArticlesODTO = await GetPageArticlesById(id);
+            _context.PageArticles.Remove(pageArticles);
+            await SaveContextChangesAsync();
+            return pageArticlesODTO;
+        }
+
+        #endregion PageArticles
     }
 }

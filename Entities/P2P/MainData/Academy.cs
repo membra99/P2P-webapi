@@ -37,5 +37,6 @@ namespace Entities.P2P.MainData
         public UrlTable UrlTable { get; set; }
         public Serp Serp { get; set; }
         public Language Language { get; set; }
+        public ICollection<PageArticles> PageArticles { get; set; }
     }
 }

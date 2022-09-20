@@ -16,16 +16,17 @@ namespace Entities.P2P.MainData
         public int? ReviewId { get; set; }
         public int DataTypeId { get; set; }
         public int LanguageId { get; set; }
+
         [StringLength(100)]
         public string PageTitle { get; set; }
+
         public string Content { get; set; }
 
-        
         public Language Language { get; set; }
         public DataType DataType { get; set; }
         public Serp Serp { get; set; }
         public Review Review { get; set; }
         public ICollection<FaqTitle> FaqTitles { get; set; }
-
+        public ICollection<PageArticles> PageArticles { get; set; }
     }
 }

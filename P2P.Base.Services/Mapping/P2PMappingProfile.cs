@@ -131,6 +131,12 @@ namespace P2P.Base.Services.Mapping
 
             CreateMap<NewsFeedODTO, NewsFeedIDTO>();
 
+            CreateMap<PageArticles, PageArticlesODTO>()
+            .ForMember(dest => dest.Title, source => source.MapFrom(m => m.Academy.Title))
+            .ForMember(dest => dest.PageTitle, source => source.MapFrom(m => m.Page.PageArticles));
+
+            CreateMap<PagesArticlesIDTO, PageArticles>();
+
             #endregion MainData
         }
     }
