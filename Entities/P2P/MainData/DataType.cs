@@ -22,5 +22,6 @@ namespace Entities.P2P.MainData
         public ICollection<Routes> Routes { get; set; }
         public ICollection<Serp> Serps { get; set; }
         public ICollection<Page> Pages { get; set; }
+        public ICollection<PagesSettings> PagesSettings { get; set; }
     }
 }

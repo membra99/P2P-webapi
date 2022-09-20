@@ -110,6 +110,27 @@ namespace P2P.Base.Services.Mapping
             CreateMap<Page, GetPageListODTO>()
                 .ForMember(dest => dest.DataTypeName, source => source.MapFrom(m => m.DataType.DataTypeName));
 
+            CreateMap<Academy, AcademyODTO>()
+                .ForMember(dest => dest.LanguageName, source => source.MapFrom(m => m.Language.LanguageName))
+                .ForMember(dest => dest.SerpTitle, source => source.MapFrom(m => m.Serp.SerpTitle))
+                .ForMember(dest => dest.Url, source => source.MapFrom(m => m.UrlTable.URL));
+            CreateMap<AcademyIDTO, Academy>();
+
+            CreateMap<PagesSettings, PagesSettingsODTO>()
+              .ForMember(dest => dest.LanguageName, source => source.MapFrom(m => m.Language.LanguageName))
+              .ForMember(dest => dest.SerpTitle, source => source.MapFrom(m => m.Serp.SerpTitle))
+              .ForMember(dest => dest.Name, source => source.MapFrom(m => m.Review.Name))
+              .ForMember(dest => dest.DataTypeName, source => source.MapFrom(m => m.DataType.DataTypeName));
+
+            CreateMap<PagesSettingsODTO, PagesSettings>();
+
+            CreateMap<NewsFeed, NewsFeedODTO>()
+             .ForMember(dest => dest.LanguageName, source => source.MapFrom(m => m.Language.LanguageName))
+             .ForMember(dest => dest.URL, source => source.MapFrom(m => m.UrlTable.URL))
+             .ForMember(dest => dest.Name, source => source.MapFrom(m => m.Review.Name));
+
+            CreateMap<NewsFeedODTO, NewsFeedIDTO>();
+
             #endregion MainData
         }
     }

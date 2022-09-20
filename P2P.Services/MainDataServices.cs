@@ -438,6 +438,11 @@ namespace P2P.Services
             return await GetLinks(0, key, langId).ToListAsync();
         }
 
+        public async Task<List<LinkODTO>> GetLinkByLang(int langId)
+        {
+            return await GetLinks(0, null, langId).ToListAsync();
+        }
+
         public async Task<LinkODTO> EditLink(LinkIDTO linkIDTO)
         {
             var links = _mapper.Map<Links>(linkIDTO);
@@ -693,7 +698,43 @@ namespace P2P.Services
             return routesODTO;
         }
 
-        //TODO GetDropdownValues, GetDropdownValuesLocale
+        public async Task<List<GetDropdownValuesODTO>> GetDropdownValues(string key)
+        {
+            var reviews = new List<GetDropdownValuesODTO>();
+
+            reviews = await (from x in _context.Review
+                             select new GetDropdownValuesODTO
+                             {
+                                 Value = "review_" + x.ReviewId.ToString(),
+                                 Name = x.Name,
+                             }).OrderByDescending(x => x.Value).ToListAsync();
+
+            var pages = new List<GetDropdownValuesODTO>();
+
+            pages = await (from x in _context.Pages
+                           select new GetDropdownValuesODTO
+                           {
+                               Value = "pages__" + x.PageId.ToString(),
+                               Name = x.PageTitle,
+                           }).OrderByDescending(x => x.Value).ToListAsync();
+
+            if (key.ToLower() == "review")
+            {
+                return reviews;
+            }
+            if (key.ToLower() == "academy" || key.ToLower() == "cashback-bonus" || key.ToLower() == "general")
+            {
+                return pages;
+            }
+            if (key.ToLower() == "specific")
+            {
+                return reviews.Concat(pages).ToList();
+            }
+
+            return reviews.Concat(pages).ToList();
+        }
+
+        //TODO GetDropdownValues
 
         #endregion Routes
 
@@ -1037,16 +1078,120 @@ namespace P2P.Services
 
         #region Review
 
-        private IQueryable<ReviewODTO> GetReview(int id)
+        private IQueryable<ReviewODTO> GetReview(int id, int urlId)
         {
             return from x in _context.Review
-                   where (id == 0 || x.ReviewId == id)
+                   join y in _context.Routes on x.ReviewId equals y.ReviewId
+                   where (id == 0 || x.ReviewId == id
+                   && (urlId == 0 || y.UrlTableId == urlId))
                    select _mapper.Map<ReviewODTO>(x);
         }
 
         public async Task<ReviewODTO> GetReviewById(int id)
         {
-            return await GetReview(id).AsNoTracking().SingleOrDefaultAsync();
+            return await GetReview(id, 0).AsNoTracking().SingleOrDefaultAsync();
+        }
+
+        public async Task<GetReviewsByRouteODTO> GetReviewsByRoute(int urlId, int langId)
+        {
+            int lang = _context.Languages.FirstOrDefault(x => x.LanguageId == langId).LanguageId;
+            int UrlReviewId = _context.Routes.FirstOrDefault(x => x.UrlTableId == urlId && x.LanguageId == lang).ReviewId;
+            var review = _context.Review.FirstOrDefault(x => x.ReviewId == UrlReviewId);
+
+            var ReviewBoxOnes = new List<ReviewBoxOneODTO>();
+            ReviewBoxOnes.Add(new ReviewBoxOneODTO
+            {
+                ReviewId = review.ReviewId,
+                Name = review.Name,
+                Interest = review.Interest,
+                RatingCalculated = review.RatingCalculated,
+                SecuredBy = review.SecuredBy,
+                SecuredByCheck = review.SecuredByCheck,
+                Bonus = review.Bonus,
+                CustomMessage = review.CustomMessage,
+                CompareButton = review.CompareButton,
+                Logo = review.Logo,
+                Recommended = review.Recommended
+            });
+            var ReviewBoxTwos = new List<ReviewBoxTwoODTO>();
+            ReviewBoxTwos.Add(new ReviewBoxTwoODTO
+            {
+                //TODO highlights => BILO JE VISE HIGHLIGHTA sad su to ReviewAttr
+                Ratings = new decimal?[] { review.RiskAndReturn, review.Usability, review.Liquidity, review.Support }
+            });
+
+            var ReviewBoxThrees = new List<ReviewBoxThreeODTO>();
+            ReviewBoxThrees.Add(new ReviewBoxThreeODTO
+            {
+                BuybackGuarantee = review.BuybackGuarantee,
+                AutoInvest = review.AutoInvest,
+                Secondarymarket = review.SecondaryMarket,
+                Cashback = review.CashbackBonus,
+                Promotion = review.Promotion
+            });
+            var reviewBoxFours = new List<ReviewBoxFourODTO>();
+            reviewBoxFours.Add(new ReviewBoxFourODTO
+            {
+                MinInvestment = review.DiversificationMinInvest,
+                Country = review.Countries,
+                LoanOriginators = review.LoanOriginators,
+                LoanType = review.LoanType,
+                LoanPeriod = string.Format("{0} - {1}", review.MinLoanPerion, review.MaxLoanPerion),
+                Interest = review.InterestRange,
+                Currency = review.StatisticsCurrency
+            });
+            var reviewBoxFives = new List<ReviewBoxFiveODTO>();
+            reviewBoxFives.Add(new ReviewBoxFiveODTO
+            {
+                //TODO pros=> BILO JE VISE Benefita sad su to ReviewAttr
+                //TODO cons=> BILO JE VISE Disadvantage sad su to ReviewAttr
+            });
+            var statistics = new List<StatisticsODTO>();
+            statistics.Add(new StatisticsODTO
+            {
+                OperatingSince = review.OperatingSince,
+                Investors = review.NumberOfInvestors,
+                InvestorsEarnings = review.Earnings,
+                AveragePortfolio = review.PortfolioSize,
+                TotalInvested = review.TotalLoanValue,
+                FinancialReport = review.FinancialReport,
+                InvestorsLoss = review.InvestorsLoss,
+                StatisticsOtherCurrency = review.StatisticsOtherCurrency,
+                ReportLink = review.ReportLink,
+                StatisticsCurrency = review.StatisticsCurrency
+            });
+            var ComapanyInfo = new List<CompanyInfoODTO>();
+            ComapanyInfo.Add(new CompanyInfoODTO
+            {
+                Name = review.Name,
+                Address = review.Address,
+                Phone = review.Phone,
+                Email = review.Email,
+                LiveChat = review.LiveChat,
+                OpeningHours = review.OpeningHours,
+                SocialMedia = new int?[] { review.FacebookUrl, review.TwitterUrl, review.LinkedInUrl, review.YoutubeUrl, review.InstagramUrl },
+            });
+            var data = new GetReviewsByRouteODTO
+            {
+                ReviewId = review.ReviewId,
+                Name = review.Name,
+                UpdatedDate = review.UpdatedDate,
+                Availability = review.Availability,
+                SerpId = review.SerpId,
+                RiskReturn = review.RiskAndReturn,
+                Address = review.OfficeAddress,
+                Content = review.ReviewContent,
+                Count = (review.Count != null) ? review.Count : 0,
+                ReviewBoxOne = ReviewBoxOnes,
+                ReviewBoxTwo = ReviewBoxTwos,
+                ReviewBoxThree = ReviewBoxThrees,
+                ReviewBoxFour = reviewBoxFours,
+                ReviewBoxFive = reviewBoxFives,
+                Statistics = statistics,
+                CompanyInfo = ComapanyInfo
+            };
+
+            return data;
         }
 
         public async Task<List<ReviewContentDropdownODTO>> GetListOfReviews()
@@ -1087,6 +1232,36 @@ namespace P2P.Services
             return reviews;
         }
 
+        public async Task<List<GetParentReviewODTO>> GetParentReview(int langId)
+        {
+            var lang = _context.Languages.First(e => e.LanguageId == langId);
+            var ReviewRoute = (from x in _context.Review
+                               join r in _context.Routes on x.ReviewId equals r.ReviewId into c
+                               from a in c.DefaultIfEmpty()
+                                   //TODO DataTypeId mora biti REVIEW
+                               where (a.DataTypeId == 1 && x.LanguageId == langId)
+                               select new GetParentReviewODTO
+                               {
+                                   ReviewId = x.ReviewId,
+                                   Stars = x.RatingCalculated,
+                                   Logo = x.Logo,
+                                   Name = x.Name,
+                                   LinkTo = a.UrlTableId,
+                                   NewPlatform = x.NewPlatform,
+                                   Interest = x.Interest,
+                                   SecuredBy = x.SecuredBy,
+                                   Count = (x.Count != null) ? x.Count : 0,
+                                   Guarantee = x.BuybackGuarantee ? "buyback guarantee" : x.PersonalGuarantee ? "personal guarantee " : x.Mortage ? "mortgage" : x.Collateral ? "collateral" :
+                                              x.NoProtection ? "not secured" : x.CryptoAssets ? "cryptoassets" : "",
+                                   IsSecured = !x.NotSecured,
+                                   ExternalLinkKey = x.Name.ToLower(),
+                                   CustomMessage = x.CustomMessage,
+                                   Recommended = x.Recommended,
+                                   CompareButton = x.CompareButton ? true : false,
+                               }).ToListAsync();
+            return await ReviewRoute;
+        }
+
         public async Task<ReviewODTO> EditReview(ReviewIDTO reviewIDTO)
         {
             var review = _mapper.Map<Review>(reviewIDTO);
@@ -1121,5 +1296,159 @@ namespace P2P.Services
         }
 
         #endregion Review
+
+        #region Academy
+
+        private IQueryable<AcademyODTO> GetAcademy(int id, int langId)
+        {
+            return from x in _context.Academies
+                   where (id == 0 || x.AcademyId == id)
+                   && (langId == 0 || x.LanguageId == langId)
+                   select _mapper.Map<AcademyODTO>(x);
+        }
+
+        public async Task<AcademyODTO> GetAcademyById(int id)
+        {
+            return await GetAcademy(id, 0).AsNoTracking().SingleOrDefaultAsync();
+        }
+
+        public async Task<AcademyODTO> EditAcademy(AcademyIDTO academyIDTO)
+        {
+            var academy = _mapper.Map<Academy>(academyIDTO);
+
+            academy.UpdatedDate = DateTime.Now;
+
+            _context.Entry(academy).State = EntityState.Modified;
+
+            await SaveContextChangesAsync();
+
+            return await GetAcademyById(academy.AcademyId);
+        }
+
+        public async Task<AcademyODTO> AddAcademy(AcademyIDTO academyIDTO)
+        {
+            var academy = _mapper.Map<Academy>(academyIDTO);
+            academy.AcademyId = 0;
+            academy.CreatedDate = DateTime.Now;
+            academy.UpdatedDate = null;
+            _context.Academies.Add(academy);
+
+            await SaveContextChangesAsync();
+
+            return await GetAcademyById(academy.AcademyId);
+        }
+
+        public async Task<AcademyODTO> DeleteAcademy(int id)
+        {
+            var academy = await _context.Academies.FindAsync(id);
+            if (academy == null) return null;
+
+            var academyODTO = await GetAcademyById(id);
+            _context.Academies.Remove(academy);
+            await SaveContextChangesAsync();
+            return academyODTO;
+        }
+
+        #endregion Academy
+
+        #region PagesSettings
+
+        private IQueryable<PagesSettingsODTO> GetPagesSettings(int id, int langId)
+        {
+            return from x in _context.PagesSettings
+                   where (id == 0 || x.PagesSettingsId == id)
+                   && (langId == 0 || x.LanguageId == langId)
+                   select _mapper.Map<PagesSettingsODTO>(x);
+        }
+
+        public async Task<PagesSettingsODTO> GetPagesSettingsById(int id)
+        {
+            return await GetPagesSettings(id, 0).AsNoTracking().SingleOrDefaultAsync();
+        }
+
+        public async Task<PagesSettingsODTO> EditPagesSettings(PagesSettingsIDTO pagesSettingsIDTO)
+        {
+            var pagesSettings = _mapper.Map<PagesSettings>(pagesSettingsIDTO); ;
+
+            _context.Entry(pagesSettings).State = EntityState.Modified;
+
+            await SaveContextChangesAsync();
+
+            return await GetPagesSettingsById(pagesSettings.PagesSettingsId);
+        }
+
+        public async Task<PagesSettingsODTO> AddPagesSettings(PagesSettingsIDTO pagesSettingsIDTO)
+        {
+            var pagesSettings = _mapper.Map<PagesSettings>(pagesSettingsIDTO);
+            pagesSettings.PagesSettingsId = 0;
+            _context.PagesSettings.Add(pagesSettings);
+
+            await SaveContextChangesAsync();
+
+            return await GetPagesSettingsById(pagesSettings.PagesSettingsId);
+        }
+
+        public async Task<PagesSettingsODTO> DeletePagesSettings(int id)
+        {
+            var pagesSetings = await _context.PagesSettings.FindAsync(id);
+            if (pagesSetings == null) return null;
+
+            var pagesSettingsODTO = await GetPagesSettingsById(id);
+            _context.PagesSettings.Remove(pagesSetings);
+            await SaveContextChangesAsync();
+            return pagesSettingsODTO;
+        }
+
+        #endregion PagesSettings
+
+        #region NewsFeed
+
+        private IQueryable<NewsFeedODTO> GetNewsFeed(int id, int langId)
+        {
+            return from x in _context.NewsFeeds
+                   where (id == 0 || x.NewsFeedId == id)
+                   && (langId == 0 || x.LanguageId == langId)
+                   select _mapper.Map<NewsFeedODTO>(x);
+        }
+
+        public async Task<NewsFeedODTO> GetNewsFeedById(int id)
+        {
+            return await GetNewsFeed(id, 0).AsNoTracking().SingleOrDefaultAsync();
+        }
+
+        public async Task<NewsFeedODTO> EditNewsFeed(NewsFeedIDTO newsFeedIDTO)
+        {
+            var newsFeeds = _mapper.Map<NewsFeed>(newsFeedIDTO); ;
+
+            _context.Entry(newsFeeds).State = EntityState.Modified;
+
+            await SaveContextChangesAsync();
+
+            return await GetNewsFeedById(newsFeeds.NewsFeedId);
+        }
+
+        public async Task<NewsFeedODTO> AddNewsFeed(NewsFeedIDTO newsFeedIDTO)
+        {
+            var newsFeeds = _mapper.Map<NewsFeed>(newsFeedIDTO);
+            newsFeeds.NewsFeedId = 0;
+            _context.NewsFeeds.Add(newsFeeds);
+
+            await SaveContextChangesAsync();
+
+            return await GetNewsFeedById(newsFeeds.NewsFeedId);
+        }
+
+        public async Task<NewsFeedODTO> DeleteNewsFeed(int id)
+        {
+            var newsFeeds = await _context.NewsFeeds.FindAsync(id);
+            if (newsFeeds == null) return null;
+
+            var newsFeedODTO = await GetNewsFeedById(id);
+            _context.NewsFeeds.Remove(newsFeeds);
+            await SaveContextChangesAsync();
+            return newsFeedODTO;
+        }
+
+        #endregion NewsFeed
     }
 }

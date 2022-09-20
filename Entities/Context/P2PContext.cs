@@ -28,6 +28,9 @@ namespace Entities.Context
         public DbSet<FaqTitle> FaqTitles { get; set; }
         public DbSet<FaqList> FaqLists { get; set; }
         public DbSet<Page> Pages { get; set; }
+        public DbSet<Academy> Academies { get; set; }
+        public DbSet<PagesSettings> PagesSettings { get; set; }
+        public DbSet<NewsFeed> NewsFeeds { get; set; }
 
         #endregion MainData
 
@@ -253,6 +256,61 @@ namespace Entities.Context
                 entity.HasOne(x => x.Review)
                     .WithMany(x => x.Routes)
                     .OnDelete(DeleteBehavior.Restrict);
+            });
+
+            modelBuilder.Entity<Academy>(entity =>
+            {
+                entity.HasKey(x => x.AcademyId);
+
+                entity.HasOne(x => x.UrlTable)
+                    .WithMany(x => x.Academies)
+                    .OnDelete(DeleteBehavior.Restrict);
+
+                entity.HasOne(x => x.Language)
+                    .WithMany(x => x.Academies)
+                    .OnDelete(DeleteBehavior.Restrict);
+
+                entity.HasOne(x => x.Serp)
+                    .WithMany(x => x.Academies)
+                    .OnDelete(DeleteBehavior.Restrict);
+            });
+
+            modelBuilder.Entity<PagesSettings>(entity =>
+            {
+                entity.HasKey(x => x.PagesSettingsId);
+
+                entity.HasOne(x => x.Language)
+                    .WithMany(x => x.PagesSettings)
+                    .OnDelete(DeleteBehavior.Restrict);
+
+                entity.HasOne(x => x.DataType)
+                        .WithMany(x => x.PagesSettings)
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                entity.HasOne(x => x.Review)
+                       .WithMany(x => x.PagesSettings)
+                       .OnDelete(DeleteBehavior.Restrict);
+
+                entity.HasOne(x => x.Serp)
+                    .WithMany(x => x.PagesSettings)
+                    .OnDelete(DeleteBehavior.Restrict);
+            });
+
+            modelBuilder.Entity<NewsFeed>(entity =>
+            {
+                entity.HasKey(x => x.NewsFeedId);
+
+                entity.HasOne(x => x.Language)
+                    .WithMany(x => x.NewsFeeds)
+                    .OnDelete(DeleteBehavior.Restrict);
+
+                entity.HasOne(x => x.UrlTable)
+                        .WithMany(x => x.NewsFeeds)
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                entity.HasOne(x => x.Review)
+                       .WithMany(x => x.NewsFeeds)
+                       .OnDelete(DeleteBehavior.Restrict);
             });
 
             #endregion MainData

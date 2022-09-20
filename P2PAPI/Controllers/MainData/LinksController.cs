@@ -28,15 +28,24 @@ namespace P2P.WebApi.Controllers.MainData
         public async Task<ActionResult<LinkODTO>> GetById(int id)
         {
             var link = await _mainDataServices.GetLinkById(id);
-            if(link == null) return NotFound();
+            if (link == null) return NotFound();
             return link;
         }
 
         //GET: api/Link
-        [HttpGet("ByKeyAndLanguageId")]
+        [HttpGet("GetItemByKey")]
         public async Task<ActionResult<IEnumerable<LinkODTO>>> GetByKeyAndLanguageId(string key, int langId)
         {
-            var link = await _mainDataServices.GetLinkByKeyAndLang(key,langId);
+            var link = await _mainDataServices.GetLinkByKeyAndLang(key, langId);
+            if (link == null) return NotFound();
+            return link;
+        }
+
+        //GET: api/Link
+        [HttpGet("GetExternalLinks")]
+        public async Task<ActionResult<IEnumerable<LinkODTO>>> GetLinkByLang(int langId)
+        {
+            var link = await _mainDataServices.GetLinkByLang(langId);
             if (link == null) return NotFound();
             return link;
         }

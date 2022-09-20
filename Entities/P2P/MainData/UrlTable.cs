@@ -36,6 +36,8 @@ namespace Entities.P2P.MainData
         public ICollection<Review> Rev_YoutubeUrls { get; set; }
         public ICollection<Review> Rev_InstagramUrls { get; set; }
         public ICollection<Review> Rev_ReportLinks { get; set; }
+        public ICollection<Academy> Academies { get; set; }
+        public ICollection<NewsFeed> NewsFeeds { get; set; }
 
         //public ICollection<Serp> Serps { get; set; }
     }

@@ -27,5 +27,7 @@ namespace Entities.P2P.MainData
         public DataType DataType { get; set; }
         public ICollection<Review> Reviews { get; set; }
         public ICollection<Page> Pages { get; set; }
+        public ICollection<Academy> Academies { get; set; }
+        public ICollection<PagesSettings> PagesSettings { get; set; }
     }
 }

@@ -37,6 +37,18 @@ namespace P2P.WebApi.Controllers.MainData
         }
 
         //GET: api/Review
+        [HttpGet("GetReviewByRoute")]
+        public async Task<ActionResult<GetReviewsByRouteODTO>> GetReviewByRoute(int urlId, int langId)
+        {
+            var review = await _mainDataServices.GetReviewsByRoute(urlId, langId);
+            if (review == null)
+            {
+                return NotFound();
+            }
+            return review;
+        }
+
+        //GET: api/Review
         [HttpGet("GetListOfReview")]
         public async Task<ActionResult<IEnumerable<ReviewContentDropdownODTO>>> GetListOfReviews()
         {
@@ -53,6 +65,18 @@ namespace P2P.WebApi.Controllers.MainData
         public async Task<ActionResult<IEnumerable<ReviewContentDropdownODTO>>> GetListOfReviewByLangId(int langId)
         {
             var review = await _mainDataServices.GetListOfReviewsByLang(langId);
+            if (review == null)
+            {
+                return NotFound();
+            }
+            return review;
+        }
+
+        //GET: api/Review
+        [HttpGet("GetparentReview/{langId}")]
+        public async Task<ActionResult<IEnumerable<GetParentReviewODTO>>> GetparentReview(int langId)
+        {
+            var review = await _mainDataServices.GetParentReview(langId);
             if (review == null)
             {
                 return NotFound();

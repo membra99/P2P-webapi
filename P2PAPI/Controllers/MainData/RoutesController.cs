@@ -7,6 +7,7 @@ using P2P.Services;
 using System.Threading.Tasks;
 using System;
 using System.Collections.Generic;
+using P2P.DTO.Output.EndPointODTO;
 
 namespace P2P.WebApi.Controllers.MainData
 {
@@ -46,6 +47,17 @@ namespace P2P.WebApi.Controllers.MainData
         public async Task<ActionResult<IEnumerable<RoutesODTO>>> GetAllRoutesByLanguageId(int langId)
         {
             var routes = await _mainDataServices.GetRoutesByLanguageId(langId);
+            if (routes == null)
+            {
+                return NotFound();
+            }
+            return routes;
+        }
+
+        [HttpGet("DropdownValues/{key}")]
+        public async Task<ActionResult<IEnumerable<GetDropdownValuesODTO>>> GetDropdownValues(string key)
+        {
+            var routes = await _mainDataServices.GetDropdownValues(key);
             if (routes == null)
             {
                 return NotFound();
