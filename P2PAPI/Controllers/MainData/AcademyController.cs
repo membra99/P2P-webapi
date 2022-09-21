@@ -48,6 +48,18 @@ namespace P2P.WebApi.Controllers.MainData
             return academy;
         }
 
+        //GET: api/Academy
+        [HttpGet("GetList/")]
+        public async Task<ActionResult<IEnumerable<AcademyODTO>>> GetList(int langId, string tag)
+        {
+            var academy = await _mainDataServices.GetListByLangOrTag(langId, tag);
+            if (academy == null)
+            {
+                return NotFound();
+            }
+            return academy;
+        }
+
         //PUT: api/Academy
         [HttpPut]
         public async Task<ActionResult<AcademyODTO>> PutAcademy(AcademyIDTO academyIDTO)

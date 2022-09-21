@@ -32,6 +32,9 @@ namespace Entities.Context
         public DbSet<PagesSettings> PagesSettings { get; set; }
         public DbSet<NewsFeed> NewsFeeds { get; set; }
         public DbSet<PageArticles> PageArticles { get; set; }
+        public DbSet<HomeSettings> HomeSettings { get; set; }
+        public DbSet<AboutSettings> AboutSettings { get; set; }
+        public DbSet<SettingsAttribute> SettingsAttributes { get; set; }
 
         #endregion MainData
 
@@ -324,6 +327,75 @@ namespace Entities.Context
                 entity.HasOne(x => x.Page)
                         .WithMany(x => x.PageArticles)
                         .OnDelete(DeleteBehavior.Restrict);
+            });
+
+            modelBuilder.Entity<HomeSettings>(entity =>
+            {
+                entity.HasKey(x => x.HomeSettingsId);
+
+                entity.HasOne(x => x.Review)
+                    .WithMany(x => x.HomeSettings)
+                    .OnDelete(DeleteBehavior.Restrict);
+
+                entity.HasOne(x => x.Serp)
+                        .WithMany(x => x.HomeSettings)
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                entity.HasOne(x => x.Language)
+                        .WithMany(x => x.HomeSettings)
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                entity.HasOne(x => x.NewsUrls)
+                        .WithMany(x => x.NewsUrls)
+                        .HasForeignKey(x => x.NewsUrl)
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                entity.HasOne(x => x.ReviewUrls)
+                       .WithMany(x => x.ReviewUrls)
+                       .HasForeignKey(x => x.ReviewUrl)
+                       .OnDelete(DeleteBehavior.Restrict);
+
+                entity.HasOne(x => x.AcademyUrls)
+                       .WithMany(x => x.AcademyUrls)
+                       .HasForeignKey(x => x.AcademyUrl)
+                       .OnDelete(DeleteBehavior.Restrict);
+
+                entity.HasOne(x => x.BonusUrls)
+                       .WithMany(x => x.BonusUrls)
+                       .HasForeignKey(x => x.BonusUrl)
+                       .OnDelete(DeleteBehavior.Restrict);
+            });
+
+            modelBuilder.Entity<AboutSettings>(entity =>
+            {
+                entity.HasKey(x => x.AboutSettingsId);
+
+                entity.HasOne(x => x.Serp)
+                    .WithMany(x => x.AboutSettings)
+                    .OnDelete(DeleteBehavior.Restrict);
+
+                entity.HasOne(x => x.Language)
+                    .WithMany(x => x.AboutSettings)
+                    .OnDelete(DeleteBehavior.Restrict);
+            });
+
+            modelBuilder.Entity<SettingsAttribute>(entity =>
+            {
+                entity.HasKey(x => x.SettingsAttributeId);
+
+                entity.HasOne(x => x.Language)
+                    .WithMany(x => x.SettingsAttributes)
+                    .OnDelete(DeleteBehavior.Restrict);
+
+                entity.HasOne(x => x.DataType)
+                    .WithMany(x => x.DataTypes)
+                    .HasForeignKey(x => x.DataTypeId)
+                    .OnDelete(DeleteBehavior.Restrict);
+
+                entity.HasOne(x => x.SettingsDataType)
+                    .WithMany(x => x.SettingsDataTypes)
+                    .HasForeignKey(x => x.SettingsDataTypeId)
+                    .OnDelete(DeleteBehavior.Restrict);
             });
 
             #endregion MainData

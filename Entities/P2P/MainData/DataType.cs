@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Entities.P2P.MainData.Settings;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -23,5 +24,7 @@ namespace Entities.P2P.MainData
         public ICollection<Serp> Serps { get; set; }
         public ICollection<Page> Pages { get; set; }
         public ICollection<PagesSettings> PagesSettings { get; set; }
+        public ICollection<SettingsAttribute> DataTypes { get; set; }
+        public ICollection<SettingsAttribute> SettingsDataTypes { get; set; }
     }
 }

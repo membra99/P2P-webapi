@@ -561,11 +561,10 @@ namespace P2P.Services
 
         public async Task<CampaignBonusODTO> GetCampaignBonus(int langId)
         {
-            int language = await _context.Languages.Where(x => x.LanguageId == langId).Select(x => x.LanguageId).FirstOrDefaultAsync();
             var offer = await (from x in _context.CashBacks
                                join r in _context.Review on x.ReviewId equals r.ReviewId into a
                                from d in a.DefaultIfEmpty()
-                               where d.LanguageId == language && x.IsCampaign == false
+                               where d.LanguageId == langId && x.IsCampaign == false
                                select new GetCampaignBonusODTO
                                {
                                    CashBackId = x.CashBackId,
@@ -609,7 +608,7 @@ namespace P2P.Services
             var campaign = await (from x in _context.CashBacks
                                   join r in _context.Review on x.ReviewId equals r.ReviewId into a
                                   from d in a.DefaultIfEmpty()
-                                  where d.LanguageId == language && x.IsCampaign == true
+                                  where d.LanguageId == langId && x.IsCampaign == true
                                   select new GetCampaignBonusODTO
                                   {
                                       CashBackId = x.CashBackId,
@@ -1377,7 +1376,7 @@ namespace P2P.Services
 
         #region Academy
 
-        private IQueryable<AcademyODTO> GetAcademy(int id, int langId)
+        private IQueryable<AcademyODTO> GetAcademy(int id, int langId, string tag)
         {
             return from x in _context.Academies
                    .Include(x => x.Language)
@@ -1385,17 +1384,23 @@ namespace P2P.Services
                    .Include(x => x.UrlTable)
                    where (id == 0 || x.AcademyId == id)
                    && (langId == 0 || x.LanguageId == langId)
+                   && (string.IsNullOrEmpty(tag) || x.Tag.StartsWith(tag))
                    select _mapper.Map<AcademyODTO>(x);
         }
 
         public async Task<AcademyODTO> GetAcademyById(int id)
         {
-            return await GetAcademy(id, 0).AsNoTracking().SingleOrDefaultAsync();
+            return await GetAcademy(id, 0, null).AsNoTracking().SingleOrDefaultAsync();
         }
 
         public async Task<List<AcademyODTO>> GetAcademyByLangId(int langId)
         {
-            return await GetAcademy(0, langId).ToListAsync();
+            return await GetAcademy(0, langId, null).ToListAsync();
+        }
+
+        public async Task<List<AcademyODTO>> GetListByLangOrTag(int langId, string tag)
+        {
+            return await GetAcademy(0, langId, tag).ToListAsync();
         }
 
         public async Task<AcademyODTO> EditAcademy(AcademyIDTO academyIDTO)
@@ -1454,6 +1459,11 @@ namespace P2P.Services
         public async Task<PagesSettingsODTO> GetPagesSettingsById(int id)
         {
             return await GetPagesSettings(id, 0).AsNoTracking().SingleOrDefaultAsync();
+        }
+
+        public async Task<PagesSettingsODTO> GetPagesSettingsByLangId(int langId)
+        {
+            return await GetPagesSettings(0, langId).AsNoTracking().SingleOrDefaultAsync();
         }
 
         public async Task<PagesSettingsODTO> EditPagesSettings(PagesSettingsIDTO pagesSettingsIDTO)
@@ -1657,5 +1667,179 @@ namespace P2P.Services
         }
 
         #endregion PageArticles
+
+        #region HomeSettings
+
+        private IQueryable<HomeSettings> GetHomeSettings(int id, int langId)
+        {
+            return from x in _context.HomeSettings
+                   where (id == 0 || x.HomeSettingsId == id)
+                   && (langId == 0 || x.LanguageId == langId)
+                   select x;
+        }
+
+        public async Task<HomeSettingsODTO> GetHomeSettingsById(int id)
+        {
+            return await _mapper.ProjectTo<HomeSettingsODTO>(GetHomeSettings(id, 0)).AsNoTracking().SingleOrDefaultAsync();
+        }
+
+        public async Task<List<HomeSettingsODTO>> GetHomeSettingsByLangId(int langId)
+        {
+            return await _mapper.ProjectTo<HomeSettingsODTO>(GetHomeSettings(0, langId)).ToListAsync();
+        }
+
+        public async Task<HomeSettingsODTO> EditHomeSettings(HomeSettingsIDTO homeSettingsIDTO)
+        {
+            var homeSettings = _mapper.Map<HomeSettings>(homeSettingsIDTO);
+            _context.Entry(homeSettings).State = EntityState.Modified;
+
+            await SaveContextChangesAsync();
+
+            return await GetHomeSettingsById(homeSettings.HomeSettingsId);
+        }
+
+        public async Task<HomeSettingsODTO> AddHomeSettings(HomeSettingsIDTO homeSettingsIDTO)
+        {
+            var homeSettings = _mapper.Map<HomeSettings>(homeSettingsIDTO);
+
+            homeSettings.HomeSettingsId = 0;
+
+            _context.HomeSettings.Add(homeSettings);
+
+            await SaveContextChangesAsync();
+
+            return await GetHomeSettingsById(homeSettings.HomeSettingsId);
+        }
+
+        public async Task<HomeSettingsODTO> DeleteHomeSettings(int id)
+        {
+            var homeSettings = await _context.HomeSettings.FindAsync(id);
+            if (homeSettings == null) return null;
+
+            var homeSettingsODTO = await GetHomeSettingsById(id);
+            _context.HomeSettings.Remove(homeSettings);
+            await SaveContextChangesAsync();
+            return homeSettingsODTO;
+        }
+
+        #endregion HomeSettings
+
+        #region AboutSettings
+
+        private IQueryable<AboutSettings> GetAboutSettings(int id, int langId)
+        {
+            return from x in _context.AboutSettings
+                   where (id == 0 || x.AboutSettingsId == id)
+                   && (langId == 0 || x.LanguageId == langId)
+                   select x;
+        }
+
+        public async Task<AboutSettingsODTO> GetAboutSettingsById(int id)
+        {
+            return await _mapper.ProjectTo<AboutSettingsODTO>(GetAboutSettings(id, 0)).AsNoTracking().SingleOrDefaultAsync();
+        }
+
+        public async Task<List<AboutSettingsODTO>> GetAboutSettingsByLangId(int langId)
+        {
+            return await _mapper.ProjectTo<AboutSettingsODTO>(GetHomeSettings(0, langId)).ToListAsync();
+        }
+
+        public async Task<AboutSettingsODTO> EditAboutSettings(AboutSettingsIDTO aboutSettingsIDTO)
+        {
+            var aboutSettings = _mapper.Map<AboutSettings>(aboutSettingsIDTO);
+            _context.Entry(aboutSettings).State = EntityState.Modified;
+
+            await SaveContextChangesAsync();
+
+            return await GetAboutSettingsById(aboutSettings.AboutSettingsId);
+        }
+
+        public async Task<AboutSettingsODTO> AddAboutSettings(AboutSettingsIDTO aboutSettingsIDTO)
+        {
+            var aboutSettings = _mapper.Map<AboutSettings>(aboutSettingsIDTO);
+
+            aboutSettings.AboutSettingsId = 0;
+
+            _context.AboutSettings.Add(aboutSettings);
+
+            await SaveContextChangesAsync();
+
+            return await GetAboutSettingsById(aboutSettings.AboutSettingsId);
+        }
+
+        public async Task<AboutSettingsODTO> DeleteAboutSettings(int id)
+        {
+            var aboutSettings = await _context.AboutSettings.FindAsync(id);
+            if (aboutSettings == null) return null;
+
+            var aboutSettingsODTO = await GetAboutSettingsById(id);
+            _context.AboutSettings.Remove(aboutSettings);
+            await SaveContextChangesAsync();
+            return aboutSettingsODTO;
+        }
+
+        #endregion AboutSettings
+
+        #region SettingsAttribute
+
+        private IQueryable<SettingsAttribute> GetSettingsAttribute(int id, int langId, int datatypeId)
+        {
+            return from x in _context.SettingsAttributes
+                   where (id == 0 || x.SettingsAttributeId == id)
+                   && (langId == 0 || x.LanguageId == langId)
+                   && (datatypeId == 0 || x.DataTypeId == datatypeId)
+                   select x;
+        }
+
+        public async Task<SettingsAttributeODTO> GetSettingsAttributeById(int id)
+        {
+            return await _mapper.ProjectTo<SettingsAttributeODTO>(GetSettingsAttribute(id, 0, 0)).AsNoTracking().SingleOrDefaultAsync();
+        }
+
+        public async Task<List<SettingsAttributeODTO>> GetSettingsAttributeByLangId(int langId)
+        {
+            return await _mapper.ProjectTo<SettingsAttributeODTO>(GetSettingsAttribute(0, langId, 0)).ToListAsync();
+        }
+
+        public async Task<List<SettingsAttributeODTO>> GetSettingsAttributeByDataTypeId(int datatypeId)
+        {
+            return await _mapper.ProjectTo<SettingsAttributeODTO>(GetSettingsAttribute(0, 0, datatypeId)).ToListAsync();
+        }
+
+        public async Task<SettingsAttributeODTO> EditSettingsAttribute(SettingsAttributeIDTO settingsAttributeIDTO)
+        {
+            var settingsAttribute = _mapper.Map<SettingsAttribute>(settingsAttributeIDTO);
+            _context.Entry(settingsAttribute).State = EntityState.Modified;
+
+            await SaveContextChangesAsync();
+
+            return await GetSettingsAttributeById(settingsAttribute.SettingsAttributeId);
+        }
+
+        public async Task<SettingsAttributeODTO> AddSettingsAttribute(SettingsAttributeIDTO settingsAttributeIDTO)
+        {
+            var settingsAttribute = _mapper.Map<SettingsAttribute>(settingsAttributeIDTO);
+
+            settingsAttribute.SettingsAttributeId = 0;
+
+            _context.SettingsAttributes.Add(settingsAttribute);
+
+            await SaveContextChangesAsync();
+
+            return await GetSettingsAttributeById(settingsAttribute.SettingsAttributeId);
+        }
+
+        public async Task<SettingsAttributeODTO> DeleteSettingsAttribute(int id)
+        {
+            var settingsAttribute = await _context.SettingsAttributes.FindAsync(id);
+            if (settingsAttribute == null) return null;
+
+            var settingsAttributeODTO = await GetSettingsAttributeById(id);
+            _context.SettingsAttributes.Remove(settingsAttribute);
+            await SaveContextChangesAsync();
+            return settingsAttributeODTO;
+        }
+
+        #endregion SettingsAttribute
     }
 }

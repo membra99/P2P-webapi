@@ -1,4 +1,5 @@
-﻿using MathNet.Numerics;
+﻿using Entities.P2P.MainData.Settings;
+using MathNet.Numerics;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -209,5 +210,6 @@ namespace Entities.P2P.MainData
         public ICollection<CashBack> CashBacks { get; set; }
         public ICollection<PagesSettings> PagesSettings { get; set; }
         public ICollection<NewsFeed> NewsFeeds { get; set; }
+        public ICollection<HomeSettings> HomeSettings { get; set; }
     }
 }
