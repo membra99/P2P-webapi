@@ -810,8 +810,6 @@ namespace P2P.Services
             return reviews.Concat(pages).ToList();
         }
 
-        //TODO GetDropdownValues
-
         #endregion Routes
 
         #region Serp
@@ -1133,15 +1131,27 @@ namespace P2P.Services
         public async Task<PageODTO> DeletePage(int id)
         {
             //TODO Kada bude PageAtrical i academy prepraviti brisanje
-            //var pageArtical = await _context.PageArticles.Where(x => x.PageId == id).Select(x => x.Id).ToListAsync();
-
+            //var pageArtical = await _context.PageArticles.Where(x => x.PageId == id).Select(x => x.PageId).ToListAsync();
+            //var faqTitles = await _context.FaqTitles.Where(x => x.PageId == id).Select(x => x.PageId).ToListAsync();
+            //var faqTitlesId = await _context.FaqTitles.Where(x => x.PageId == id).Select(x => x.FaqTitleId).ToListAsync();
             //foreach (var item in pageArtical)
             //{
-            //    var pageart = await _context.PagesArtical.FindAsync(item.PageId);
-            //    _context.PagesArtic.Remove(pageart);
-
+            //    var pageart = await _context.PageArticles.Where(x => x.PageId == item).FirstOrDefaultAsync();
+            //    _context.PageArticles.Remove(pageart);
+            //    await SaveContextChangesAsync();
             //}
-
+            //foreach (var item in faqTitlesId)
+            //{
+            //    var faqList = await _context.FaqLists.Where(x => x.FaqTitleId == item).FirstOrDefaultAsync();
+            //    _context.FaqLists.Remove(faqList);
+            //    await SaveContextChangesAsync();
+            //}
+            //foreach (var item in faqTitles)
+            //{
+            //    var faq = await _context.FaqTitles.Where(x => x.PageId == item).FirstOrDefaultAsync();
+            //    _context.FaqTitles.Remove(faq);
+            //    await SaveContextChangesAsync();
+            //}
             var page = await _context.Pages.FindAsync(id);
             if (page == null) return null;
 
@@ -1691,6 +1701,7 @@ namespace P2P.Services
         public async Task<HomeSettingsODTO> EditHomeSettings(HomeSettingsIDTO homeSettingsIDTO)
         {
             var homeSettings = _mapper.Map<HomeSettings>(homeSettingsIDTO);
+
             _context.Entry(homeSettings).State = EntityState.Modified;
 
             await SaveContextChangesAsync();
@@ -1741,7 +1752,7 @@ namespace P2P.Services
 
         public async Task<List<AboutSettingsODTO>> GetAboutSettingsByLangId(int langId)
         {
-            return await _mapper.ProjectTo<AboutSettingsODTO>(GetHomeSettings(0, langId)).ToListAsync();
+            return await _mapper.ProjectTo<AboutSettingsODTO>(GetAboutSettings(0, langId)).ToListAsync();
         }
 
         public async Task<AboutSettingsODTO> EditAboutSettings(AboutSettingsIDTO aboutSettingsIDTO)

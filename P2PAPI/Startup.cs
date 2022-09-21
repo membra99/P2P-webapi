@@ -1,3 +1,4 @@
+using Amazon.S3;
 using Entities.Context;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -30,6 +31,10 @@ namespace P2PAPI
             }));
 
             services.AddControllers();
+
+            var appSettingsSectionAws = Configuration.GetSection("ServiceConfiguration");
+            services.AddAWSService<IAmazonS3>();
+            services.Configure<ServiceConfiguration>(appSettingsSectionAws);
 
             services.Configure<AppSettings>(Configuration.GetSection("AppSettings"));
 

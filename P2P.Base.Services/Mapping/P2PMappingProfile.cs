@@ -140,10 +140,10 @@ namespace P2P.Base.Services.Mapping
             CreateMap<HomeSettings, HomeSettingsODTO>()
                .ForMember(dest => dest.LanguageName, source => source.MapFrom(m => m.Language.LanguageName))
                .ForMember(dest => dest.Name, source => source.MapFrom(m => m.Review.Name))
-               .ForMember(dest => dest.NewsUrlLink, source => source.MapFrom(m => m.NewsUrls.NewsUrls))
-               .ForMember(dest => dest.BonusUrlLink, source => source.MapFrom(m => m.BonusUrls.BonusUrls))
-               .ForMember(dest => dest.AcademyUrlLink, source => source.MapFrom(m => m.AcademyUrls.AcademyUrls))
-               .ForMember(dest => dest.ReviewUrlLink, source => source.MapFrom(m => m.ReviewUrls.ReviewUrls));
+               .ForMember(dest => dest.NewsUrlLink, source => source.MapFrom(m => m.NewsUrls.URL))
+               .ForMember(dest => dest.BonusUrlLink, source => source.MapFrom(m => m.BonusUrls.URL))
+               .ForMember(dest => dest.AcademyUrlLink, source => source.MapFrom(m => m.AcademyUrls.URL))
+               .ForMember(dest => dest.ReviewUrlLink, source => source.MapFrom(m => m.ReviewUrls.URL));
             CreateMap<HomeSettingsIDTO, HomeSettings>();
 
             CreateMap<SettingsAttribute, SettingsAttributeODTO>()
@@ -151,6 +151,10 @@ namespace P2P.Base.Services.Mapping
                .ForMember(dest => dest.DataTypeName, source => source.MapFrom(m => m.DataType.DataTypeName))
                .ForMember(dest => dest.SettingsDataTypeName, source => source.MapFrom(m => m.DataType.DataTypeName));
             CreateMap<SettingsAttributeIDTO, SettingsAttribute>();
+
+            CreateMap<AboutSettings, AboutSettingsODTO>()
+                .ForMember(dest => dest.LanguageName, source => source.MapFrom(m => m.Language.LanguageName));
+            CreateMap<AboutSettingsIDTO, AboutSettings>();
 
             #endregion MainData
         }

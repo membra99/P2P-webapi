@@ -11,7 +11,7 @@ namespace P2P.DTO.Output
         public int AboutSettingsId { get; set; }
         public int? SerpId { get; set; }
         public int? LanguageId { get; set; }
-        public string Name { get; set; }
+        public string LanguageName { get; set; }
         public string Paragraph { get; set; }
         public string TeamH2 { get; set; }
         public string Title { get; set; }
