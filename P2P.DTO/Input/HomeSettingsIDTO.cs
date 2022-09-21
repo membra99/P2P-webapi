@@ -20,10 +20,8 @@ namespace P2P.DTO.Input
         public string Title { get; set; }
         public decimal? Returned { get; set; }
         public int? Investment { get; set; }
-        public int? Platforms { get; set; }
         public string TestimonialH2 { get; set; }
         public string FeaturedH2 { get; set; }
-
-        //public string Platform { get; set; }
+        public string Platform { get; set; }
     }
 }

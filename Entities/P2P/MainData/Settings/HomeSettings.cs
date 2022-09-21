@@ -23,9 +23,10 @@ namespace Entities.P2P.MainData.Settings
         [StringLength(100)]
         public string Title { get; set; }
 
+        [Column(TypeName = "decimal(18, 4)")]
         public decimal? Returned { get; set; }
+
         public int? Investment { get; set; }
-        public int? Platforms { get; set; }
 
         [StringLength(100)]
         public string TestimonialH2 { get; set; }
@@ -33,8 +34,8 @@ namespace Entities.P2P.MainData.Settings
         [StringLength(100)]
         public string FeaturedH2 { get; set; }
 
-        //[StringLength(50)]
-        //public string Platform { get; set; }
+        [StringLength(50)]
+        public string Platform { get; set; }
 
         public UrlTable NewsUrls { get; set; }
         public UrlTable ReviewUrls { get; set; }
