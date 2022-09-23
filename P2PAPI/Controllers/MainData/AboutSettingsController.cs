@@ -11,7 +11,7 @@ using Entities.P2P.MainData.Settings;
 
 namespace P2P.WebApi.Controllers.MainData
 {
-    [Route("[controller]")]
+    [Route("api/[controller]")]
     [ApiController]
     [EnableCors("CorsPolicy")]
     public class AboutSettingsController : ControllerBase

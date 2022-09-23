@@ -1,11 +1,13 @@
 using Amazon.S3;
 using Entities.Context;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Cors.Infrastructure;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.IdentityModel.Protocols;
 using Microsoft.OpenApi.Models;
 using P2P.Services;
 using P2P.Services.Code;
@@ -32,10 +34,6 @@ namespace P2PAPI
 
             services.AddControllers();
 
-            var appSettingsSectionAws = Configuration.GetSection("ServiceConfiguration");
-            services.AddAWSService<IAmazonS3>();
-            services.Configure<ServiceConfiguration>(appSettingsSectionAws);
-
             services.Configure<AppSettings>(Configuration.GetSection("AppSettings"));
 
             services.AddCors(options => options.AddPolicy("CorsPolicy",
@@ -44,9 +42,7 @@ namespace P2PAPI
                     builder
                         .AllowAnyMethod()
                         .AllowAnyHeader()
-                        .WithOrigins(Configuration["AppSettings:Origins"].Split(","))
-                        .AllowCredentials()
-                        .SetPreflightMaxAge(TimeSpan.FromMinutes(60));
+                        .AllowAnyOrigin();
                 }));
 
             services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
@@ -70,7 +66,9 @@ namespace P2PAPI
 
             app.UseHttpsRedirection();
             app.UseRouting();
+
             app.UseCors("CorsPolicy");
+
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>

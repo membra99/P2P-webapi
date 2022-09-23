@@ -10,7 +10,7 @@ using System;
 
 namespace P2P.WebApi.Controllers.MainData
 {
-    [Route("[controller]")]
+    [Route("api/[controller]")]
     [ApiController]
     [EnableCors("CorsPolicy")]
     public class HomeSettingsController : ControllerBase

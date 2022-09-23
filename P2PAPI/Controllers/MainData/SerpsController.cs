@@ -9,7 +9,7 @@ using System;
 
 namespace P2P.WebApi.Controllers.MainData
 {
-    [Route("[controller]")]
+    [Route("api/[controller]")]
     [ApiController]
     [EnableCors("CorsPolicy")]
     public class SerpsController : ControllerBase
@@ -37,7 +37,6 @@ namespace P2P.WebApi.Controllers.MainData
             return await _mainDataServices.GetByDataTypeId(dataTypeId);
         }
 
-
         //PUT: api/Serp
         [HttpPut]
         public async Task<ActionResult<SerpODTO>> PutSerp(SerpIDTO serpIDTO)
@@ -50,7 +49,6 @@ namespace P2P.WebApi.Controllers.MainData
             {
                 throw new Exception(e.Message);
             }
-
         }
 
         //POST: api/Serp
@@ -81,7 +79,6 @@ namespace P2P.WebApi.Controllers.MainData
             {
                 throw new Exception(e.Message);
             }
-
         }
     }
 }

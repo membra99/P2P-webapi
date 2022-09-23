@@ -9,7 +9,7 @@ using System;
 
 namespace P2P.WebApi.Controllers.MainData
 {
-    [Route("[controller]")]
+    [Route("api/[controller]")]
     [ApiController]
     [EnableCors("CorsPolicy")]
     public class FooterSettingsController : ControllerBase
@@ -21,13 +21,12 @@ namespace P2P.WebApi.Controllers.MainData
             _mainDataServices = mainDataServices;
         }
 
-
         //GET: api/FooterSettings
         [HttpGet("{id}")]
         public async Task<ActionResult<FooterSettingsODTO>> GetById(int id)
         {
             var footer = await _mainDataServices.GetFooterSettingsById(id);
-            if(footer == null) return NotFound();
+            if (footer == null) return NotFound();
             return footer;
         }
 
@@ -37,7 +36,6 @@ namespace P2P.WebApi.Controllers.MainData
         {
             return await _mainDataServices.GetFooterSettingsByLangId(id);
         }
-
 
         //PUT: api/FooterSettings
         [HttpPut]
@@ -51,7 +49,6 @@ namespace P2P.WebApi.Controllers.MainData
             {
                 throw new Exception(e.Message);
             }
-
         }
 
         //POST: api/FooterSettings
@@ -82,7 +79,6 @@ namespace P2P.WebApi.Controllers.MainData
             {
                 throw new Exception(e.Message);
             }
-
         }
     }
 }

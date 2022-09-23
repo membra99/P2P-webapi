@@ -11,7 +11,7 @@ using System.Collections.Generic;
 
 namespace P2P.WebApi.Controllers.MainData
 {
-    [Route("[controller]")]
+    [Route("api/[controller]")]
     [ApiController]
     [EnableCors("CorsPolicy")]
     public class DataTypesController : ControllerBase
@@ -27,8 +27,8 @@ namespace P2P.WebApi.Controllers.MainData
         [HttpGet("{id}")]
         public async Task<ActionResult<DataTypeODTO>> GetDataTypeById(int id)
         {
-            var dataType =  await _mainDataServices.GetDataTypeById(id);
-            if(dataType == null)
+            var dataType = await _mainDataServices.GetDataTypeById(id);
+            if (dataType == null)
             {
                 return NotFound();
             }

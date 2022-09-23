@@ -9,7 +9,7 @@ using System;
 
 namespace P2P.WebApi.Controllers.MainData
 {
-    [Route("[controller]")]
+    [Route("api/[controller]")]
     [ApiController]
     [EnableCors("CorsPolicy")]
     public class UrlTablesController : ControllerBase
@@ -26,7 +26,7 @@ namespace P2P.WebApi.Controllers.MainData
         public async Task<ActionResult<UrlTableODTO>> GetById(int id)
         {
             var url = await _mainDataServices.GetUrlTableById(id);
-            if(url == null) return NotFound();
+            if (url == null) return NotFound();
             return url;
         }
 
@@ -36,7 +36,6 @@ namespace P2P.WebApi.Controllers.MainData
         {
             return await _mainDataServices.GetUrlTableByDataTypeId(dataTypeId);
         }
-
 
         //PUT: api/UrlTables
         [HttpPut]
@@ -50,7 +49,6 @@ namespace P2P.WebApi.Controllers.MainData
             {
                 throw new Exception(e.Message);
             }
-
         }
 
         //POST: api/UrlTables
@@ -81,7 +79,6 @@ namespace P2P.WebApi.Controllers.MainData
             {
                 throw new Exception(e.Message);
             }
-
         }
     }
 }

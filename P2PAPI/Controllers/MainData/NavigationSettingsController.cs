@@ -10,7 +10,7 @@ using System.Collections.Generic;
 
 namespace P2P.WebApi.Controllers.MainData
 {
-    [Route("[controller]")]
+    [Route("api/[controller]")]
     [ApiController]
     [EnableCors("CorsPolicy")]
     public class NavigationSettingsController : ControllerBase
@@ -38,7 +38,6 @@ namespace P2P.WebApi.Controllers.MainData
             return await _mainDataServices.GetNavigationSettingsByLangId(id);
         }
 
-
         //PUT: api/NavigationSettings
         [HttpPut]
         public async Task<ActionResult<NavigationSettingsODTO>> PutNavigationSettings(NavigationSettingsIDTO navigationSettingsIDTO)
@@ -51,7 +50,6 @@ namespace P2P.WebApi.Controllers.MainData
             {
                 throw new Exception(e.Message);
             }
-
         }
 
         //POST: api/NavigationSettings
@@ -82,7 +80,6 @@ namespace P2P.WebApi.Controllers.MainData
             {
                 throw new Exception(e.Message);
             }
-
         }
     }
 }

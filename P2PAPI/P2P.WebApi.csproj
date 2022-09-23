@@ -24,6 +24,8 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Entities\Entities.csproj" />
+    <ProjectReference Include="..\P2P.Base.Services\P2P.Base.Services.csproj" />
+    <ProjectReference Include="..\P2P.DTO\P2P.DTO.csproj" />
     <ProjectReference Include="..\P2P.Services\P2P.Services.csproj" />
   </ItemGroup>
 

@@ -9,7 +9,7 @@ using System;
 
 namespace P2P.WebApi.Controllers.MainData
 {
-    [Route("[controller]")]
+    [Route("api/[controller]")]
     [ApiController]
     [EnableCors("CorsPolicy")]
     public class LanguagesController : ControllerBase
@@ -33,7 +33,6 @@ namespace P2P.WebApi.Controllers.MainData
             return language;
         }
 
-
         //PUT: api/Language
         [HttpPut]
         public async Task<ActionResult<LanguageODTO>> PutLanguage(LanguageIDTO languageIDTO)
@@ -46,7 +45,6 @@ namespace P2P.WebApi.Controllers.MainData
             {
                 throw new Exception(e.Message);
             }
-
         }
 
         //POST: api/Language
@@ -77,7 +75,6 @@ namespace P2P.WebApi.Controllers.MainData
             {
                 throw new Exception(e.Message);
             }
-
         }
     }
 }

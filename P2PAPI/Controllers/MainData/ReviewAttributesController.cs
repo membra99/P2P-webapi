@@ -8,7 +8,7 @@ using System;
 
 namespace P2P.WebApi.Controllers.MainData
 {
-    [Route("[controller]")]
+    [Route("api/[controller]")]
     [ApiController]
     [EnableCors("CorsPolicy")]
     public class ReviewAttributesController : Controller
@@ -25,10 +25,9 @@ namespace P2P.WebApi.Controllers.MainData
         public async Task<ActionResult<ReviewAttributeODTO>> GetById(int id)
         {
             var review = await _mainDataServices.GetReviewAttribute(id);
-            if(review == null) return NotFound();
+            if (review == null) return NotFound();
             return review;
         }
-
 
         //PUT: api/ReviewAttribute
         [HttpPut]
@@ -42,7 +41,6 @@ namespace P2P.WebApi.Controllers.MainData
             {
                 throw new Exception(e.Message);
             }
-
         }
 
         //POST: api/ReviewAttribute
@@ -73,7 +71,6 @@ namespace P2P.WebApi.Controllers.MainData
             {
                 throw new Exception(e.Message);
             }
-
         }
     }
 }

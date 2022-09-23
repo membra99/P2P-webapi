@@ -484,6 +484,7 @@ namespace P2P.Services
         {
             return from x in _context.CashBacks
                    .Include(x => x.Language)
+                   .Include(x=>x.Review)
                    where (id == 0 || x.CashBackId == id)
                    && (langId == 0 || x.LanguageId == langId)
                    select _mapper.Map<CashBackODTO>(x);
@@ -721,6 +722,7 @@ namespace P2P.Services
                    .Include(x => x.Language)
                    .Include(x => x.DataType)
                    .Include(x => x.UrlTable)
+                   .Include(x=>x.Review)
                    where (id == 0 || x.RoutesId == id)
                    && (languageId == 0 || x.LanguageId == languageId)
                    select _mapper.Map<RoutesODTO>(x);
@@ -894,7 +896,7 @@ namespace P2P.Services
         public async Task<List<GetFaqTitleByPageIdODTO>> GetFaqTitleByPageId(int pageId)
         {
             return await (from x in _context.FaqTitles
-                          where (pageId == 0 || x.ReviewId == pageId)
+                          where (pageId == 0 || x.PageId == pageId)
                           && x.PageId != null
                           select _mapper.Map<GetFaqTitleByPageIdODTO>(x)).ToListAsync();
         }
@@ -1130,28 +1132,42 @@ namespace P2P.Services
 
         public async Task<PageODTO> DeletePage(int id)
         {
-            //TODO Kada bude PageAtrical i academy prepraviti brisanje
+            //TODO Videti sa frontom da li im treba brisanje u nazad
+
             //var pageArtical = await _context.PageArticles.Where(x => x.PageId == id).Select(x => x.PageId).ToListAsync();
             //var faqTitles = await _context.FaqTitles.Where(x => x.PageId == id).Select(x => x.PageId).ToListAsync();
             //var faqTitlesId = await _context.FaqTitles.Where(x => x.PageId == id).Select(x => x.FaqTitleId).ToListAsync();
-            //foreach (var item in pageArtical)
+
+            //if (pageArtical.Count != 0)
             //{
-            //    var pageart = await _context.PageArticles.Where(x => x.PageId == item).FirstOrDefaultAsync();
-            //    _context.PageArticles.Remove(pageart);
-            //    await SaveContextChangesAsync();
+            //    foreach (var item in pageArtical)
+            //    {
+            //        var pageart = await _context.PageArticles.Where(x => x.PageId == item).FirstOrDefaultAsync();
+            //        _context.PageArticles.Remove(pageart);
+            //        await SaveContextChangesAsync();
+            //    }
             //}
-            //foreach (var item in faqTitlesId)
+
+            //if (faqTitlesId.Count != 0)
             //{
-            //    var faqList = await _context.FaqLists.Where(x => x.FaqTitleId == item).FirstOrDefaultAsync();
-            //    _context.FaqLists.Remove(faqList);
-            //    await SaveContextChangesAsync();
+            //    foreach (var item in faqTitlesId)
+            //    {
+            //        var faqList = await _context.FaqLists.Where(x => x.FaqTitleId == item).FirstOrDefaultAsync();
+            //        _context.FaqLists.Remove(faqList);
+            //        await SaveContextChangesAsync();
+            //    }
             //}
-            //foreach (var item in faqTitles)
+
+            //if (faqTitles.Count != 0)
             //{
-            //    var faq = await _context.FaqTitles.Where(x => x.PageId == item).FirstOrDefaultAsync();
-            //    _context.FaqTitles.Remove(faq);
-            //    await SaveContextChangesAsync();
+            //    foreach (var item in faqTitles)
+            //    {
+            //        var faq = await _context.FaqTitles.Where(x => x.PageId == item).FirstOrDefaultAsync();
+            //        _context.FaqTitles.Remove(faq);
+            //        await SaveContextChangesAsync();
+            //    }
             //}
+
             var page = await _context.Pages.FindAsync(id);
             if (page == null) return null;
 
@@ -1181,8 +1197,7 @@ namespace P2P.Services
 
         public async Task<GetReviewsByRouteODTO> GetReviewsByRoute(int urlId, int langId)
         {
-            int lang = _context.Languages.FirstOrDefault(x => x.LanguageId == langId).LanguageId;
-            int UrlReviewId = _context.Routes.FirstOrDefault(x => x.UrlTableId == urlId && x.LanguageId == lang).ReviewId;
+            int UrlReviewId = _context.Routes.FirstOrDefault(x => x.UrlTableId == urlId && x.LanguageId == langId).ReviewId;
             var review = _context.Review.FirstOrDefault(x => x.ReviewId == UrlReviewId);
 
             var ReviewBoxOnes = new List<ReviewBoxOneODTO>();
@@ -1441,6 +1456,19 @@ namespace P2P.Services
 
         public async Task<AcademyODTO> DeleteAcademy(int id)
         {
+            //TODO Videti sa frontom da li im treba brisanje u nazad
+            //var pageArtical = await _context.PageArticles.Where(x => x.AcademyId == id).Select(x => x.AcademyId).ToListAsync();
+
+            //if (pageArtical.Count != 0)
+            //{
+            //    foreach (var item in pageArtical)
+            //    {
+            //        var pageart = await _context.PageArticles.Where(x => x.AcademyId == item).FirstOrDefaultAsync();
+            //        _context.PageArticles.Remove(pageart);
+            //        await SaveContextChangesAsync();
+            //    }
+            //}
+
             var academy = await _context.Academies.FindAsync(id);
             if (academy == null) return null;
 

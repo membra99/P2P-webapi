@@ -9,7 +9,7 @@ using P2P.DTO.Input;
 
 namespace P2P.WebApi.Controllers.MainData
 {
-    [Route("[controller]")]
+    [Route("api/[controller]")]
     [ApiController]
     [EnableCors("CorsPolicy")]
     public class TestimonialsController : ControllerBase
@@ -35,7 +35,6 @@ namespace P2P.WebApi.Controllers.MainData
             return await _mainDataServices.GetTestimonialByLanguage(langId);
         }
 
-
         //PUT: api/Testimonial
         [HttpPut]
         public async Task<ActionResult<IEnumerable<TestimonialODTO>>> PutTestimonials(TestimonialIDTO testimonialIDTO)
@@ -44,11 +43,10 @@ namespace P2P.WebApi.Controllers.MainData
             {
                 return await _mainDataServices.EditTestimonial(testimonialIDTO);
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 throw new Exception(e.Message);
             }
-            
         }
 
         //POST: api/Testimonial
@@ -59,7 +57,7 @@ namespace P2P.WebApi.Controllers.MainData
             {
                 return await _mainDataServices.AddTest(testimonialIDTO);
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 throw new Exception(e.Message);
             }
@@ -75,11 +73,10 @@ namespace P2P.WebApi.Controllers.MainData
                 if (testimonial == null) return NotFound();
                 return testimonial;
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 throw new Exception(e.Message);
             }
-            
         }
     }
 }
