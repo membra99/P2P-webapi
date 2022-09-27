@@ -25,7 +25,9 @@ namespace P2P.Services
         {
         }
 
-        #region GlobalFunctions
+        #region GlobalFunctions & Statics
+
+        public static int NEWS_FEED_TYPEID = 7;
 
         private async Task<List<ReviewContentDropdownODTO>> ListOfReviews()
         {
@@ -37,7 +39,7 @@ namespace P2P.Services
             }).OrderByDescending(e => e.Rating).ToList();
         }
 
-        #endregion GlobalFunctions
+        #endregion GlobalFunctions & Statics
 
         #region Testimonial
 
@@ -1635,10 +1637,19 @@ namespace P2P.Services
         {
             var newsFeeds = _mapper.Map<NewsFeed>(newsFeedIDTO);
             newsFeeds.NewsFeedId = 0;
+            newsFeeds.UrlTableId = null;
             _context.NewsFeeds.Add(newsFeeds);
-
             await SaveContextChangesAsync();
-
+            var url = new UrlTable
+            {
+                DataTypeId = NEWS_FEED_TYPEID,
+                TableId = newsFeeds.NewsFeedId,
+                URL = newsFeedIDTO.Url
+            };
+            _context.UrlTables.Add(url);
+            await SaveContextChangesAsync();
+            newsFeeds.UrlTableId = url.UrlTableId;
+            await SaveContextChangesAsync();
             return await GetNewsFeedById(newsFeeds.NewsFeedId);
         }
 

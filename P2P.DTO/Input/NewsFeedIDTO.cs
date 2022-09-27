@@ -13,6 +13,7 @@ namespace P2P.DTO.Input
         public int? ReviewId { get; set; }
         public int LanguageId { get; set; }
         public int? UrlTableId { get; set; }
+        public string Url { get; set; }
         public string NewsText { get; set; }
         public DateTime? CreatedDate { get; set; }
         public bool Market { get; set; }
