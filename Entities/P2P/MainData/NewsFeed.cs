@@ -18,8 +18,6 @@ namespace Entities.P2P.MainData
         public int LanguageId { get; set; }
 
         public int? UrlTableId { get; set; }
-
-        [StringLength(500)]
         public string NewsText { get; set; }
 
         public DateTime? CreatedDate { get; set; }

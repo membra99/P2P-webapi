@@ -46,7 +46,7 @@ namespace P2P.Services
             return from x in _context.Testimonials
                    .Include(x => x.Language)
                    where (id == 0 || x.TestimonialId == id)
-                   && (x.LanguageId == langId)
+                   && (langId == 0 || x.LanguageId == langId)
                    && (string.IsNullOrEmpty(fullName) || x.FullName.StartsWith(fullName))
                    select _mapper.Map<TestimonialODTO>(x);
         }
@@ -484,7 +484,7 @@ namespace P2P.Services
         {
             return from x in _context.CashBacks
                    .Include(x => x.Language)
-                   .Include(x=>x.Review)
+                   .Include(x => x.Review)
                    where (id == 0 || x.CashBackId == id)
                    && (langId == 0 || x.LanguageId == langId)
                    select _mapper.Map<CashBackODTO>(x);
@@ -722,7 +722,7 @@ namespace P2P.Services
                    .Include(x => x.Language)
                    .Include(x => x.DataType)
                    .Include(x => x.UrlTable)
-                   .Include(x=>x.Review)
+                   .Include(x => x.Review)
                    where (id == 0 || x.RoutesId == id)
                    && (languageId == 0 || x.LanguageId == languageId)
                    select _mapper.Map<RoutesODTO>(x);

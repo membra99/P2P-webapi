@@ -16,7 +16,7 @@ namespace Entities.P2P.MainData
         public int DataTypeId { get; set; }
 
         [Required]
-        [StringLength(100)]
+        [StringLength(500)]
         public string URL { get; set; }
 
         public int TableId { get; set; }

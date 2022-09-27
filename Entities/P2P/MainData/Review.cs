@@ -50,7 +50,7 @@ namespace Entities.P2P.MainData
         [StringLength(100)]
         public string Bonus { get; set; }
 
-        [StringLength(100)]
+        [StringLength(500)]
         public string CustomMessage { get; set; }
 
         [Required]
@@ -100,17 +100,17 @@ namespace Entities.P2P.MainData
 
         public int? OperatingSince { get; set; }
 
-        public int? Earnings { get; set; }
+        public long Earnings { get; set; }
 
-        public int? TotalLoanValue { get; set; }
+        public long TotalLoanValue { get; set; }
 
-        public int? NumberOfInvestors { get; set; }
+        public long NumberOfInvestors { get; set; }
 
-        public int? InvestorsLoss { get; set; }
+        public long InvestorsLoss { get; set; }
 
         public int? PortfolioSize { get; set; }
 
-        [StringLength(50)]
+        [StringLength(100)]
         public string FinancialReport { get; set; }
 
         [StringLength(50)]
@@ -137,7 +137,7 @@ namespace Entities.P2P.MainData
         [StringLength(100)]
         public string LegalName { get; set; }
 
-        [StringLength(100)]
+        [StringLength(200)]
         public string Address { get; set; }
 
         [StringLength(50)]
@@ -163,7 +163,6 @@ namespace Entities.P2P.MainData
         [StringLength(50)]
         public string ProtectionScheme { get; set; }
 
-        [StringLength(500)]
         public string ReviewContent { get; set; }
 
         [StringLength(5)]
@@ -182,7 +181,7 @@ namespace Entities.P2P.MainData
         [Required]
         public bool Recommended { get; set; }
 
-        [StringLength(100)]
+        [StringLength(200)]
         public string OfficeAddress { get; set; }
 
         [Required]

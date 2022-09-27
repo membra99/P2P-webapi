@@ -15,13 +15,13 @@ namespace Entities.P2P.MainData
         public int SerpId { get; set; }
         public int DataTypeId { get; set; }
 
-        [StringLength(50)]
+        [StringLength(200)]
         public string SerpTitle { get; set; }
 
-        [StringLength(200)]
+        [StringLength(500)]
         public string SerpDescription { get; set; }
 
-        [StringLength(50)]
+        [StringLength(200)]
         public string Subtitle { get; set; }
 
         public int TableId { get; set; }

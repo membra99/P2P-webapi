@@ -16,7 +16,7 @@ namespace P2P.DTO.Input
 
         public string Title { get; set; }
 
-        public string FuturedImage { get; set; }
+        public string FeaturedImage { get; set; }
 
         public string Tag { get; set; }
 

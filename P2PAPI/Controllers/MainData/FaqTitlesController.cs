@@ -14,7 +14,6 @@ namespace P2P.WebApi.Controllers.MainData
     [Route("api/[controller]")]
     [ApiController]
     [EnableCors("CorsPolicy")]
-
     public class FaqTitlesController : ControllerBase
     {
         private readonly MainDataServices _mainDataServices;
@@ -63,7 +62,6 @@ namespace P2P.WebApi.Controllers.MainData
             {
                 throw new Exception(e.Message);
             }
-
         }
 
         //POST: api/FaqTitle
@@ -94,7 +92,6 @@ namespace P2P.WebApi.Controllers.MainData
             {
                 throw new Exception(e.Message);
             }
-
         }
     }
 }

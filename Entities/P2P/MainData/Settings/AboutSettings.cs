@@ -15,7 +15,7 @@ namespace Entities.P2P.MainData.Settings
         public int? SerpId { get; set; }
         public int? LanguageId { get; set; }
 
-        [StringLength(500)]
+        [StringLength(1000)]
         public string Paragraph { get; set; }
 
         [StringLength(100)]

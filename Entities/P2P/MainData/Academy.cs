@@ -12,15 +12,16 @@ namespace Entities.P2P.MainData
     public class Academy
     {
         public int AcademyId { get; set; }
-        public int UrlTableId { get; set; }
+        public int? UrlTableId { get; set; }
         public int? SerpId { get; set; }
         public int? LanguageId { get; set; }
 
+        [Required]
         [StringLength(200)]
         public string Title { get; set; }
 
         [StringLength(100)]
-        public string FuturedImage { get; set; }
+        public string FeaturedImage { get; set; }
 
         [StringLength(50)]
         public string Tag { get; set; }
@@ -28,7 +29,7 @@ namespace Entities.P2P.MainData
         [StringLength(100)]
         public string TitleOverview { get; set; }
 
-        [StringLength(100)]
+        [StringLength(500)]
         public string Excerpt { get; set; }
 
         public DateTime? CreatedDate { get; set; }

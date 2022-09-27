@@ -60,9 +60,9 @@ namespace P2PAPI
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
-                app.UseSwagger();
-                app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "P2PAPI v1"));
             }
+            app.UseSwaggerUI(c => { c.SwaggerEndpoint("/swagger/v1/swagger.json", "P2PAPI v1"); c.RoutePrefix = "swagger"; });
+            app.UseSwagger();
 
             app.UseHttpsRedirection();
             app.UseRouting();

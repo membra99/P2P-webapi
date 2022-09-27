@@ -1,0 +1,20 @@
+
+{
+    "region" : "eu-central-1",
+    "configuration" : "Debug",
+    "framework"     : "net5.0",
+    "self-contained" : false,
+    "application"    : "p2pApiTest",
+    "environment"    : "P2papitest-env",
+    "enable-xray"    : false,
+    "enhanced-health-type" : "enhanced",
+    "additional-options"   : "",
+    "solution-stack"       : "64bit Amazon Linux 2 v2.3.5 running .NET Core",
+    "environment-type"     : "SingleInstance",
+    "cname"                : "p2pwebapi-dev",
+    "instance-type"        : "t2.micro",
+    "key-pair"             : "p2p-empire-main-key",
+    "instance-profile"     : "aws-elasticbeanstalk-ec2-role",
+    "service-role"         : "ATM1-RecipeBeanstalkServiceRole62B7EC28-45NCBGV36BSY",
+    "proxy-server"         : "nginx"
+}
