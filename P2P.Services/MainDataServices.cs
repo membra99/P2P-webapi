@@ -1637,6 +1637,8 @@ namespace P2P.Services
         {
             var newsFeeds = _mapper.Map<NewsFeed>(newsFeedIDTO);
             newsFeeds.NewsFeedId = 0;
+            if (newsFeeds.ReviewId == 0)
+                newsFeeds.ReviewId = null;
             newsFeeds.UrlTableId = null;
             _context.NewsFeeds.Add(newsFeeds);
             await SaveContextChangesAsync();
