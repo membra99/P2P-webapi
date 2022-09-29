@@ -47,6 +47,12 @@ namespace P2PAPI
 
             services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
             services.AddScoped<MainDataServices>();
+            //AWS services
+            var appSettingsSectionAws = Configuration.GetSection("ServiceConfiguration");
+            services.AddAWSService<IAmazonS3>();
+            services.Configure<Entities.ServiceConfiguration>(appSettingsSectionAws);
+            services.AddTransient<IAWSS3FileService, AWSS3FileService>();
+            services.AddTransient<IAWSS3BucketHelper, AWSS3BucketHelper>();
 
             services.AddSwaggerGen(c =>
             {
