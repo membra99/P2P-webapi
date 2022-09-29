@@ -66,7 +66,7 @@ namespace P2P.Services
         public async Task<List<TestimonialODTO>> EditTestimonial(TestimonialIDTO testimonialIDTO)
         {
             var testimonial = _mapper.Map<Testimonial>(testimonialIDTO);
-            testimonial.TestimonialId = 0;
+
             _context.Entry(testimonial).State = EntityState.Modified;
 
             await SaveContextChangesAsync();
@@ -77,6 +77,7 @@ namespace P2P.Services
         public async Task<List<TestimonialODTO>> AddTest(TestimonialIDTO testimonialIDTO)
         {
             var testimonial = _mapper.Map<Testimonial>(testimonialIDTO);
+            testimonial.TestimonialId = 0;
             _context.Testimonials.Add(testimonial);
             await SaveContextChangesAsync();
             return await Get(testimonial.TestimonialId);
