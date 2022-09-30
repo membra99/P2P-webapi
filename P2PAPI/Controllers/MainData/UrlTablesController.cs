@@ -6,6 +6,7 @@ using P2P.Services;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System;
+using P2P.DTO.Output.EndPointODTO;
 
 namespace P2P.WebApi.Controllers.MainData
 {
@@ -35,6 +36,15 @@ namespace P2P.WebApi.Controllers.MainData
         public async Task<ActionResult<IEnumerable<UrlTableODTO>>> GetByDataTypeId(int dataTypeId)
         {
             return await _mainDataServices.GetUrlTableByDataTypeId(dataTypeId);
+        }
+
+        //GET: api/UrlTables
+        [HttpGet("GetUrlTableByDataTypeIdAndLang")]
+        public async Task<ActionResult<IEnumerable<GetUrlTableByDataTypeIdAndLangODTO>>> GetUrlTableByDataTypeIdAndLang(int dataTypeId, int langId)
+        {
+            var url = await _mainDataServices.GetUrlTableByDataTypeIdAndLang(dataTypeId, langId);
+            if (url == null) return NotFound();
+            return url;
         }
 
         //PUT: api/UrlTables

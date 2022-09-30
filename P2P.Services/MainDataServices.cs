@@ -11,11 +11,13 @@ using P2P.DTO.Output;
 using P2P.DTO.Output.EndPointODTO;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Data;
 using System.Linq;
 using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
 using System.Xml.Linq;
+using DataType = Entities.P2P.MainData.DataType;
 
 namespace P2P.Services
 {
@@ -27,7 +29,19 @@ namespace P2P.Services
 
         #region GlobalFunctions & Statics
 
+        public static int REVIEW_TYPEID = 1;
+        public static int ACADEMY_TYPEID = 2;
+        public static int CASHBACK_TYPEID = 3;
+        public static int FAQLIST_TYPEID = 4;
+        public static int FAQTITLES_TYPEID = 5;
+        public static int LINKS_TYPEID = 6;
         public static int NEWS_FEED_TYPEID = 7;
+        public static int PAGE_ARTICLES_TYPEID = 8;
+        public static int PAGES_TYPEID = 9;
+        public static int ROUTES_TYPEID = 10;
+        public static int SERPS_TYPEID = 11;
+        public static int URL_TABLES_TYPEID = 12;
+        public static int HOME_SETTINGS_TYPEID = 14;
 
         private async Task<List<ReviewContentDropdownODTO>> ListOfReviews()
         {
@@ -379,6 +393,80 @@ namespace P2P.Services
         public async Task<List<UrlTableODTO>> GetUrlTableByDataTypeId(int dataTypeId)
         {
             return await GetUrlTable(0, dataTypeId).ToListAsync();
+        }
+
+        public async Task<List<GetUrlTableByDataTypeIdAndLangODTO>> GetUrlTableByDataTypeIdAndLang(int dataTypeId, int langId)
+        {
+            switch (dataTypeId)
+            {
+                case 1:
+                    return await _context.Review.Where(x => x.LanguageId == langId).Select(x =>
+                    new GetUrlTableByDataTypeIdAndLangODTO
+                    {
+                        UrlTableId = new List<int?> { x.FacebookUrl, x.TwitterUrl, x.InstagramUrl, x.LinkedInUrl, x.YoutubeUrl, x.ReportLink },
+                        URL = new List<string> { x.Rev_FacebookUrl.URL, x.Rev_TwitterUrl.URL, x.Rev_InstagramUrl.URL, x.Rev_LinkedInUrl.URL, x.Rev_YoutubeUrl.URL, x.Rev_ReportLink.URL },
+                        LanguageId = x.LanguageId,
+                        LanguageName = x.Language.LanguageName
+                    }).ToListAsync();
+                    break;
+
+                case 2:
+                    return await _context.Academies.Where(x => x.LanguageId == langId).Select(x =>
+                   new GetUrlTableByDataTypeIdAndLangODTO
+                   {
+                       UrlTableId = new List<int?> { x.UrlTableId },
+                       URL = new List<string> { x.UrlTable.URL },
+                       LanguageId = (int)x.LanguageId,
+                       LanguageName = x.Language.LanguageName
+                   }).ToListAsync();
+                    break;
+
+                case 6:
+                    return await _context.Links.Where(x => x.LanguageId == langId).Select(x =>
+                    new GetUrlTableByDataTypeIdAndLangODTO
+                    {
+                        UrlTableId = new List<int?> { x.UrlTableId },
+                        URL = new List<string> { x.UrlTable.URL },
+                        LanguageId = x.LanguageId,
+                        LanguageName = x.Language.LanguageName
+                    }).ToListAsync();
+                    break;
+
+                case 7:
+                    return await _context.NewsFeeds.Where(x => x.LanguageId == langId).Select(x =>
+                    new GetUrlTableByDataTypeIdAndLangODTO
+                    {
+                        UrlTableId = new List<int?> { x.UrlTableId },
+                        URL = new List<string> { x.UrlTable.URL },
+                        LanguageId = x.LanguageId,
+                        LanguageName = x.Language.LanguageName
+                    }).ToListAsync();
+                    break;
+
+                case 10:
+                    return await _context.Routes.Where(x => x.LanguageId == langId).Select(x =>
+                    new GetUrlTableByDataTypeIdAndLangODTO
+                    {
+                        UrlTableId = new List<int?> { x.UrlTableId },
+                        URL = new List<string> { x.UrlTable.URL },
+                        LanguageId = x.LanguageId,
+                        LanguageName = x.Language.LanguageName
+                    }).ToListAsync();
+                    break;
+
+                case 14:
+                    return await _context.HomeSettings.Where(x => x.LanguageId == langId).Select(x =>
+                   new GetUrlTableByDataTypeIdAndLangODTO
+                   {
+                       UrlTableId = new List<int?> { x.NewsUrl, x.ReviewId, x.AcademyUrl, x.BonusUrl },
+                       URL = new List<string> { x.NewsUrls.URL, x.ReviewUrls.URL, x.AcademyUrls.URL, x.BonusUrls.URL },
+                       LanguageId = (int)x.LanguageId,
+                       LanguageName = x.Language.LanguageName
+                   }).ToListAsync();
+                    break;
+
+                default: return null;
+            }
         }
 
         public async Task<UrlTableODTO> EditUrlTable(UrlTableIDTO urlTableIDTO)
