@@ -20,6 +20,7 @@ namespace Entities.Context
         public DbSet<NavigationSettings> NavigationSettings { get; set; }
         public DbSet<FooterSettings> FooterSettings { get; set; }
         public DbSet<UrlTable> UrlTables { get; set; }
+        public DbSet<User> Users { get; set; }
         public DbSet<Links> Links { get; set; }
         public DbSet<CashBack> CashBacks { get; set; }
         public DbSet<Routes> Routes { get; set; }
@@ -41,6 +42,11 @@ namespace Entities.Context
         private void P2PModelCreating(ModelBuilder modelBuilder)
         {
             #region MainData
+
+            modelBuilder.Entity<User>(entity =>
+            {
+                entity.HasKey(x => x.UserId);
+            });
 
             modelBuilder.Entity<Testimonial>(entity =>
             {

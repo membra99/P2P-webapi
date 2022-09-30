@@ -157,6 +157,11 @@ namespace P2P.Base.Services.Mapping
             CreateMap<AboutSettingsIDTO, AboutSettings>();
 
             #endregion MainData
+
+            #region Users
+            CreateMap<User, UserODTO>();
+            CreateMap<UserIDTO, User>();
+            #endregion
         }
     }
 }
