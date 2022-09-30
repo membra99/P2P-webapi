@@ -13,12 +13,15 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace P2P.WebApi.Controllers
 {
+    [Route("api/[controller]")]
+    [ApiController]
     public class UsersController : Controller
     {
         private readonly IConfiguration _config;
         private readonly IUsersService _userServices;
         private readonly ITokenService _tokenService;
         private string generatedToken = null;
+
         public UsersController(IConfiguration config, ITokenService tokenService, IUsersService userServices)
         {
             _config = config;
@@ -27,6 +30,7 @@ namespace P2P.WebApi.Controllers
         }
 
         [AllowAnonymous]
+        [Route("Login")]
         [HttpPost]
         public IActionResult Login(UserIDTO userModel)
         {
@@ -50,6 +54,7 @@ namespace P2P.WebApi.Controllers
         }
 
         [AllowAnonymous]
+        [Route("Register")]
         [HttpPost]
         public IActionResult Register(UserIDTO userModel)
         {
@@ -61,6 +66,7 @@ namespace P2P.WebApi.Controllers
         }
 
         [Authorize]
+        [Route("GetUserbyId")]
         [HttpGet]
         public IActionResult GetUserbyId(int id)
         {

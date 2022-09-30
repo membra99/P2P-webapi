@@ -117,15 +117,7 @@ namespace P2PAPI
             app.UseHttpsRedirection();
             app.UseRouting();
             app.UseSession();
-            app.Use(async (context, next) =>
-            {
-                var token = context.Session.GetString("Token");
-                if (!string.IsNullOrEmpty(token))
-                {
-                    context.Request.Headers.Add("Authorization", "Bearer " + token);
-                }
-                await next();
-            });
+           
             app.UseCors("CorsPolicy");
 
             app.UseAuthentication();

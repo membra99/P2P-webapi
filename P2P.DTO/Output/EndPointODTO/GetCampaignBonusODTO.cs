@@ -17,7 +17,7 @@ namespace P2P.DTO.Output.EndPointODTO
         public string CashbackCta { get; set; }
         public decimal Stars { get; set; }
         public string ExternalLinkKey { get; set; }
-        public int ReviewUrlId { get; set; }
+        public int? ReviewUrlId { get; set; }
         public string Terms { get; set; }
         public List<ReviewBoxThreeODTO> ReviewBoxThree { get; set; }
         public List<ReviewBoxFourODTO> ReviewBoxFour { get; set; }
