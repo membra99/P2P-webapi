@@ -1448,6 +1448,13 @@ namespace P2P.Services
         {
             var academy = _mapper.Map<Academy>(academyIDTO);
             academy.AcademyId = 0;
+            if (academy.LanguageId == 0)
+                academy.LanguageId = null;
+            if (academy.UrlTableId == 0)
+                academy.UrlTableId = null;
+            if (academy.SerpId == 0)
+                academy.SerpId = null;
+
             academy.CreatedDate = DateTime.Now;
             academy.UpdatedDate = null;
             _context.Academies.Add(academy);
