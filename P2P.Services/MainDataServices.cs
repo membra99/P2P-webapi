@@ -1195,7 +1195,7 @@ namespace P2P.Services
 
         public async Task<ReviewODTO> GetReviewById(int id)
         {
-            return await GetReview(id, 0).AsNoTracking().SingleOrDefaultAsync();
+            return await GetReview(id, 0).AsNoTracking().FirstOrDefaultAsync();
         }
 
         public async Task<GetReviewsByRouteODTO> GetReviewsByRoute(int urlId, int langId)
