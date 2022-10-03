@@ -156,12 +156,22 @@ namespace P2P.Base.Services.Mapping
                 .ForMember(dest => dest.LanguageName, source => source.MapFrom(m => m.Language.LanguageName));
             CreateMap<AboutSettingsIDTO, AboutSettings>();
 
+            CreateMap<Category, CategoryODTO>();
+            CreateMap<CategoryIDTO, Category>();
+
+            CreateMap<Blog, BlogODTO>()
+                .ForMember(dest => dest.SerpTitle, source => source.MapFrom(m => m.Serp.SerpTitle))
+                .ForMember(dest => dest.SerpDescription, source => source.MapFrom(m => m.Serp.SerpDescription))
+                .ForMember(dest => dest.Subtitle, source => source.MapFrom(m => m.Serp.Subtitle));
+
             #endregion MainData
 
             #region Users
+
             CreateMap<User, UserODTO>();
             CreateMap<UserIDTO, User>();
-            #endregion
+
+            #endregion Users
         }
     }
 }

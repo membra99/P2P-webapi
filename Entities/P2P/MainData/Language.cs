@@ -28,5 +28,6 @@ namespace Entities.P2P.MainData
         public ICollection<HomeSettings> HomeSettings { get; set; }
         public ICollection<AboutSettings> AboutSettings { get; set; }
         public ICollection<SettingsAttribute> SettingsAttributes { get; set; }
+        public ICollection<Blog> Blogs { get; set; }
     }
 }

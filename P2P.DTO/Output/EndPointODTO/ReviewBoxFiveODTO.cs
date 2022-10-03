@@ -8,7 +8,7 @@ namespace P2P.DTO.Output.EndPointODTO
 {
     public class ReviewBoxFiveODTO
     {
-        public string[] Pros { get; set; }
-        public string[] Cons { get; set; }
+        public List<string> Pros { get; set; }
+        public List<string> Cons { get; set; }
     }
 }

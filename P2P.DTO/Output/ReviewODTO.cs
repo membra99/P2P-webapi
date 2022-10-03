@@ -9,8 +9,8 @@ namespace P2P.DTO.Output
     public class ReviewODTO
     {
         public int ReviewId { get; set; }
-        public int SerpId { get; set; }
-        public int SerpTitle { get; set; }
+        public int? SerpId { get; set; }
+        public string SerpTitle { get; set; }
         public int LanguageId { get; set; }
         public string Languagename { get; set; }
         public int? FacebookUrl { get; set; } //Url Table
@@ -29,19 +29,19 @@ namespace P2P.DTO.Output
         public string Logo { get; set; }
         public decimal? Interest { get; set; }
         public int? SecuredBy { get; set; }
-        public bool SecuredByCheck { get; set; }
-        public bool NotSecured { get; set; }
+        public bool? SecuredByCheck { get; set; }
+        public bool? NotSecured { get; set; }
         public string Bonus { get; set; }
         public string CustomMessage { get; set; }
-        public bool CompareButton { get; set; }
+        public bool? CompareButton { get; set; }
         public decimal? RiskReturn { get; set; }
         public decimal? Usability { get; set; }
         public decimal? Liquidity { get; set; }
         public decimal? Support { get; set; }
         public string Features { get; set; }
-        public bool AutoInvest { get; set; }
-        public bool SecondaryMarket { get; set; }
-        public bool Promotion { get; set; }
+        public bool? AutoInvest { get; set; }
+        public bool? SecondaryMarket { get; set; }
+        public bool? Promotion { get; set; }
         public int? MinInvestment { get; set; }
         public string DiversificationOtherCurrency { get; set; }
         public int? Countries { get; set; }
@@ -58,20 +58,20 @@ namespace P2P.DTO.Output
         public int? PortfolioSize { get; set; }
         public string FinancialReport { get; set; }
         public string StatisticsOtherCurrency { get; set; }
-        public bool BuybackGuarantee { get; set; }
-        public bool PersonalGuarantee { get; set; }
-        public bool Mortage { get; set; }
-        public bool Collateral { get; set; }
-        public bool NoProtection { get; set; }
-        public bool CryptoAssets { get; set; }
+        public bool? BuybackGuarantee { get; set; }
+        public bool? PersonalGuarantee { get; set; }
+        public bool? Mortage { get; set; }
+        public bool? Collateral { get; set; }
+        public bool? NoProtection { get; set; }
+        public bool? CryptoAssets { get; set; }
         public string LegalName { get; set; }
         public string Address { get; set; }
         public string Phone { get; set; }
         public string Email { get; set; }
-        public bool LiveChat { get; set; }
+        public bool? LiveChat { get; set; }
         public string OpeningHours { get; set; }
-        public bool TableOfContents { get; set; }
-        public bool CashbackBonus { get; set; }
+        public bool? TableOfContents { get; set; }
+        public bool? CashbackBonus { get; set; }
         public int? DiversificationMinInvest { get; set; }
         public string ProtectionScheme { get; set; }
         public string ReviewContent { get; set; }
@@ -79,10 +79,10 @@ namespace P2P.DTO.Output
         public int? Cryptoloan { get; set; }
         public DateTime? UpdatedDate { get; set; }
         public decimal? RatingCalculated { get; set; }
-        public bool NewPlatform { get; set; }
-        public bool Recommended { get; set; }
+        public bool? NewPlatform { get; set; }
+        public bool? Recommended { get; set; }
         public string OfficeAddress { get; set; }
-        public decimal RiskAndReturn { get; set; }
+        public decimal? RiskAndReturn { get; set; }
         public int? Availability { get; set; }
         public int? Count { get; set; }
     }

@@ -29,19 +29,19 @@ namespace P2P.Services
 
         #region GlobalFunctions & Statics
 
-        public static int REVIEW_TYPEID = 1;
-        public static int ACADEMY_TYPEID = 2;
-        public static int CASHBACK_TYPEID = 3;
-        public static int FAQLIST_TYPEID = 4;
-        public static int FAQTITLES_TYPEID = 5;
-        public static int LINKS_TYPEID = 6;
-        public static int NEWS_FEED_TYPEID = 7;
-        public static int PAGE_ARTICLES_TYPEID = 8;
-        public static int PAGES_TYPEID = 9;
-        public static int ROUTES_TYPEID = 10;
-        public static int SERPS_TYPEID = 11;
-        public static int URL_TABLES_TYPEID = 12;
-        public static int HOME_SETTINGS_TYPEID = 14;
+        public const int REVIEW_TYPEID = 1;
+        public const int ACADEMY_TYPEID = 2;
+        public const int CASHBACK_TYPEID = 3;
+        public const int FAQLIST_TYPEID = 4;
+        public const int FAQTITLES_TYPEID = 5;
+        public const int LINKS_TYPEID = 6;
+        public const int NEWS_FEED_TYPEID = 7;
+        public const int PAGE_ARTICLES_TYPEID = 8;
+        public const int PAGES_TYPEID = 9;
+        public const int ROUTES_TYPEID = 10;
+        public const int SERPS_TYPEID = 11;
+        public const int URL_TABLES_TYPEID = 12;
+        public const int HOME_SETTINGS_TYPEID = 14;
 
         private async Task<List<ReviewContentDropdownODTO>> ListOfReviews()
         {
@@ -399,7 +399,7 @@ namespace P2P.Services
         {
             switch (dataTypeId)
             {
-                case 1:
+                case REVIEW_TYPEID:
                     return await _context.Review.Where(x => x.LanguageId == langId).Select(x =>
                     new GetUrlTableByDataTypeIdAndLangODTO
                     {
@@ -410,7 +410,7 @@ namespace P2P.Services
                     }).ToListAsync();
                     break;
 
-                case 2:
+                case ACADEMY_TYPEID:
                     return await _context.Academies.Where(x => x.LanguageId == langId).Select(x =>
                    new GetUrlTableByDataTypeIdAndLangODTO
                    {
@@ -421,7 +421,7 @@ namespace P2P.Services
                    }).ToListAsync();
                     break;
 
-                case 6:
+                case LINKS_TYPEID:
                     return await _context.Links.Where(x => x.LanguageId == langId).Select(x =>
                     new GetUrlTableByDataTypeIdAndLangODTO
                     {
@@ -432,7 +432,7 @@ namespace P2P.Services
                     }).ToListAsync();
                     break;
 
-                case 7:
+                case NEWS_FEED_TYPEID:
                     return await _context.NewsFeeds.Where(x => x.LanguageId == langId).Select(x =>
                     new GetUrlTableByDataTypeIdAndLangODTO
                     {
@@ -443,7 +443,7 @@ namespace P2P.Services
                     }).ToListAsync();
                     break;
 
-                case 10:
+                case ROUTES_TYPEID:
                     return await _context.Routes.Where(x => x.LanguageId == langId).Select(x =>
                     new GetUrlTableByDataTypeIdAndLangODTO
                     {
@@ -454,7 +454,7 @@ namespace P2P.Services
                     }).ToListAsync();
                     break;
 
-                case 14:
+                case HOME_SETTINGS_TYPEID:
                     return await _context.HomeSettings.Where(x => x.LanguageId == langId).Select(x =>
                    new GetUrlTableByDataTypeIdAndLangODTO
                    {
@@ -669,8 +669,7 @@ namespace P2P.Services
                                    Stars = (decimal)(((d.RiskAndReturn != null ? d.RiskAndReturn : 0) + (d.Usability != null ? d.Usability : 0) +
                                                (d.Liquidity != null ? d.Liquidity : 0) + (d.Support != null ? d.Support : 0)) / 4),
                                    ExternalLinkKey = d.Name.ToLower(),
-                                   //datatype treba biti 'review'
-                                   ReviewUrlId = _context.Routes.FirstOrDefault(e => e.DataTypeId == 1 && e.ReviewId == d.ReviewId).UrlTableId,
+                                   ReviewUrlId = _context.Routes.FirstOrDefault(e => e.DataTypeId == REVIEW_TYPEID && e.ReviewId == d.ReviewId).UrlTableId,
                                    Terms = x.CashBack_terms,
                                    ReviewBoxThree = new List<ReviewBoxThreeODTO> { new ReviewBoxThreeODTO
                              {
@@ -690,11 +689,11 @@ namespace P2P.Services
                                  Interest=d.InterestRange,
                                  Currency=d.StatisticsCurrency
                              } },
-                                   //      ReviewBoxFive = new List<ReviewBoxFiveODTO> { new ReviewBoxFiveODTO
-                                   //{
-                                   //    //TODO pros=> BILO JE VISE Benefita sad su to ReviewAttr
-                                   //    //TODO cons=> BILO JE VISE Disadvantage sad su to ReviewAttr
-                                   //} }
+                                   ReviewBoxFive = new List<ReviewBoxFiveODTO> { new ReviewBoxFiveODTO
+                                   {
+                                       //TODO pros=> BILO JE VISE Benefita sad su to ReviewAttr
+                                       //TODO cons=> BILO JE VISE Disadvantage sad su to ReviewAttr
+                                   } }
                                }).OrderByDescending(e => e.Stars).ToListAsync();
 
             var campaign = await (from x in _context.CashBacks
@@ -732,7 +731,7 @@ namespace P2P.Services
             var cashBack = _mapper.Map<CashBack>(cashBackIDTO);
             if (cashBack.IsCampaign)
             {
-                if (cashBack.Valid_Until != null && cashBack.Valid_Until > DateTime.Now)
+                if (cashBack.Valid_Until != null)
                 {
                     cashBack.Exclusive = null;
                 }
@@ -1431,8 +1430,7 @@ namespace P2P.Services
             var ReviewRoute = (from x in _context.Review
                                join r in _context.Routes on x.ReviewId equals r.ReviewId into c
                                from a in c.DefaultIfEmpty()
-                                   //TODO DataTypeId mora biti REVIEW
-                               where (a.DataTypeId == 1 && x.LanguageId == langId)
+                               where (a.DataTypeId == REVIEW_TYPEID && x.LanguageId == langId)
                                select new GetParentReviewODTO
                                {
                                    ReviewId = x.ReviewId,
@@ -1444,13 +1442,13 @@ namespace P2P.Services
                                    Interest = x.Interest,
                                    SecuredBy = x.SecuredBy,
                                    Count = (x.Count != null) ? x.Count : 0,
-                                   Guarantee = x.BuybackGuarantee ? "buyback guarantee" : x.PersonalGuarantee ? "personal guarantee " : x.Mortage ? "mortgage" : x.Collateral ? "collateral" :
-                                              x.NoProtection ? "not secured" : x.CryptoAssets ? "cryptoassets" : "",
+                                   Guarantee = (bool)x.BuybackGuarantee ? "buyback guarantee" : (bool)x.PersonalGuarantee ? "personal guarantee " : (bool)x.Mortage ? "mortgage" : (bool)x.Collateral ? "collateral" :
+                                               (bool)x.NoProtection ? "not secured" : (bool)x.CryptoAssets ? "cryptoassets" : "",
                                    IsSecured = !x.NotSecured,
                                    ExternalLinkKey = x.Name.ToLower(),
                                    CustomMessage = x.CustomMessage,
                                    Recommended = x.Recommended,
-                                   CompareButton = x.CompareButton ? true : false,
+                                   CompareButton = (bool)x.CompareButton ? true : false,
                                }).ToListAsync();
             return await ReviewRoute;
         }
@@ -1668,8 +1666,7 @@ namespace P2P.Services
                 UrlTableId = x.UrlTableId,
                 URL = x.UrlTable.URL,
                 RedFlag = x.RedFlag,
-                //TODO DataType treba da bude 'review'
-                Route = _context.Routes.Where(e => e.DataTypeId == 1 && e.ReviewId == x.ReviewId).Select(e => e.UrlTableId).FirstOrDefault(),
+                Route = _context.Routes.Where(e => e.DataTypeId == REVIEW_TYPEID && e.ReviewId == x.ReviewId).Select(e => e.UrlTableId).FirstOrDefault(),
                 Logo = _context.Review.Where(e => e.ReviewId == x.ReviewId).Select(e => e.Logo).FirstOrDefault()
             }).OrderBy(x => x.CreatedDate).ToListAsync();
 
@@ -1683,8 +1680,7 @@ namespace P2P.Services
                 return await (from x in _context.NewsFeeds
                               select new GetNewsFeedListODTO
                               {
-                                  //TODO DataType treba da bude 'review' i proveriti kakac where uslov treab da bude
-                                  Route = _context.Routes.Where(e => e.DataTypeId == 1 && e.ReviewId == x.ReviewId).Select(e => e.UrlTableId).FirstOrDefault(),
+                                  Route = _context.Routes.Where(e => e.DataTypeId == REVIEW_TYPEID && e.ReviewId == x.ReviewId).Select(e => e.UrlTableId).FirstOrDefault(),
                                   NewsText = x.NewsText,
                                   CreatedDate = x.CreatedDate,
                                   NewsFeedId = x.NewsFeedId,
@@ -1699,8 +1695,7 @@ namespace P2P.Services
             else
             {
                 return await (from x in _context.NewsFeeds
-                                  //TODO DataType treba da bude 'review' i proveriti kakac where uslov treab da bude
-                              join r in _context.Routes.Where(e => e.DataTypeId == 1) on x.ReviewId equals r.ReviewId into c
+                              join r in _context.Routes.Where(e => e.DataTypeId == REVIEW_TYPEID) on x.ReviewId equals r.ReviewId into c
                               from b in c.DefaultIfEmpty()
                               select new GetNewsFeedListODTO
                               {

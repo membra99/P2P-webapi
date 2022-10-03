@@ -12,7 +12,7 @@ namespace P2P.DTO.Output.EndPointODTO
         public string Address { get; set; }
         public string Phone { get; set; }
         public string Email { get; set; }
-        public bool LiveChat { get; set; }
+        public bool? LiveChat { get; set; }
         public string OpeningHours { get; set; }
         public int?[] SocialMedia { get; set; }
     }

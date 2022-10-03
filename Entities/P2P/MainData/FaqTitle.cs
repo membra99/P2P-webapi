@@ -14,12 +14,14 @@ namespace Entities.P2P.MainData
         public int FaqTitleId { get; set; }
         public int? PageId { get; set; }
         public int? ReviewId { get; set; }
+        public int? BlogId { get; set; }
+
         [StringLength(50)]
         public string Title { get; set; }
 
-
         public Page Page { get; set; }
         public Review Review { get; set; }
+        public Blog Blog { get; set; }
         public ICollection<FaqList> FaqLists { get; set; }
     }
 }

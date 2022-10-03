@@ -11,9 +11,7 @@ namespace Entities.P2P.MainData
     public class Review
     {
         public int ReviewId { get; set; }
-
-        [Required]
-        public int SerpId { get; set; }
+        public int? SerpId { get; set; }
 
         [Required]
         public int LanguageId { get; set; }
@@ -30,6 +28,7 @@ namespace Entities.P2P.MainData
 
         public int? ReportLink { get; set; }//Url Table
 
+        [Required]
         [StringLength(100)]
         public string Name { get; set; }
 
@@ -40,12 +39,8 @@ namespace Entities.P2P.MainData
         public decimal? Interest { get; set; }
 
         public int? SecuredBy { get; set; }
-
-        [Required]
-        public bool SecuredByCheck { get; set; }
-
-        [Required]
-        public bool NotSecured { get; set; }
+        public bool? SecuredByCheck { get; set; }
+        public bool? NotSecured { get; set; }
 
         [StringLength(100)]
         public string Bonus { get; set; }
@@ -53,8 +48,7 @@ namespace Entities.P2P.MainData
         [StringLength(500)]
         public string CustomMessage { get; set; }
 
-        [Required]
-        public bool CompareButton { get; set; }
+        public bool? CompareButton { get; set; }
 
         [Column(TypeName = "decimal(18, 4)")]
         public decimal? RiskReturn { get; set; }
@@ -71,14 +65,9 @@ namespace Entities.P2P.MainData
         [StringLength(100)]
         public string Features { get; set; }
 
-        [Required]
-        public bool AutoInvest { get; set; }
-
-        [Required]
-        public bool SecondaryMarket { get; set; }
-
-        [Required]
-        public bool Promotion { get; set; }
+        public bool? AutoInvest { get; set; }
+        public bool? SecondaryMarket { get; set; }
+        public bool? Promotion { get; set; }
 
         public int? MinInvestment { get; set; }
 
@@ -100,13 +89,13 @@ namespace Entities.P2P.MainData
 
         public int? OperatingSince { get; set; }
 
-        public long Earnings { get; set; }
+        public long? Earnings { get; set; }
 
-        public long TotalLoanValue { get; set; }
+        public long? TotalLoanValue { get; set; }
 
-        public long NumberOfInvestors { get; set; }
+        public long? NumberOfInvestors { get; set; }
 
-        public long InvestorsLoss { get; set; }
+        public long? InvestorsLoss { get; set; }
 
         public int? PortfolioSize { get; set; }
 
@@ -116,23 +105,12 @@ namespace Entities.P2P.MainData
         [StringLength(50)]
         public string StatisticsOtherCurrency { get; set; }
 
-        [Required]
-        public bool BuybackGuarantee { get; set; }
-
-        [Required]
-        public bool PersonalGuarantee { get; set; }
-
-        [Required]
-        public bool Mortage { get; set; }
-
-        [Required]
-        public bool Collateral { get; set; }
-
-        [Required]
-        public bool NoProtection { get; set; }
-
-        [Required]
-        public bool CryptoAssets { get; set; }
+        public bool? BuybackGuarantee { get; set; }
+        public bool? PersonalGuarantee { get; set; }
+        public bool? Mortage { get; set; }
+        public bool? Collateral { get; set; }
+        public bool? NoProtection { get; set; }
+        public bool? CryptoAssets { get; set; }
 
         [StringLength(100)]
         public string LegalName { get; set; }
@@ -146,18 +124,13 @@ namespace Entities.P2P.MainData
         [StringLength(100)]
         public string Email { get; set; }
 
-        [Required]
-        public bool LiveChat { get; set; }
+        public bool? LiveChat { get; set; }
 
         [StringLength(50)]
         public string OpeningHours { get; set; }
 
-        [Required]
-        public bool TableOfContents { get; set; }
-
-        [Required]
-        public bool CashbackBonus { get; set; }
-
+        public bool? TableOfContents { get; set; }
+        public bool? CashbackBonus { get; set; }
         public int? DiversificationMinInvest { get; set; }
 
         [StringLength(50)]
@@ -175,18 +148,14 @@ namespace Entities.P2P.MainData
         [Column(TypeName = "decimal(18, 2)")]
         public decimal? RatingCalculated { get; set; }
 
-        [Required]
-        public bool NewPlatform { get; set; }
-
-        [Required]
-        public bool Recommended { get; set; }
+        public bool? NewPlatform { get; set; }
+        public bool? Recommended { get; set; }
 
         [StringLength(200)]
         public string OfficeAddress { get; set; }
 
-        [Required]
         [Column(TypeName = "decimal(18, 2)")]
-        public decimal RiskAndReturn { get; set; }
+        public decimal? RiskAndReturn { get; set; }
 
         public int? Availability { get; set; }
 

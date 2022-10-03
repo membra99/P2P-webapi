@@ -39,5 +39,6 @@ namespace Entities.P2P.MainData
         public Serp Serp { get; set; }
         public Language Language { get; set; }
         public ICollection<PageArticles> PageArticles { get; set; }
+        public ICollection<Blog> Blogs { get; set; }
     }
 }

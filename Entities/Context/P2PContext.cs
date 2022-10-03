@@ -36,6 +36,7 @@ namespace Entities.Context
         public DbSet<HomeSettings> HomeSettings { get; set; }
         public DbSet<AboutSettings> AboutSettings { get; set; }
         public DbSet<SettingsAttribute> SettingsAttributes { get; set; }
+        public DbSet<Blog> Blogs { get; set; }
 
         #endregion MainData
 
@@ -171,6 +172,10 @@ namespace Entities.Context
                 entity.HasOne(x => x.Review)
                       .WithMany(x => x.FaqTitles)
                       .OnDelete(DeleteBehavior.Restrict);
+
+                entity.HasOne(x => x.Blog)
+                    .WithMany(x => x.FaqTitles)
+                    .OnDelete(DeleteBehavior.Restrict);
             });
 
             modelBuilder.Entity<FaqList>(entity =>
@@ -401,6 +406,32 @@ namespace Entities.Context
                 entity.HasOne(x => x.SettingsDataType)
                     .WithMany(x => x.SettingsDataTypes)
                     .HasForeignKey(x => x.SettingsDataTypeId)
+                    .OnDelete(DeleteBehavior.Restrict);
+            });
+
+            modelBuilder.Entity<Blog>(entity =>
+            {
+                entity.HasKey(x => x.BlogId);
+
+                entity.HasOne(x => x.Language)
+                    .WithMany(x => x.Blogs)
+                    .OnDelete(DeleteBehavior.Restrict);
+
+                entity.HasOne(x => x.SelectedPopularArticles)
+                    .WithMany(x => x.Blogs)
+                    .OnDelete(DeleteBehavior.Restrict);
+
+                entity.HasOne(x => x.User)
+                    .WithMany(x => x.Blogs)
+                    .HasForeignKey(x => x.AuthorId)
+                    .OnDelete(DeleteBehavior.Restrict);
+
+                entity.HasOne(x => x.Serp)
+                    .WithMany(x => x.Blogs)
+                    .OnDelete(DeleteBehavior.Restrict);
+
+                entity.HasOne(x => x.Category)
+                    .WithMany(x => x.Blogs)
                     .OnDelete(DeleteBehavior.Restrict);
             });
 

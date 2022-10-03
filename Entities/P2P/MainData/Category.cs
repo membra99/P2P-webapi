@@ -8,20 +8,14 @@ using System.Threading.Tasks;
 
 namespace Entities.P2P.MainData
 {
-    [Table("Users", Schema = "P2P")]
-    public class User
+    [Table("Categories", Schema = "P2P")]
+    public class Category
     {
-        [Required]
-        public int UserId { get; set; }
+        public int CategoryId { get; set; }
 
         [Required]
-        public string Username { get; set; }
-
-        [Required]
-        public string Password { get; set; }
-
-        [Required]
-        public string Role { get; set; }
+        [StringLength(100)]
+        public string CategoryName { get; set; }
 
         public ICollection<Blog> Blogs { get; set; }
     }
