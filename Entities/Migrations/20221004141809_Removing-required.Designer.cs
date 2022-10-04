@@ -4,14 +4,16 @@ using Entities.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Entities.Migrations
 {
     [DbContext(typeof(MainContext))]
-    partial class MainContextModelSnapshot : ModelSnapshot
+    [Migration("20221004141809_Removing-required")]
+    partial class Removingrequired
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -172,12 +174,7 @@ namespace Entities.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
-                    b.Property<int>("LanguageId")
-                        .HasColumnType("int");
-
                     b.HasKey("CategoryId");
-
-                    b.HasIndex("LanguageId");
 
                     b.ToTable("Categories", "P2P");
                 });
@@ -1210,17 +1207,6 @@ namespace Entities.Migrations
                     b.Navigation("Review");
                 });
 
-            modelBuilder.Entity("Entities.P2P.MainData.Category", b =>
-                {
-                    b.HasOne("Entities.P2P.MainData.Language", "Language")
-                        .WithMany("Categories")
-                        .HasForeignKey("LanguageId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("Language");
-                });
-
             modelBuilder.Entity("Entities.P2P.MainData.FaqList", b =>
                 {
                     b.HasOne("Entities.P2P.MainData.FaqTitle", "FaqTitle")
@@ -1741,8 +1727,6 @@ namespace Entities.Migrations
                     b.Navigation("Blogs");
 
                     b.Navigation("CashBacks");
-
-                    b.Navigation("Categories");
 
                     b.Navigation("FooterSettings");
 
