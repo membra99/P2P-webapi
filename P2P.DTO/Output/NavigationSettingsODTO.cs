@@ -15,6 +15,6 @@ namespace P2P.DTO.Output
         public int HomeRoute { get; set; }
         public int NewsRoute { get; set; }
         public int ReviewsRoute { get; set; }
-        public List<SettingsAttributeODTO> SettingsAttributes { get; set; }
+        public List<SettingsAttributeODTO> ReviewsRoutes { get; set; }
     }
 }

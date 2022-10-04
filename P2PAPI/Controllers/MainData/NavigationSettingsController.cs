@@ -23,15 +23,6 @@ namespace P2P.WebApi.Controllers.MainData
         }
 
         //GET: api/NavigationSettings
-        [HttpGet]
-        public async Task<ActionResult<NavigationSettingsODTO>> GetById(int id)
-        {
-            var navigation = await _mainDataServices.GetNavigationSettingsById(id);
-            if (navigation == null) return NotFound();
-            return navigation;
-        }
-
-        //GET: api/NavigationSettings
         [HttpGet("ByLanguageId/{id}")]
         public async Task<ActionResult<IEnumerable<NavigationSettingsODTO>>> GetByLanguageId(int id)
         {

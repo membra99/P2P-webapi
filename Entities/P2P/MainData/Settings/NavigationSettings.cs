@@ -31,8 +31,6 @@ namespace Entities.P2P.MainData.Settings
         public int HomeRoute { get; set; }
         public int NewsRoute { get; set; }
         public int ReviewsRoute { get; set; }
-
-        public ICollection<SettingsAttribute> SettingsAttributes { get; set; }
         public Language Language { get; set; }
     }
 }

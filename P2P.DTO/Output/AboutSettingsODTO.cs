@@ -11,7 +11,6 @@ namespace P2P.DTO.Output
         public int AboutSettingsId { get; set; }
         public int? SerpId { get; set; }
         public int? LanguageId { get; set; }
-        public string LanguageName { get; set; }
         public string Paragraph { get; set; }
         public string TeamH2 { get; set; }
         public string Title { get; set; }
@@ -22,5 +21,8 @@ namespace P2P.DTO.Output
         public string Section2H2 { get; set; }
         public string Section2Paragraph { get; set; }
         public string TestimonialH2 { get; set; }
+        public List<SettingsAttributeODTO> memberImageUrl { get; set; }
+        public List<SettingsAttributeODTO> memberName { get; set; }
+        public List<SettingsAttributeODTO> memberRole { get; set; }
     }
 }

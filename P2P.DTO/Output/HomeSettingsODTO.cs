@@ -28,5 +28,9 @@ namespace P2P.DTO.Output
         public string TestimonialH2 { get; set; }
         public string FeaturedH2 { get; set; }
         public string Platform { get; set; }
+
+        public List<SettingsAttributeODTO> TrackH2 { get; set; }
+        public List<SettingsAttributeODTO> TrackH3 { get; set; }
+        public List<SettingsAttributeODTO> Trackparahraph { get; set; }
     }
 }
