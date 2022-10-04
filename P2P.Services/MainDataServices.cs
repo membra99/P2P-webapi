@@ -42,6 +42,7 @@ namespace P2P.Services
         public const int SERPS_TYPEID = 11;
         public const int URL_TABLES_TYPEID = 12;
         public const int HOME_SETTINGS_TYPEID = 14;
+        public const int NAVIGATION_SETTINGS_TYPEID = 27;
         public const int HIGHLIGHT_ATTR_TYPEID = 28;
         public const int BENEFIT_ATTR_TYPEID = 29;
         public const int DISSADVANTAGE_ATTR_TYPEID = 30;
@@ -227,12 +228,46 @@ namespace P2P.Services
 
         public async Task<NavigationSettingsODTO> GetNavigationSettingsById(int id)
         {
-            return await GetNavigationSettings(id, 0).AsNoTracking().SingleOrDefaultAsync();
+            try
+            {
+                var nav = await _context.NavigationSettings.Where(x => x.NavigationSettingsId == id).FirstOrDefaultAsync();
+                var NavSettings = new NavigationSettingsODTO
+                {
+                    NavigationSettingsId = nav.NavigationSettingsId,
+                    LanguageId = nav.LanguageId,
+                    AcademyRoute = nav.AcademyRoute,
+                    BonusRoute = nav.BonusRoute,
+                    HomeRoute = nav.HomeRoute,
+                    NewsRoute = nav.NewsRoute,
+                    ReviewsRoute = nav.ReviewsRoute,
+                    SettingsAttributes = _context.SettingsAttributes.Where(x => x.DataTypeId == NAVIGATION_SETTINGS_TYPEID).Select(x => _mapper.Map<SettingsAttributeODTO>(x)).ToList(),
+                };
+                return NavSettings;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception();
+            }
         }
 
         public async Task<List<NavigationSettingsODTO>> GetNavigationSettingsByLangId(int langId)
         {
-            return await GetNavigationSettings(0, langId).ToListAsync();
+            //return await GetNavigationSettings(0, langId).ToListAsync();
+
+            List<NavigationSettingsODTO> NavSettings = await (from x in _context.NavigationSettings
+                                                              where x.LanguageId == langId
+                                                              select new NavigationSettingsODTO
+                                                              {
+                                                                  NavigationSettingsId = x.NavigationSettingsId,
+                                                                  LanguageId = x.LanguageId,
+                                                                  AcademyRoute = x.AcademyRoute,
+                                                                  BonusRoute = x.BonusRoute,
+                                                                  HomeRoute = x.HomeRoute,
+                                                                  NewsRoute = x.NewsRoute,
+                                                                  ReviewsRoute = x.ReviewsRoute,
+                                                                  SettingsAttributes = _context.SettingsAttributes.Where(x => x.DataTypeId == NAVIGATION_SETTINGS_TYPEID).Select(x => _mapper.Map<SettingsAttributeODTO>(x)).ToList(),
+                                                              }).ToListAsync();
+            return NavSettings;
         }
 
         public async Task<NavigationSettingsODTO> EditNavigationSettings(NavigationSettingsIDTO navigationSettingsIDTO)

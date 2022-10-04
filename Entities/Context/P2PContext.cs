@@ -398,6 +398,10 @@ namespace Entities.Context
                     .WithMany(x => x.SettingsAttributes)
                     .OnDelete(DeleteBehavior.Restrict);
 
+                entity.HasOne(x => x.NavigationSettings)
+                  .WithMany(x => x.SettingsAttributes)
+                  .OnDelete(DeleteBehavior.Restrict);
+
                 entity.HasOne(x => x.DataType)
                     .WithMany(x => x.DataTypes)
                     .HasForeignKey(x => x.DataTypeId)

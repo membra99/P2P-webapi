@@ -28,8 +28,7 @@ namespace P2P.Base.Services.Mapping
             CreateMap<DataType, DataTypeODTO>();
             CreateMap<DataTypeIDTO, DataType>();
 
-            CreateMap<NavigationSettings, NavigationSettingsODTO>()
-                .ForMember(dest => dest.LanguageName, source => source.MapFrom(m => m.Language.LanguageName));
+            CreateMap<NavigationSettings, NavigationSettingsODTO>();
             CreateMap<NavigationSettingsIDTO, NavigationSettings>();
 
             CreateMap<FooterSettings, FooterSettingsODTO>()
@@ -149,7 +148,9 @@ namespace P2P.Base.Services.Mapping
             CreateMap<SettingsAttribute, SettingsAttributeODTO>()
                .ForMember(dest => dest.LanguageName, source => source.MapFrom(m => m.Language.LanguageName))
                .ForMember(dest => dest.DataTypeName, source => source.MapFrom(m => m.DataType.DataTypeName))
-               .ForMember(dest => dest.SettingsDataTypeName, source => source.MapFrom(m => m.DataType.DataTypeName));
+               .ForMember(dest => dest.SettingsDataTypeName, source => source.MapFrom(m => m.SettingsDataType.DataTypeName))
+               .ForMember(dest => dest.Index, source => source.MapFrom(m => m.Index));
+
             CreateMap<SettingsAttributeIDTO, SettingsAttribute>();
 
             CreateMap<AboutSettings, AboutSettingsODTO>()
