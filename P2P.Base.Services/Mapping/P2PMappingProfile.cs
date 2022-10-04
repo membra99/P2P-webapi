@@ -153,7 +153,9 @@ namespace P2P.Base.Services.Mapping
 
             CreateMap<SettingsAttributeIDTO, SettingsAttribute>();
 
-            CreateMap<AboutSettings, AboutSettingsODTO>();
+            CreateMap<AboutSettings, AboutSettingsODTO>()
+                .ForMember(dest => dest.SerpTitle, source => source.MapFrom(m => m.Serp.SerpTitle))
+                .ForMember(dest => dest.SerpDescription, source => source.MapFrom(m => m.Serp.SerpDescription));
             CreateMap<AboutSettingsIDTO, AboutSettings>();
 
             CreateMap<Category, CategoryODTO>();
