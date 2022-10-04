@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Entities.Context;
+using Entities.Migrations;
 using Entities.P2P;
 using Entities.P2P.MainData;
 using Entities.P2P.MainData.Settings;
@@ -18,6 +19,7 @@ using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
 using System.Xml.Linq;
 using DataType = Entities.P2P.MainData.DataType;
+using Language = Entities.P2P.MainData.Language;
 
 namespace P2P.Services
 {
@@ -1978,6 +1980,8 @@ namespace P2P.Services
                                                            {
                                                                AboutSettingsId = x.AboutSettingsId,
                                                                SerpId = x.SerpId,
+                                                               SerpDescription = x.Serp.SerpDescription,
+                                                               SerpTitle = x.Serp.SerpTitle,
                                                                LanguageId = x.LanguageId,
                                                                Paragraph = x.Paragraph,
                                                                TeamH2 = x.TeamH2,
@@ -1989,9 +1993,26 @@ namespace P2P.Services
                                                                Section2H2 = x.Section2H2,
                                                                Section2Paragraph = x.Section2Paragraph,
                                                                TestimonialH2 = x.TestimonialH2,
-                                                               memberRole = _context.SettingsAttributes.Where(x => x.DataTypeId == ABOUT_SETTINGS_TYPEID && x.SettingsDataTypeId == MEMBER_ROLE_TYPEID && x.LanguageId == langId).Select(x => _mapper.Map<SettingsAttributeODTO>(x)).ToList(),
-                                                               memberImageUrl = _context.SettingsAttributes.Where(x => x.DataTypeId == ABOUT_SETTINGS_TYPEID && x.SettingsDataTypeId == MEMBER_IMAGE_TYPEID && x.LanguageId == langId).Select(x => _mapper.Map<SettingsAttributeODTO>(x)).ToList(),
-                                                               memberName = _context.SettingsAttributes.Where(x => x.DataTypeId == ABOUT_SETTINGS_TYPEID && x.SettingsDataTypeId == MEMBER_NAME_TYPEID && x.LanguageId == langId).Select(x => _mapper.Map<SettingsAttributeODTO>(x)).ToList(),
+                                                               memberRole =  (from a in _context.SettingsAttributes
+                                                                              .Include(x => x.Language)
+                                                                              .Include(x => x.DataType)
+                                                                              .Include(x => x.SettingsDataType)
+                                                                             where (a.DataTypeId == ABOUT_SETTINGS_TYPEID)
+                                                                             && (a.SettingsDataTypeId == MEMBER_ROLE_TYPEID)
+                                                                             && (a.LanguageId == langId)
+                                                                             select _mapper.Map<SettingsAttributeODTO>(a)).ToList(),
+                                                               memberImageUrl = (from v in _context.SettingsAttributes
+                                                                                 .Include(x => x.SettingsDataType)
+                                                                                 where (v.DataTypeId == ABOUT_SETTINGS_TYPEID)
+                                                                                 && (v.SettingsDataTypeId == MEMBER_IMAGE_TYPEID)
+                                                                                 && (v.LanguageId == langId)
+                                                                                 select _mapper.Map<SettingsAttributeODTO>(v)).ToList(),
+                                                               memberName = (from c in _context.SettingsAttributes
+                                                                             .Include(x => x.SettingsDataType)
+                                                                             where (c.DataTypeId == ABOUT_SETTINGS_TYPEID)
+                                                                             && (c.SettingsDataTypeId == MEMBER_NAME_TYPEID)
+                                                                             && (c.LanguageId == langId)
+                                                                             select _mapper.Map<SettingsAttributeODTO>(c)).ToList()
                                                            }).ToListAsync();
             return aboutSettings;
         }
