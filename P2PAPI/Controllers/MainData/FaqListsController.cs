@@ -42,6 +42,24 @@ namespace P2P.WebApi.Controllers.MainData
             return faqList;
         }
 
+        //GET: api/FaqList
+        [HttpGet("ByBlogTitleId")]
+        public async Task<ActionResult<IEnumerable<FaqListODTO>>> GetByBlogTitleId(int faqTitleId)
+        {
+            var faqList = await _mainDataServices.GetFaqListByBlogTitleId(faqTitleId);
+            if (faqList == null) return NotFound();
+            return faqList;
+        }
+
+        //GET: api/FaqList
+        [HttpGet("ByPageTitleId")]
+        public async Task<ActionResult<IEnumerable<FaqListODTO>>> GetByPageTitleId(int faqTitleId)
+        {
+            var faqList = await _mainDataServices.GetFaqListByPageTitleId(faqTitleId);
+            if (faqList == null) return NotFound();
+            return faqList;
+        }
+
         //PUT: api/FaqList
         [HttpPut]
         public async Task<ActionResult<FaqListODTO>> PutFaqList(FaqListIDTO faqListIDTO)

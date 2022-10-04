@@ -98,7 +98,7 @@ namespace P2P.Base.Services.Mapping
             CreateMap<FaqTitle, GetFaqTitleByPageIdODTO>();
 
             CreateMap<FaqList, FaqListODTO>()
-                .ForMember(dest => dest.Title, source => source.MapFrom(m => m.FaqTitle.Title));
+                .ForMember(dest => dest.FaqListId, source => source.MapFrom(m => m.FaqPageListId));
             CreateMap<FaqListIDTO, FaqList>();
 
             CreateMap<Page, PageODTO>()

@@ -42,6 +42,9 @@ namespace P2P.Services
         public const int SERPS_TYPEID = 11;
         public const int URL_TABLES_TYPEID = 12;
         public const int HOME_SETTINGS_TYPEID = 14;
+        public const int HIGHLIGHT_ATTR_TYPEID = 28;
+        public const int BENEFIT_ATTR_TYPEID = 29;
+        public const int DISSADVANTAGE_ATTR_TYPEID = 30;
 
         private async Task<List<ReviewContentDropdownODTO>> ListOfReviews()
         {
@@ -671,29 +674,29 @@ namespace P2P.Services
                                    ExternalLinkKey = d.Name.ToLower(),
                                    ReviewUrlId = _context.Routes.FirstOrDefault(e => e.DataTypeId == REVIEW_TYPEID && e.ReviewId == d.ReviewId).UrlTableId,
                                    Terms = x.CashBack_terms,
-                                   ReviewBoxThree = new List<ReviewBoxThreeODTO> { new ReviewBoxThreeODTO
-                             {
-                                 BuybackGuarantee=d.BuybackGuarantee,
-                                 AutoInvest=d.AutoInvest,
-                                 Secondarymarket=d.SecondaryMarket,
-                                 Cashback=d.CashbackBonus,
-                                 Promotion=d.Promotion
-                             } },
-                                   ReviewBoxFour = new List<ReviewBoxFourODTO> { new ReviewBoxFourODTO
-                             {
-                                 MinInvestment=d.DiversificationMinInvest,
-                                 Country=d.Countries,
-                                 LoanOriginators=d.LoanOriginators,
-                                 LoanType=d.LoanType,
-                                 LoanPeriod=string.Format("{0} - {1}", d.MinLoanPerion, d.MaxLoanPerion),
-                                 Interest=d.InterestRange,
-                                 Currency=d.StatisticsCurrency
-                             } },
-                                   ReviewBoxFive = new List<ReviewBoxFiveODTO> { new ReviewBoxFiveODTO
+                                   ReviewBoxThree = new ReviewBoxThreeODTO
                                    {
-                                       //TODO pros=> BILO JE VISE Benefita sad su to ReviewAttr
-                                       //TODO cons=> BILO JE VISE Disadvantage sad su to ReviewAttr
-                                   } }
+                                       BuybackGuarantee = d.BuybackGuarantee,
+                                       AutoInvest = d.AutoInvest,
+                                       Secondarymarket = d.SecondaryMarket,
+                                       Cashback = d.CashbackBonus,
+                                       Promotion = d.Promotion
+                                   },
+                                   ReviewBoxFour = new ReviewBoxFourODTO
+                                   {
+                                       MinInvestment = d.DiversificationMinInvest,
+                                       Country = d.Countries,
+                                       LoanOriginators = d.LoanOriginators,
+                                       LoanType = d.LoanType,
+                                       LoanPeriod = string.Format("{0} - {1}", d.MinLoanPerion, d.MaxLoanPerion),
+                                       Interest = d.InterestRange,
+                                       Currency = d.StatisticsCurrency
+                                   },
+                                   ReviewBoxFive = new ReviewBoxFiveODTO
+                                   {
+                                       Benefits = _context.ReviewAttributes.Where(x => x.ReviewId == d.ReviewId && x.DataTypeId == BENEFIT_ATTR_TYPEID).Select(x => _mapper.Map<ReviewAttributeODTO>(x)).ToList(),
+                                       Disadvantages = _context.ReviewAttributes.Where(x => x.ReviewId == d.ReviewId && x.DataTypeId == DISSADVANTAGE_ATTR_TYPEID).Select(x => _mapper.Map<ReviewAttributeODTO>(x)).ToList()
+                                   }
                                }).OrderByDescending(e => e.Stars).ToListAsync();
 
             var campaign = await (from x in _context.CashBacks
@@ -712,8 +715,7 @@ namespace P2P.Services
                                       Stars = (decimal)(((d.RiskAndReturn != null ? d.RiskAndReturn : 0) + (d.Usability != null ? d.Usability : 0) +
                                          (d.Liquidity != null ? d.Liquidity : 0) + (d.Support != null ? d.Support : 0)) / 4),
                                       ExternalLinkKey = d.Name.ToLower(),
-                                      //datatype treba biti 'review'
-                                      ReviewUrlId = _context.Routes.FirstOrDefault(e => e.DataTypeId == 1 && e.ReviewId == d.ReviewId).UrlTableId,
+                                      ReviewUrlId = _context.Routes.FirstOrDefault(e => e.DataTypeId == REVIEW_TYPEID && e.ReviewId == d.ReviewId).UrlTableId,
                                       Terms = x.CashBack_terms,
                                   }).OrderByDescending(e => e.Stars).ToListAsync();
 
@@ -763,7 +765,7 @@ namespace P2P.Services
             var cashBack = _mapper.Map<CashBack>(cashBackIDTO);
             if (cashBack.IsCampaign)
             {
-                if (cashBack.Valid_Until != null && cashBack.Valid_Until > DateTime.Now)
+                if (cashBack.Valid_Until != null)
                 {
                     cashBack.Exclusive = null;
                 }
@@ -1048,6 +1050,22 @@ namespace P2P.Services
             return await GetFaqList(0, faqTitleId).ToListAsync();
         }
 
+        public async Task<List<FaqListODTO>> GetFaqListByPageTitleId(int faqTitleId)
+        {
+            var blog = await _context.FaqTitles.Where(x => x.FaqTitleId == faqTitleId).FirstOrDefaultAsync();
+            if (blog.PageId != null)
+                return await GetFaqList(0, faqTitleId).ToListAsync();
+            return null;
+        }
+
+        public async Task<List<FaqListODTO>> GetFaqListByBlogTitleId(int faqTitleId)
+        {
+            var blog = await _context.FaqTitles.Where(x => x.FaqTitleId == faqTitleId).FirstOrDefaultAsync();
+            if (blog.BlogId != null)
+                return await GetFaqList(0, faqTitleId).ToListAsync();
+            return null;
+        }
+
         public async Task<FaqListODTO> EditFaqList(FaqListIDTO faqListIDTO)
         {
             var faqList = _mapper.Map<FaqList>(faqListIDTO);
@@ -1290,8 +1308,7 @@ namespace P2P.Services
             int UrlReviewId = _context.Routes.FirstOrDefault(x => x.UrlTableId == urlId && x.LanguageId == langId).ReviewId;
             var review = _context.Review.FirstOrDefault(x => x.ReviewId == UrlReviewId);
 
-            var ReviewBoxOnes = new List<ReviewBoxOneODTO>();
-            ReviewBoxOnes.Add(new ReviewBoxOneODTO
+            var ReviewBoxOne = new ReviewBoxOneODTO()
             {
                 ReviewId = review.ReviewId,
                 Name = review.Name,
@@ -1304,25 +1321,22 @@ namespace P2P.Services
                 CompareButton = review.CompareButton,
                 Logo = review.Logo,
                 Recommended = review.Recommended
-            });
-            var ReviewBoxTwos = new List<ReviewBoxTwoODTO>();
-            ReviewBoxTwos.Add(new ReviewBoxTwoODTO
+            };
+            var ReviewBoxTwo = new ReviewBoxTwoODTO()
             {
-                //TODO highlights => BILO JE VISE HIGHLIGHTA sad su to ReviewAttr
+                Highlights = _context.ReviewAttributes.Where(x => x.ReviewId == UrlReviewId && x.DataTypeId == BENEFIT_ATTR_TYPEID).Select(x => _mapper.Map<ReviewAttributeODTO>(x)).ToList(),
                 Ratings = new decimal?[] { review.RiskAndReturn, review.Usability, review.Liquidity, review.Support }
-            });
+            };
 
-            var ReviewBoxThrees = new List<ReviewBoxThreeODTO>();
-            ReviewBoxThrees.Add(new ReviewBoxThreeODTO
+            var ReviewBoxThree = new ReviewBoxThreeODTO()
             {
                 BuybackGuarantee = review.BuybackGuarantee,
                 AutoInvest = review.AutoInvest,
                 Secondarymarket = review.SecondaryMarket,
                 Cashback = review.CashbackBonus,
                 Promotion = review.Promotion
-            });
-            var reviewBoxFours = new List<ReviewBoxFourODTO>();
-            reviewBoxFours.Add(new ReviewBoxFourODTO
+            };
+            var reviewBoxFour = new ReviewBoxFourODTO()
             {
                 MinInvestment = review.DiversificationMinInvest,
                 Country = review.Countries,
@@ -1331,15 +1345,14 @@ namespace P2P.Services
                 LoanPeriod = string.Format("{0} - {1}", review.MinLoanPerion, review.MaxLoanPerion),
                 Interest = review.InterestRange,
                 Currency = review.StatisticsCurrency
-            });
-            var reviewBoxFives = new List<ReviewBoxFiveODTO>();
-            reviewBoxFives.Add(new ReviewBoxFiveODTO
+            };
+            var reviewBoxFive =
+            new ReviewBoxFiveODTO()
             {
-                //TODO pros=> BILO JE VISE Benefita sad su to ReviewAttr
-                //TODO cons=> BILO JE VISE Disadvantage sad su to ReviewAttr
-            });
-            var statistics = new List<StatisticsODTO>();
-            statistics.Add(new StatisticsODTO
+                Benefits = _context.ReviewAttributes.Where(x => x.ReviewId == UrlReviewId && x.DataTypeId == BENEFIT_ATTR_TYPEID).Select(x => _mapper.Map<ReviewAttributeODTO>(x)).ToList(),
+                Disadvantages = _context.ReviewAttributes.Where(x => x.ReviewId == UrlReviewId && x.DataTypeId == DISSADVANTAGE_ATTR_TYPEID).Select(x => _mapper.Map<ReviewAttributeODTO>(x)).ToList()
+            };
+            var statistics = new StatisticsODTO()
             {
                 OperatingSince = review.OperatingSince,
                 Investors = review.NumberOfInvestors,
@@ -1351,9 +1364,8 @@ namespace P2P.Services
                 StatisticsOtherCurrency = review.StatisticsOtherCurrency,
                 ReportLink = review.ReportLink,
                 StatisticsCurrency = review.StatisticsCurrency
-            });
-            var ComapanyInfo = new List<CompanyInfoODTO>();
-            ComapanyInfo.Add(new CompanyInfoODTO
+            };
+            var CompanyInfo = new CompanyInfoODTO()
             {
                 Name = review.Name,
                 Address = review.Address,
@@ -1362,7 +1374,7 @@ namespace P2P.Services
                 LiveChat = review.LiveChat,
                 OpeningHours = review.OpeningHours,
                 SocialMedia = new int?[] { review.FacebookUrl, review.TwitterUrl, review.LinkedInUrl, review.YoutubeUrl, review.InstagramUrl },
-            });
+            };
             var data = new GetReviewsByRouteODTO
             {
                 ReviewId = review.ReviewId,
@@ -1374,13 +1386,13 @@ namespace P2P.Services
                 Address = review.OfficeAddress,
                 Content = review.ReviewContent,
                 Count = (review.Count != null) ? review.Count : 0,
-                ReviewBoxOne = ReviewBoxOnes,
-                ReviewBoxTwo = ReviewBoxTwos,
-                ReviewBoxThree = ReviewBoxThrees,
-                ReviewBoxFour = reviewBoxFours,
-                ReviewBoxFive = reviewBoxFives,
+                ReviewBoxOne = ReviewBoxOne,
+                ReviewBoxTwo = ReviewBoxTwo,
+                ReviewBoxThree = ReviewBoxThree,
+                ReviewBoxFour = reviewBoxFour,
+                ReviewBoxFive = reviewBoxFive,
                 Statistics = statistics,
-                CompanyInfo = ComapanyInfo
+                CompanyInfo = CompanyInfo
             };
 
             return data;
