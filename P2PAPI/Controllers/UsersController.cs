@@ -46,7 +46,7 @@ namespace P2P.WebApi.Controllers
                 if (generatedToken != null)
                 {
                     HttpContext.Session.SetString("Token", generatedToken);
-                    return Ok(generatedToken);
+                    return Ok(new { user = validUser, token = generatedToken });
                 }
                 else return BadRequest("Token could not be generated");
             }

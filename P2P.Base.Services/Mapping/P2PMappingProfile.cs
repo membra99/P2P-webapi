@@ -96,6 +96,7 @@ namespace P2P.Base.Services.Mapping
 
             CreateMap<FaqTitle, GetFaqTitleByReviewIdODTO>();
             CreateMap<FaqTitle, GetFaqTitleByPageIdODTO>();
+            CreateMap<FaqTitle, GetFaqTitleByBlogIdODTO>();
 
             CreateMap<FaqList, FaqListODTO>()
                 .ForMember(dest => dest.Title, source => source.MapFrom(m => m.FaqTitle.Title));
@@ -163,6 +164,7 @@ namespace P2P.Base.Services.Mapping
                 .ForMember(dest => dest.SerpTitle, source => source.MapFrom(m => m.Serp.SerpTitle))
                 .ForMember(dest => dest.SerpDescription, source => source.MapFrom(m => m.Serp.SerpDescription))
                 .ForMember(dest => dest.Subtitle, source => source.MapFrom(m => m.Serp.Subtitle));
+            CreateMap<BlogIDTO, Blog>();
 
             #endregion MainData
 

@@ -23,6 +23,7 @@ namespace Entities.Context
         public DbSet<User> Users { get; set; }
         public DbSet<Links> Links { get; set; }
         public DbSet<CashBack> CashBacks { get; set; }
+        public DbSet<Category> Categories { get; set; }
         public DbSet<Routes> Routes { get; set; }
         public DbSet<Serp> Serps { get; set; }
         public DbSet<Review> Review { get; set; }
@@ -390,24 +391,33 @@ namespace Entities.Context
                     .OnDelete(DeleteBehavior.Restrict);
             });
 
-            modelBuilder.Entity<SettingsAttribute>(entity =>
+            modelBuilder.Entity<Category>(entity =>
             {
-                entity.HasKey(x => x.SettingsAttributeId);
+                entity.HasKey(x => x.CategoryId);
 
                 entity.HasOne(x => x.Language)
-                    .WithMany(x => x.SettingsAttributes)
-                    .OnDelete(DeleteBehavior.Restrict);
-
-                entity.HasOne(x => x.DataType)
-                    .WithMany(x => x.DataTypes)
-                    .HasForeignKey(x => x.DataTypeId)
-                    .OnDelete(DeleteBehavior.Restrict);
-
-                entity.HasOne(x => x.SettingsDataType)
-                    .WithMany(x => x.SettingsDataTypes)
-                    .HasForeignKey(x => x.SettingsDataTypeId)
+                    .WithMany(x => x.Categories)
                     .OnDelete(DeleteBehavior.Restrict);
             });
+
+            modelBuilder.Entity<SettingsAttribute>(entity =>
+        {
+            entity.HasKey(x => x.SettingsAttributeId);
+
+            entity.HasOne(x => x.Language)
+                .WithMany(x => x.SettingsAttributes)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            entity.HasOne(x => x.DataType)
+                .WithMany(x => x.DataTypes)
+                .HasForeignKey(x => x.DataTypeId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            entity.HasOne(x => x.SettingsDataType)
+                .WithMany(x => x.SettingsDataTypes)
+                .HasForeignKey(x => x.SettingsDataTypeId)
+                .OnDelete(DeleteBehavior.Restrict);
+        });
 
             modelBuilder.Entity<Blog>(entity =>
             {

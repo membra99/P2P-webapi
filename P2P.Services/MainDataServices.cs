@@ -42,7 +42,7 @@ namespace P2P.Services
         public const int SERPS_TYPEID = 11;
         public const int URL_TABLES_TYPEID = 12;
         public const int HOME_SETTINGS_TYPEID = 14;
-
+        public const int BLOG_SETTINGS_TYPEID = 42;
         private async Task<List<ReviewContentDropdownODTO>> ListOfReviews()
         {
             return _context.Review.Select(r => new ReviewContentDropdownODTO
@@ -989,6 +989,14 @@ namespace P2P.Services
                           where (pageId == 0 || x.PageId == pageId)
                           && x.PageId != null
                           select _mapper.Map<GetFaqTitleByPageIdODTO>(x)).ToListAsync();
+        }
+
+        public async Task<List<GetFaqTitleByBlogIdODTO>> GetFaqTitleByBlogId(int blogId)
+        {
+            return await (from x in _context.FaqTitles
+                          where (blogId == 0 || x.BlogId == blogId)
+                          && x.BlogId != null
+                          select _mapper.Map<GetFaqTitleByBlogIdODTO>(x)).ToListAsync();
         }
 
         public async Task<FaqTitleODTO> EditFaqTitle(FaqTitleIDTO faqTitleIDTO)
@@ -1984,5 +1992,145 @@ namespace P2P.Services
         }
 
         #endregion SettingsAttribute
+
+        #region Blog
+        private IQueryable<BlogODTO> GetBlog(int id, int languageId, int categoryId)
+        {
+            return from x in _context.Blogs
+                   .Include(x => x.Language)
+                   .Include(x => x.Category)
+                   where (id == 0 || x.BlogId == id)
+                   && (languageId == 0 || x.LanguageId == languageId)
+                   && (categoryId == 0 || x.CategoryId == categoryId)
+                   select _mapper.Map<BlogODTO>(x);
+        }
+
+        private IQueryable<UserODTO> GetAuthors(int languageId)
+        {
+            var blogs = from x in _context.Blogs
+                   .Include(x => x.Language)
+                   where (languageId == 0 || x.LanguageId == languageId)
+                   select _mapper.Map<BlogODTO>(x);
+            var blogsIdList = blogs.Select(x => x.AuthorId).ToList();
+            return _context.Users.Where(x => blogsIdList.Contains(x.UserId)).Select(x => _mapper.Map<UserODTO>(x));
+        }
+
+        public async Task<BlogODTO> GetBlogById(int id)
+        {
+            return await GetBlog(id, 0, 0).AsNoTracking().SingleOrDefaultAsync();
+        }
+
+        public async Task<List<BlogODTO>> GetBlogsByLang(int languageId)
+        {
+            return await GetBlog(0, languageId,0).AsNoTracking().ToListAsync();
+        }
+
+        public async Task<List<BlogODTO>> GetBlogsByCategory(int categoryId)
+        {
+            return await GetBlog(0, 0 , categoryId).AsNoTracking().ToListAsync();
+        }
+
+        public async Task<List<UserODTO>> GetAuthorsByLanguageId(int languageId)
+        {
+            return await GetAuthors(languageId).AsNoTracking().ToListAsync();
+        }
+
+        public async Task<BlogODTO> EditBlog(BlogIDTO blogIDTO)
+        {
+            var blog = _mapper.Map<Blog>(blogIDTO);
+
+            _context.Entry(blog).State = EntityState.Modified;
+
+            await SaveContextChangesAsync();
+
+            return await GetBlogById(blog.BlogId);
+        }
+
+        public async Task<BlogODTO> AddBlog(BlogIDTO blogIDTO)
+        {
+            var blog = _mapper.Map<Blog>(blogIDTO);
+
+            blog.BlogId = 0;
+            blog.SerpId = blog.SerpId == 0 ? null : blog.SerpId;
+            blog.LanguageId = blog.LanguageId == 0 ? null : blog.LanguageId;
+            blog.CategoryId = blog.CategoryId == 0 ? null : blog.CategoryId;
+            blog.AuthorId = blog.AuthorId == 0 ? null : blog.AuthorId;
+            blog.SelectedPopularArticle = blog.SelectedPopularArticle == 0 ? null : blog.SelectedPopularArticle;
+            _context.Blogs.Add(blog);
+
+            await SaveContextChangesAsync();
+
+            return await GetBlogById(blog.BlogId);
+        }
+
+        public async Task<BlogODTO> DeleteBlog(int id)
+        {
+            var blog = await _context.Blogs.FindAsync(id);
+            if (blog == null) return null;
+
+            var blogODTO = await GetBlogById(id);
+            _context.Blogs.Remove(blog);
+            await SaveContextChangesAsync();
+            return blogODTO;
+        }
+
+        #endregion
+
+        #region Categories
+
+        private IQueryable<CategoryODTO> GetCategories(int id, int languageId)
+        {         
+                return from x in _context.Categories
+                       .Include(x => x.Language)
+                       where (id == 0 || x.CategoryId == id)
+                       && (languageId == 0 || x.LanguageId == languageId)
+                        select _mapper.Map<CategoryODTO>(x);            
+        }
+
+        public async Task<List<CategoryODTO>> GetCategoriesByLanguageId(int languageId)
+        {
+            return await GetCategories(0, languageId).AsNoTracking().ToListAsync();
+        }
+
+        public async Task<CategoryODTO> GetCategoryById(int id)
+        {
+            return await GetCategories(id, 0).AsNoTracking().SingleOrDefaultAsync();
+        }
+
+        public async Task<CategoryODTO> EditCategory(CategoryIDTO categoryIDTO)
+        {
+            var category = _mapper.Map<Category>(categoryIDTO);
+
+            _context.Entry(category).State = EntityState.Modified;
+
+            await SaveContextChangesAsync();
+
+            return await GetCategoryById(category.CategoryId);
+        }
+
+        public async Task<CategoryODTO> AddCategory(CategoryIDTO categoryIDTO)
+        {
+            var category = _mapper.Map<Category>(categoryIDTO);
+
+            category.CategoryId = 0;
+            _context.Categories.Add(category);
+
+            await SaveContextChangesAsync();
+
+            return await GetCategoryById(category.CategoryId);
+        }
+
+        public async Task<CategoryODTO> DeleteCategory(int id)
+        {
+            var category = await _context.Categories.FindAsync(id);
+            if (category == null) return null;
+
+            var categoryODTO = await GetCategoryById(id);
+            _context.Categories.Remove(category);
+            await SaveContextChangesAsync();
+            return categoryODTO;
+        }
+
+        #endregion
     }
 }
