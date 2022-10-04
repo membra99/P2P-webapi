@@ -12,7 +12,7 @@ namespace P2P.DTO.Input
         public int BlogId { get; set; }
         public int? LanguageId { get; set; }
         public int? SerpId { get; set; }
-        public int? AcademyId { get; set; }
+        public int? SelectedPopularArticle { get; set; }
         public int? CategoryId { get; set; }
         public int? AuthorId { get; set; }
         public string PageTitle { get; set; }

@@ -32,20 +32,29 @@ namespace P2P.WebApi.Controllers.MainData
             return faqTitle;
         }
 
-        //GET: api/FaqTitle
+        //GET: api/FaqTitle/ByReviewId
         [HttpGet("ByReviewId")]
-        public async Task<ActionResult<IEnumerable<GetFaqTitleByReviewIdODTO>>> GetGetFaqTitleByReview(int reviewId)
+        public async Task<ActionResult<IEnumerable<GetFaqTitleByReviewIdODTO>>> GetFaqTitleByReview(int reviewId)
         {
             var faqTitles = await _mainDataServices.GetFaqTitleByReviewId(reviewId);
             if (faqTitles == null) return NotFound();
             return faqTitles;
         }
 
-        //GET: api/FaqTitle
+        //GET: api/FaqTitle/ByPageId
         [HttpGet("ByPageId")]
-        public async Task<ActionResult<IEnumerable<GetFaqTitleByPageIdODTO>>> GetGetFaqTitleByPage(int pageId)
+        public async Task<ActionResult<IEnumerable<GetFaqTitleByPageIdODTO>>> GetFaqTitleByPage(int pageId)
         {
             var faqTitles = await _mainDataServices.GetFaqTitleByPageId(pageId);
+            if (faqTitles == null) return NotFound();
+            return faqTitles;
+        }
+
+        //GET: api/FaqTitle/ByBlogId
+        [HttpGet("ByBlogId")]
+        public async Task<ActionResult<IEnumerable<GetFaqTitleByBlogIdODTO>>> GetFaqTitleByBlog(int blogId)
+        {
+            var faqTitles = await _mainDataServices.GetFaqTitleByBlogId(blogId);
             if (faqTitles == null) return NotFound();
             return faqTitles;
         }

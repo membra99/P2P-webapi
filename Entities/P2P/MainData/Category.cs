@@ -12,11 +12,12 @@ namespace Entities.P2P.MainData
     public class Category
     {
         public int CategoryId { get; set; }
-
+        public int LanguageId { get; set; }
         [Required]
         [StringLength(100)]
         public string CategoryName { get; set; }
 
         public ICollection<Blog> Blogs { get; set; }
+        public Language Language { get; set; }
     }
 }
