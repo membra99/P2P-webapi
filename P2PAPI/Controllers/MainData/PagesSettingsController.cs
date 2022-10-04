@@ -23,7 +23,7 @@ namespace P2P.WebApi.Controllers.MainData
         }
 
         //GET: api/PagesSettings
-        [HttpGet("{id}")]
+        [HttpGet("GetPagesSettingsById/{id}")]
         public async Task<ActionResult<PagesSettingsODTO>> GetById(int id)
         {
             var PagesSettings = await _mainDataServices.GetPagesSettingsById(id);
@@ -35,7 +35,7 @@ namespace P2P.WebApi.Controllers.MainData
         }
 
         //GET: api/PagesSettings
-        [HttpGet("{langId}")]
+        [HttpGet("GetPagesSettingsByLangId/{langId}")]
         public async Task<ActionResult<PagesSettingsODTO>> GetByLangid(int langId)
         {
             var PagesSettings = await _mainDataServices.GetPagesSettingsByLangId(langId);
