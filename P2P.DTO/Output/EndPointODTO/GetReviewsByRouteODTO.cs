@@ -17,12 +17,12 @@ namespace P2P.DTO.Output.EndPointODTO
         public decimal? RiskReturn { get; set; }
         public string Address { get; set; }
         public string Content { get; set; }
-        public List<ReviewBoxOneODTO> ReviewBoxOne { get; set; }
-        public List<ReviewBoxTwoODTO> ReviewBoxTwo { get; set; }
-        public List<ReviewBoxThreeODTO> ReviewBoxThree { get; set; }
-        public List<ReviewBoxFourODTO> ReviewBoxFour { get; set; }
-        public List<ReviewBoxFiveODTO> ReviewBoxFive { get; set; }
-        public List<StatisticsODTO> Statistics { get; set; }
-        public List<CompanyInfoODTO> CompanyInfo { get; set; }
+        public ReviewBoxOneODTO ReviewBoxOne { get; set; }
+        public ReviewBoxTwoODTO ReviewBoxTwo { get; set; }
+        public ReviewBoxThreeODTO ReviewBoxThree { get; set; }
+        public ReviewBoxFourODTO ReviewBoxFour { get; set; }
+        public ReviewBoxFiveODTO ReviewBoxFive { get; set; }
+        public StatisticsODTO Statistics { get; set; }
+        public CompanyInfoODTO CompanyInfo { get; set; }
     }
 }

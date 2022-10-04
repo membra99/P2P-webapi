@@ -25,7 +25,9 @@ namespace Entities.P2P.MainData.Settings
         [Required]
         public string Value { get; set; }
 
+        public int Index { get; set; }
         public DataType DataType { get; set; }
+
         public DataType SettingsDataType { get; set; }
         public Language Language { get; set; }
     }

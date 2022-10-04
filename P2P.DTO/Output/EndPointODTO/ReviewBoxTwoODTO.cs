@@ -8,7 +8,7 @@ namespace P2P.DTO.Output.EndPointODTO
 {
     public class ReviewBoxTwoODTO
     {
-        public string[] Highlights { get; set; }
+        public List<ReviewAttributeODTO> Highlights { get; set; }
         public decimal?[] Ratings { get; set; }
     }
 }
