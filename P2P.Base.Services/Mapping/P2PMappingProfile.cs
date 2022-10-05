@@ -171,7 +171,8 @@ namespace P2P.Base.Services.Mapping
             CreateMap<Blog, BlogODTO>()
                 .ForMember(dest => dest.SerpTitle, source => source.MapFrom(m => m.Serp.SerpTitle))
                 .ForMember(dest => dest.SerpDescription, source => source.MapFrom(m => m.Serp.SerpDescription))
-                .ForMember(dest => dest.Subtitle, source => source.MapFrom(m => m.Serp.Subtitle));
+                .ForMember(dest => dest.Subtitle, source => source.MapFrom(m => m.Serp.Subtitle))
+                .ForMember(dest => dest.CategoryName, source => source.MapFrom(m => m.Category.CategoryName));
             CreateMap<BlogIDTO, Blog>();
 
             #endregion MainData

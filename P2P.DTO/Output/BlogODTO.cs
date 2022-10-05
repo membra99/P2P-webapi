@@ -16,6 +16,7 @@ namespace P2P.DTO.Output
         public string Subtitle { get; set; }
         public int? SelectedPopularArticle { get; set; }
         public int? CategoryId { get; set; }
+        public string CategoryName { get; set; }
         public int? AuthorId { get; set; }
         public string PageTitle { get; set; }
         public string Excerpt { get; set; }
