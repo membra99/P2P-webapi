@@ -38,9 +38,9 @@ namespace P2P.WebApi.Controllers.MainData
 
         //GET: api/Review
         [HttpGet("GetReviewByRoute")]
-        public async Task<ActionResult<GetReviewsByRouteODTO>> GetReviewByRoute(int urlId, int langId)
+        public async Task<ActionResult<GetReviewsByRouteODTO>> GetReviewByRoute(string url, int langId)
         {
-            var review = await _mainDataServices.GetReviewsByRoute(urlId, langId);
+            var review = await _mainDataServices.GetReviewsByRoute(url, langId);
             if (review == null)
             {
                 return NotFound();

@@ -24,5 +24,6 @@ namespace P2P.DTO.Output.EndPointODTO
         public ReviewBoxFiveODTO ReviewBoxFive { get; set; }
         public StatisticsODTO Statistics { get; set; }
         public CompanyInfoODTO CompanyInfo { get; set; }
+        public List<NewsFeedODTO> NewsFeeds { get; set; }
     }
 }
