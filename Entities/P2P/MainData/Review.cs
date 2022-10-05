@@ -176,7 +176,6 @@ namespace Entities.P2P.MainData
         public ICollection<Page> Pages { get; set; }
         public ICollection<ReviewAttribute> ReviewAttribute { get; set; }
         public ICollection<CashBack> CashBacks { get; set; }
-        public ICollection<PagesSettings> PagesSettings { get; set; }
         public ICollection<NewsFeed> NewsFeeds { get; set; }
     }
 }

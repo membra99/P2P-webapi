@@ -327,10 +327,7 @@ namespace Entities.Context
                 entity.HasOne(x => x.DataType)
                         .WithMany(x => x.PagesSettings)
                         .OnDelete(DeleteBehavior.Restrict);
-
-                entity.HasOne(x => x.Review)
-                       .WithMany(x => x.PagesSettings)
-                       .OnDelete(DeleteBehavior.Restrict);
+                
 
                 entity.HasOne(x => x.Serp)
                     .WithMany(x => x.PagesSettings)

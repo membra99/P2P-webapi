@@ -15,7 +15,7 @@ namespace Entities.P2P.MainData
         public int LanguageId { get; set; }
         public int SerpId { get; set; }
         public int DataTypeId { get; set; }
-        public int? ReviewId { get; set; }
+        public string Platform { get; set; }
 
         [StringLength(200)]
         public string Title { get; set; }
@@ -23,6 +23,5 @@ namespace Entities.P2P.MainData
         public Language Language { get; set; }
         public Serp Serp { get; set; }
         public DataType DataType { get; set; }
-        public Review Review { get; set; }
     }
 }
