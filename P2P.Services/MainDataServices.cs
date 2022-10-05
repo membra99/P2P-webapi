@@ -15,6 +15,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Data;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
 using System.Xml.Linq;
@@ -1411,11 +1412,19 @@ namespace P2P.Services
             return await GetReview(id, 0).AsNoTracking().FirstOrDefaultAsync();
         }
 
-        public async Task<GetReviewsByRouteODTO> GetReviewsByRoute(int urlId, int langId)
+        public async Task<GetReviewsByRouteODTO> GetReviewsByRoute(string url, int langId)
         {
-            int UrlReviewId = _context.Routes.FirstOrDefault(x => x.UrlTableId == urlId && x.LanguageId == langId).ReviewId;
-            var review = _context.Review.FirstOrDefault(x => x.ReviewId == UrlReviewId);
+            int UrlReviewId = await (from x in _context.Routes
+                                     where (x.UrlTable.URL == url)
+                                     && (x.LanguageId == langId)
+                                     select x.ReviewId).FirstOrDefaultAsync();
+            var review = await _context.Review.FirstOrDefaultAsync(x => x.ReviewId == UrlReviewId);
 
+            var newsfeed = await (from x in _context.NewsFeeds
+                                  where (x.ReviewId == review.ReviewId)
+                                  orderby x.CreatedDate
+                                  select _mapper.Map<NewsFeedODTO>(x)).Take(4).ToListAsync();
+            
             var ReviewBoxOne = new ReviewBoxOneODTO()
             {
                 ReviewId = review.ReviewId,
@@ -1500,7 +1509,9 @@ namespace P2P.Services
                 ReviewBoxFour = reviewBoxFour,
                 ReviewBoxFive = reviewBoxFive,
                 Statistics = statistics,
-                CompanyInfo = CompanyInfo
+                CompanyInfo = CompanyInfo,
+                NewsFeeds = newsfeed
+
             };
 
             return data;
