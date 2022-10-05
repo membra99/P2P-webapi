@@ -125,6 +125,8 @@ namespace P2P.Base.Services.Mapping
             CreateMap<PagesSettings, PagesSettingsODTO>()
               .ForMember(dest => dest.LanguageName, source => source.MapFrom(m => m.Language.LanguageName))
               .ForMember(dest => dest.SerpTitle, source => source.MapFrom(m => m.Serp.SerpTitle))
+              .ForMember(dest => dest.SerpDescription, source => source.MapFrom(m => m.Serp.SerpDescription))
+              .ForMember(dest => dest.Subtitle, source => source.MapFrom(m => m.Serp.Subtitle))
               .ForMember(dest => dest.Name, source => source.MapFrom(m => m.Review.Name))
               .ForMember(dest => dest.DataTypeName, source => source.MapFrom(m => m.DataType.DataTypeName));
 

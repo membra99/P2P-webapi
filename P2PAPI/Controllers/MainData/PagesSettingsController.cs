@@ -46,6 +46,17 @@ namespace P2P.WebApi.Controllers.MainData
             return PagesSettings;
         }
 
+        [HttpGet("GetBonusSettingsByLangId/{langId}")]
+        public async Task<ActionResult<PagesSettingsODTO>> GetBonusSettings(int langId)
+        {
+            var PagesSettings = await _mainDataServices.GetBonusSettingsByLangId(langId);
+            if (PagesSettings == null)
+            {
+                return NotFound();
+            }
+            return PagesSettings;
+        }
+
         //PUT: api/PagesSettings
         [HttpPut]
         public async Task<ActionResult<PagesSettingsODTO>> PutPagesSettings(PagesSettingsIDTO pagesSettingsIDTO)

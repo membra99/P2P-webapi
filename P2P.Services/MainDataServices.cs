@@ -46,6 +46,7 @@ namespace P2P.Services
         public const int FOOTER_SETTINGS_TYPEID = 13;
         public const int HOME_SETTINGS_TYPEID = 14;
         public const int ABOUT_SETTINGS_TYPEID = 15;
+        public const int BONUS_SETTINGS_TYPEID = 20;
         public const int NAVIGATION_SETTINGS_TYPEID = 27;
         public const int HIGHLIGHT_ATTR_TYPEID = 28;
         public const int BENEFIT_ATTR_TYPEID = 29;
@@ -1714,6 +1715,26 @@ namespace P2P.Services
         public async Task<PagesSettingsODTO> GetPagesSettingsByLangId(int langId)
         {
             return await GetPagesSettings(0, langId).AsNoTracking().FirstOrDefaultAsync();
+        }
+
+        public async Task<PagesSettingsODTO> GetBonusSettingsByLangId(int langId)
+        {
+            return await _context.PagesSettings.Where(x => x.LanguageId == langId && x.DataTypeId == BONUS_SETTINGS_TYPEID).Select(x =>
+                     new PagesSettingsODTO
+                     {
+                         PagesSettingsId = x.PagesSettingsId,
+                         LanguageId = x.LanguageId,
+                         LanguageName = x.Language.LanguageName,
+                         SerpId = x.SerpId,
+                         SerpTitle = x.Serp.SerpTitle,
+                         SerpDescription = x.Serp.SerpDescription,
+                         Subtitle = x.Serp.Subtitle,
+                         DataTypeId = x.DataTypeId,
+                         DataTypeName = x.DataType.DataTypeName,
+                         ReviewId = x.ReviewId,
+                         Name = x.Review.Name,
+                         Title = x.Title,
+                     }).FirstOrDefaultAsync();
         }
 
         public async Task<PagesSettingsODTO> EditPagesSettings(PagesSettingsIDTO pagesSettingsIDTO)
