@@ -33,23 +33,44 @@ namespace P2P.WebApi.Controllers.MainData
             }
             return PagesSettings;
         }
-
         //GET: api/PagesSettings
-        [HttpGet("GetPagesSettingsByLangId/{langId}")]
-        public async Task<ActionResult<PagesSettingsODTO>> GetByLangid(int langId)
+        [HttpGet("GetBonusSettingsByLangId/{langId}")]
+        public async Task<ActionResult<PagesSettingsODTO>> GetBonusSettings(int langId)
         {
-            var PagesSettings = await _mainDataServices.GetPagesSettingsByLangId(langId);
+            var PagesSettings = await _mainDataServices.GetBonusSettingsByLangId(langId);
             if (PagesSettings == null)
             {
                 return NotFound();
             }
             return PagesSettings;
         }
-
-        [HttpGet("GetBonusSettingsByLangId/{langId}")]
-        public async Task<ActionResult<PagesSettingsODTO>> GetBonusSettings(int langId)
+        //GET: api/PagesSettings
+        [HttpGet("GetNewsSettingsByLangId/{langId}")]
+        public async Task<ActionResult<PagesSettingsODTO>> GetNewsSettings(int langId)
         {
-            var PagesSettings = await _mainDataServices.GetBonusSettingsByLangId(langId);
+            var PagesSettings = await _mainDataServices.GetNewsSettingsByLangId(langId);
+            if (PagesSettings == null)
+            {
+                return NotFound();
+            }
+            return PagesSettings;
+        }
+        //GET: api/PagesSettings
+        [HttpGet("GetAcademySettingsByLangId/{langId}")]
+        public async Task<ActionResult<PagesSettingsODTO>> GetAcademySettings(int langId)
+        {
+            var PagesSettings = await _mainDataServices.GetAcademySettingsByLangId(langId);
+            if (PagesSettings == null)
+            {
+                return NotFound();
+            }
+            return PagesSettings;
+        }
+        //GET: api/PagesSettings
+        [HttpGet("GetReviewSettingsByLangId/{langId}")]
+        public async Task<ActionResult<PagesSettingsODTO>> GetReviewSettings(int langId)
+        {
+            var PagesSettings = await _mainDataServices.GetReviewSettingsByLangId(langId);
             if (PagesSettings == null)
             {
                 return NotFound();

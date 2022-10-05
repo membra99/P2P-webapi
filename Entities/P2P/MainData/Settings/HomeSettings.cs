@@ -13,7 +13,7 @@ namespace Entities.P2P.MainData.Settings
     {
         public int HomeSettingsId { get; set; }
         public int? NewsUrl { get; set; }
-        public int? ReviewId { get; set; }
+        public int? Platforms { get; set; }
         public int? ReviewUrl { get; set; }
         public int? SerpId { get; set; }
         public int? AcademyUrl { get; set; }
@@ -41,7 +41,6 @@ namespace Entities.P2P.MainData.Settings
         public UrlTable ReviewUrls { get; set; }
         public UrlTable AcademyUrls { get; set; }
         public UrlTable BonusUrls { get; set; }
-        public Review Review { get; set; }
         public Serp Serp { get; set; }
         public Language Language { get; set; }
     }

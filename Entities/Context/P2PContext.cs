@@ -370,10 +370,6 @@ namespace Entities.Context
             {
                 entity.HasKey(x => x.HomeSettingsId);
 
-                entity.HasOne(x => x.Review)
-                    .WithMany(x => x.HomeSettings)
-                    .OnDelete(DeleteBehavior.Restrict);
-
                 entity.HasOne(x => x.Serp)
                         .WithMany(x => x.HomeSettings)
                         .OnDelete(DeleteBehavior.Restrict);

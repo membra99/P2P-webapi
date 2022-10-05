@@ -178,6 +178,5 @@ namespace Entities.P2P.MainData
         public ICollection<CashBack> CashBacks { get; set; }
         public ICollection<PagesSettings> PagesSettings { get; set; }
         public ICollection<NewsFeed> NewsFeeds { get; set; }
-        public ICollection<HomeSettings> HomeSettings { get; set; }
     }
 }

@@ -11,11 +11,13 @@ namespace P2P.DTO.Output
         public int HomeSettingsId { get; set; }
         public int? NewsUrl { get; set; }
         public string NewsUrlLink { get; set; }
-        public int? ReviewId { get; set; }
-        public string Name { get; set; }
+        public int? Platforms { get; set; }
         public int? ReviewUrl { get; set; }
         public string ReviewUrlLink { get; set; }
         public int? SerpId { get; set; }
+        public string SerpTitle { get; set; }
+        public string SerpDescription { get; set; }
+        public string Subtitle { get; set; }
         public int? AcademyUrl { get; set; }
         public string AcademyUrlLink { get; set; }
         public int? BonusUrl { get; set; }

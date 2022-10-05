@@ -13,7 +13,7 @@ namespace P2P.DTO.Input
     {
         public int HomeSettingsId { get; set; }
         public int? NewsUrl { get; set; }
-        public int? ReviewId { get; set; }
+        public int? Platforms { get; set; }
         public int? ReviewUrl { get; set; }
         public int? SerpId { get; set; }
         public int? AcademyUrl { get; set; }
