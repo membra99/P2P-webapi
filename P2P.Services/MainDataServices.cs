@@ -1422,9 +1422,9 @@ namespace P2P.Services
 
             var newsfeed = await (from x in _context.NewsFeeds
                                   where (x.ReviewId == review.ReviewId)
-                                  orderby x.CreatedDate
+                                  orderby x.CreatedDate descending
                                   select _mapper.Map<NewsFeedODTO>(x)).Take(4).ToListAsync();
-            
+
             var ReviewBoxOne = new ReviewBoxOneODTO()
             {
                 ReviewId = review.ReviewId,
@@ -1511,7 +1511,6 @@ namespace P2P.Services
                 Statistics = statistics,
                 CompanyInfo = CompanyInfo,
                 NewsFeeds = newsfeed
-
             };
 
             return data;
