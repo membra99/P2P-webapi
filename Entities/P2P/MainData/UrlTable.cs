@@ -21,9 +21,7 @@ namespace Entities.P2P.MainData
 
         public int TableId { get; set; }
         public DataType DataType { get; set; }
-
         public ICollection<Links> Links { get; set; }
-
         public ICollection<FooterSettings> FacebookUrls { get; set; }
         public ICollection<FooterSettings> LinkedInUrls { get; set; }
         public ICollection<FooterSettings> PodcastUrls { get; set; }
@@ -42,5 +40,10 @@ namespace Entities.P2P.MainData
         public ICollection<HomeSettings> ReviewUrls { get; set; }
         public ICollection<HomeSettings> AcademyUrls { get; set; }
         public ICollection<HomeSettings> BonusUrls { get; set; }
+        public ICollection<NavigationSettings> AcademyRouteLinks { get; set; }
+        public ICollection<NavigationSettings> BonusRouteLinks { get; set; }
+        public ICollection<NavigationSettings> HomeRouteLinks { get; set; }
+        public ICollection<NavigationSettings> NewsRouteLinks { get; set; }
+        public ICollection<NavigationSettings> ReviewsRouteLinks { get; set; }
     }
 }

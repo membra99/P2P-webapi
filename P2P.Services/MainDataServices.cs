@@ -61,8 +61,9 @@ namespace P2P.Services
         public const int MEMBER_IMAGE_TYPEID = 39;
         public const int MEMBER_NAME_TYPEID = 40;
         public const int MEMBER_ROLE_TYPEID = 41;
-
         public const int BLOG_SETTINGS_TYPEID = 42;
+        public const int NAV_SETTINGS_REVIEWS_TYPEID = 42;
+
         private async Task<List<ReviewContentDropdownODTO>> ListOfReviews()
         {
             return _context.Review.Select(r => new ReviewContentDropdownODTO
@@ -255,12 +256,31 @@ namespace P2P.Services
                                                               {
                                                                   NavigationSettingsId = x.NavigationSettingsId,
                                                                   LanguageId = x.LanguageId,
+                                                                  LanguageName = x.Language.LanguageName,
                                                                   AcademyRoute = x.AcademyRoute,
+                                                                  AcademyRouteLink = x.AcademyRouteLink.URL,
                                                                   BonusRoute = x.BonusRoute,
+                                                                  BonusRouteLink = x.BonusRouteLink.URL,
                                                                   HomeRoute = x.HomeRoute,
+                                                                  HomeRouteLink = x.HomeRouteLink.URL,
                                                                   NewsRoute = x.NewsRoute,
+                                                                  NewsRouteLink = x.NewsRouteLink.URL,
                                                                   ReviewsRoute = x.ReviewsRoute,
-                                                                  ReviewsRoutes = _context.SettingsAttributes.Where(x => x.DataTypeId == NAVIGATION_SETTINGS_TYPEID && x.SettingsDataTypeId == REVIEW_ROUTE_TYPEID && x.LanguageId == langId).Select(x => _mapper.Map<SettingsAttributeODTO>(x)).ToList(),
+                                                                  ReviewsRouteLink = x.ReviewsRouteLink.URL,
+                                                                  ReviewsRoutes = (from a in _context.SettingsAttributes
+                                                                                     .Include(x => x.Language)
+                                                                                     .Include(x => x.DataType)
+                                                                                     .Include(x => x.SettingsDataType)
+                                                                                   where (a.DataTypeId == NAVIGATION_SETTINGS_TYPEID)
+                                                                                   && (a.SettingsDataTypeId == REVIEW_ROUTE_TYPEID)
+                                                                                   && (a.LanguageId == langId)
+                                                                                   select _mapper.Map<SettingsAttributeODTO>(a)).ToList(),
+                                                                  Reviews = (from b in _context.SettingsAttributes
+                                                                                     .Include(x => x.SettingsDataType)
+                                                                             where (b.DataTypeId == NAVIGATION_SETTINGS_TYPEID)
+                                                                             && (b.SettingsDataTypeId == NAV_SETTINGS_REVIEWS_TYPEID)
+                                                                             && (b.LanguageId == langId)
+                                                                             select _mapper.Map<SettingsAttributeODTO>(b)).ToList()
                                                               }).ToListAsync();
             return NavSettings;
         }
@@ -325,17 +345,45 @@ namespace P2P.Services
                                                            {
                                                                FooterSettingsId = x.FooterSettingsId,
                                                                LanguageId = x.LanguageId,
+                                                               LanguageName = x.Language.LanguageName,
                                                                FacebookLink = x.FacebookLink,
+                                                               FacebookUrl = x.FS_FacebookUrl.URL,
                                                                LinkedInLink = x.LinkedInLink,
+                                                               LinkedInUrl = x.FS_LinkedInUrl.URL,
                                                                PodcastLink = x.PodcastLink,
+                                                               PodcastUrl = x.FS_PodcastUrl.URL,
                                                                TwitterLink = x.TwitterLink,
+                                                               TwitterUrl = x.FS_TwitterUrl.URL,
                                                                YoutubeLink = x.YoutubeLink,
+                                                               YoutubeUrl = x.FS_YoutubeUrl.URL,
                                                                CopyrightNotice = x.CopyrightNotice,
                                                                FooterNote = x.FooterNote,
-                                                               aItemAnchor = _context.SettingsAttributes.Where(x => x.DataTypeId == FOOTER_SETTINGS_TYPEID && x.SettingsDataTypeId == A_ITEM_ANCHOR_TYPEID && x.LanguageId == langId).Select(x => _mapper.Map<SettingsAttributeODTO>(x)).ToList(),
-                                                               pItemAnchor = _context.SettingsAttributes.Where(x => x.DataTypeId == FOOTER_SETTINGS_TYPEID && x.SettingsDataTypeId == P_ITEM_ANCHOR_TYPEID && x.LanguageId == langId).Select(x => _mapper.Map<SettingsAttributeODTO>(x)).ToList(),
-                                                               aItemLink = _context.SettingsAttributes.Where(x => x.DataTypeId == FOOTER_SETTINGS_TYPEID && x.SettingsDataTypeId == A_ITEM_LINK_TYPEID && x.LanguageId == langId).Select(x => _mapper.Map<SettingsAttributeODTO>(x)).ToList(),
-                                                               pItemLink = _context.SettingsAttributes.Where(x => x.DataTypeId == FOOTER_SETTINGS_TYPEID && x.SettingsDataTypeId == P_ITEM_LINK_TYPEID && x.LanguageId == langId).Select(x => _mapper.Map<SettingsAttributeODTO>(x)).ToList(),
+                                                               aItemAnchor = (from a in _context.SettingsAttributes
+                                                                              .Include(x => x.Language)
+                                                                              .Include(x => x.DataType)
+                                                                              .Include(x => x.SettingsDataType)
+                                                                              where (a.DataTypeId == FOOTER_SETTINGS_TYPEID)
+                                                                              && (a.SettingsDataTypeId == A_ITEM_ANCHOR_TYPEID)
+                                                                              && (a.LanguageId == langId)
+                                                                              select _mapper.Map<SettingsAttributeODTO>(a)).ToList(),
+                                                               pItemAnchor = (from b in _context.SettingsAttributes
+                                                                              .Include(x => x.SettingsDataType)
+                                                                              where (b.DataTypeId == FOOTER_SETTINGS_TYPEID)
+                                                                              && (b.SettingsDataTypeId == P_ITEM_ANCHOR_TYPEID)
+                                                                              && (b.LanguageId == langId)
+                                                                              select _mapper.Map<SettingsAttributeODTO>(b)).ToList(),
+                                                               aItemLink = (from c in _context.SettingsAttributes
+                                                                              .Include(x => x.SettingsDataType)
+                                                                            where (c.DataTypeId == FOOTER_SETTINGS_TYPEID)
+                                                                            && (c.SettingsDataTypeId == A_ITEM_LINK_TYPEID)
+                                                                            && (c.LanguageId == langId)
+                                                                            select _mapper.Map<SettingsAttributeODTO>(c)).ToList(),
+                                                               pItemLink = (from d in _context.SettingsAttributes
+                                                                              .Include(x => x.SettingsDataType)
+                                                                            where (d.DataTypeId == FOOTER_SETTINGS_TYPEID)
+                                                                            && (d.SettingsDataTypeId == P_ITEM_LINK_TYPEID)
+                                                                            && (d.LanguageId == langId)
+                                                                            select _mapper.Map<SettingsAttributeODTO>(d)).ToList()
                                                            }).ToListAsync();
             return FootSettings;
         }
@@ -1901,21 +1949,44 @@ namespace P2P.Services
                                                          {
                                                              HomeSettingsId = x.HomeSettingsId,
                                                              NewsUrl = x.NewsUrl,
+                                                             NewsUrlLink = x.NewsUrls.URL,
                                                              ReviewId = x.ReviewId,
+                                                             Name = x.Review.Name,
                                                              ReviewUrl = x.ReviewUrl,
+                                                             ReviewUrlLink = x.ReviewUrls.URL,
                                                              SerpId = x.SerpId,
                                                              AcademyUrl = x.AcademyUrl,
+                                                             AcademyUrlLink = x.AcademyUrls.URL,
                                                              BonusUrl = x.BonusUrl,
+                                                             BonusUrlLink = x.BonusUrls.URL,
                                                              LanguageId = x.LanguageId,
+                                                             LanguageName = x.Language.LanguageName,
                                                              Title = x.Title,
                                                              Returned = x.Returned,
                                                              Investment = x.Investment,
                                                              TestimonialH2 = x.TestimonialH2,
                                                              FeaturedH2 = x.FeaturedH2,
                                                              Platform = x.Platform,
-                                                             TrackH2 = _context.SettingsAttributes.Where(x => x.DataTypeId == HOME_SETTINGS_TYPEID && x.SettingsDataTypeId == TRACKH2_TYPEID && x.LanguageId == langId).Select(x => _mapper.Map<SettingsAttributeODTO>(x)).ToList(),
-                                                             TrackH3 = _context.SettingsAttributes.Where(x => x.DataTypeId == HOME_SETTINGS_TYPEID && x.SettingsDataTypeId == TRACKH3_TYPEID && x.LanguageId == langId).Select(x => _mapper.Map<SettingsAttributeODTO>(x)).ToList(),
-                                                             Trackparahraph = _context.SettingsAttributes.Where(x => x.DataTypeId == HOME_SETTINGS_TYPEID && x.SettingsDataTypeId == TRACKHPARAGRAPH_TYPEID && x.LanguageId == langId).Select(x => _mapper.Map<SettingsAttributeODTO>(x)).ToList(),
+                                                             TrackH2 = (from a in _context.SettingsAttributes
+                                                                              .Include(x => x.Language)
+                                                                              .Include(x => x.DataType)
+                                                                              .Include(x => x.SettingsDataType)
+                                                                        where (a.DataTypeId == HOME_SETTINGS_TYPEID)
+                                                                        && (a.SettingsDataTypeId == TRACKH2_TYPEID)
+                                                                        && (a.LanguageId == langId)
+                                                                        select _mapper.Map<SettingsAttributeODTO>(a)).ToList(),
+                                                             TrackH3 = (from b in _context.SettingsAttributes
+                                                                              .Include(x => x.SettingsDataType)
+                                                                        where (b.DataTypeId == HOME_SETTINGS_TYPEID)
+                                                                        && (b.SettingsDataTypeId == TRACKH3_TYPEID)
+                                                                        && (b.LanguageId == langId)
+                                                                        select _mapper.Map<SettingsAttributeODTO>(b)).ToList(),
+                                                             Trackparahraph = (from c in _context.SettingsAttributes
+                                                                              .Include(x => x.SettingsDataType)
+                                                                               where (c.DataTypeId == HOME_SETTINGS_TYPEID)
+                                                                               && (c.SettingsDataTypeId == TRACKHPARAGRAPH_TYPEID)
+                                                                               && (c.LanguageId == langId)
+                                                                               select _mapper.Map<SettingsAttributeODTO>(c)).ToList(),
                                                          }).ToListAsync();
             return homeSettings;
         }
@@ -1993,7 +2064,7 @@ namespace P2P.Services
                                                                Section2H2 = x.Section2H2,
                                                                Section2Paragraph = x.Section2Paragraph,
                                                                TestimonialH2 = x.TestimonialH2,
-                                                               memberRole =  (from a in _context.SettingsAttributes
+                                                               memberRole = (from a in _context.SettingsAttributes
                                                                               .Include(x => x.Language)
                                                                               .Include(x => x.DataType)
                                                                               .Include(x => x.SettingsDataType)
@@ -2116,6 +2187,7 @@ namespace P2P.Services
         #endregion SettingsAttribute
 
         #region Blog
+
         private IQueryable<BlogODTO> GetBlog(int id, int languageId, int categoryId)
         {
             return from x in _context.Blogs
@@ -2131,8 +2203,8 @@ namespace P2P.Services
         {
             var blogs = from x in _context.Blogs
                    .Include(x => x.Language)
-                   where (languageId == 0 || x.LanguageId == languageId)
-                   select _mapper.Map<BlogODTO>(x);
+                        where (languageId == 0 || x.LanguageId == languageId)
+                        select _mapper.Map<BlogODTO>(x);
             var blogsIdList = blogs.Select(x => x.AuthorId).ToList();
             return _context.Users.Where(x => blogsIdList.Contains(x.UserId)).Select(x => _mapper.Map<UserODTO>(x));
         }
@@ -2144,12 +2216,12 @@ namespace P2P.Services
 
         public async Task<List<BlogODTO>> GetBlogsByLang(int languageId)
         {
-            return await GetBlog(0, languageId,0).AsNoTracking().ToListAsync();
+            return await GetBlog(0, languageId, 0).AsNoTracking().ToListAsync();
         }
 
         public async Task<List<BlogODTO>> GetBlogsByCategory(int categoryId)
         {
-            return await GetBlog(0, 0 , categoryId).AsNoTracking().ToListAsync();
+            return await GetBlog(0, 0, categoryId).AsNoTracking().ToListAsync();
         }
 
         public async Task<List<UserODTO>> GetAuthorsByLanguageId(int languageId)
@@ -2196,17 +2268,17 @@ namespace P2P.Services
             return blogODTO;
         }
 
-        #endregion
+        #endregion Blog
 
         #region Categories
 
         private IQueryable<CategoryODTO> GetCategories(int id, int languageId)
-        {         
-                return from x in _context.Categories
-                       .Include(x => x.Language)
-                       where (id == 0 || x.CategoryId == id)
-                       && (languageId == 0 || x.LanguageId == languageId)
-                        select _mapper.Map<CategoryODTO>(x);            
+        {
+            return from x in _context.Categories
+                   .Include(x => x.Language)
+                   where (id == 0 || x.CategoryId == id)
+                   && (languageId == 0 || x.LanguageId == languageId)
+                   select _mapper.Map<CategoryODTO>(x);
         }
 
         public async Task<List<CategoryODTO>> GetCategoriesByLanguageId(int languageId)
@@ -2253,6 +2325,6 @@ namespace P2P.Services
             return categoryODTO;
         }
 
-        #endregion
+        #endregion Categories
     }
 }

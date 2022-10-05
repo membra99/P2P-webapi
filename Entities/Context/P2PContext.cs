@@ -78,6 +78,31 @@ namespace Entities.Context
                 entity.HasOne(x => x.Language)
                       .WithMany(x => x.NavigationSettings)
                       .OnDelete(DeleteBehavior.Restrict);
+
+                entity.HasOne(x => x.HomeRouteLink)
+                     .WithMany(x => x.HomeRouteLinks)
+                     .HasForeignKey(x => x.HomeRoute)
+                     .OnDelete(DeleteBehavior.Restrict);
+
+                entity.HasOne(x => x.BonusRouteLink)
+                     .WithMany(x => x.BonusRouteLinks)
+                     .HasForeignKey(x => x.BonusRoute)
+                     .OnDelete(DeleteBehavior.Restrict);
+
+                entity.HasOne(x => x.AcademyRouteLink)
+                     .WithMany(x => x.AcademyRouteLinks)
+                     .HasForeignKey(x => x.AcademyRoute)
+                     .OnDelete(DeleteBehavior.Restrict);
+
+                entity.HasOne(x => x.ReviewsRouteLink)
+                    .WithMany(x => x.ReviewsRouteLinks)
+                    .HasForeignKey(x => x.ReviewsRoute)
+                    .OnDelete(DeleteBehavior.Restrict);
+
+                entity.HasOne(x => x.NewsRouteLink)
+                    .WithMany(x => x.NewsRouteLinks)
+                    .HasForeignKey(x => x.NewsRoute)
+                    .OnDelete(DeleteBehavior.Restrict);
             });
 
             modelBuilder.Entity<FooterSettings>(entity =>

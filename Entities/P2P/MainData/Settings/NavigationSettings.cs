@@ -32,5 +32,10 @@ namespace Entities.P2P.MainData.Settings
         public int NewsRoute { get; set; }
         public int ReviewsRoute { get; set; }
         public Language Language { get; set; }
+        public UrlTable AcademyRouteLink { get; set; }
+        public UrlTable BonusRouteLink { get; set; }
+        public UrlTable HomeRouteLink { get; set; }
+        public UrlTable NewsRouteLink { get; set; }
+        public UrlTable ReviewsRouteLink { get; set; }
     }
 }

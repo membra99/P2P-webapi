@@ -28,7 +28,13 @@ namespace P2P.Base.Services.Mapping
             CreateMap<DataType, DataTypeODTO>();
             CreateMap<DataTypeIDTO, DataType>();
 
-            CreateMap<NavigationSettings, NavigationSettingsODTO>();
+            CreateMap<NavigationSettings, NavigationSettingsODTO>()
+                .ForMember(dest => dest.LanguageName, source => source.MapFrom(m => m.Language.LanguageName))
+                .ForMember(dest => dest.AcademyRoute, source => source.MapFrom(m => m.AcademyRouteLink.AcademyRouteLinks))
+                .ForMember(dest => dest.BonusRoute, source => source.MapFrom(m => m.BonusRouteLink.BonusRouteLinks))
+                .ForMember(dest => dest.NewsRoute, source => source.MapFrom(m => m.NewsRouteLink.NewsRouteLinks))
+                .ForMember(dest => dest.ReviewsRoute, source => source.MapFrom(m => m.ReviewsRouteLink.ReviewsRouteLinks))
+                .ForMember(dest => dest.HomeRoute, source => source.MapFrom(m => m.HomeRouteLink.HomeRouteLinks));
             CreateMap<NavigationSettingsIDTO, NavigationSettings>();
 
             CreateMap<FooterSettings, FooterSettingsODTO>()
