@@ -13,6 +13,9 @@ namespace P2P.DTO.Output.EndPointODTO
         public DateTime? UpdatedDate { get; set; }
         public int? Availability { get; set; }
         public int? SerpId { get; set; }
+        public string SerpDescription { get; set; }
+        public string SerpTitle { get; set; }
+        public string Subtitle { get; set; }
         public int? Count { get; set; }
         public decimal? RiskReturn { get; set; }
         public string Address { get; set; }

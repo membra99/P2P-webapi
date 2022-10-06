@@ -1043,9 +1043,93 @@ namespace P2P.Services
             var serp = _mapper.Map<Serp>(serpIDTO);
             serp.SerpId = 0;
             _context.Serps.Add(serp);
-
             await SaveContextChangesAsync();
+            switch (serpIDTO.DataTypeId)
+            {
+                case REVIEW_TYPEID:
+                    var rev = await _context.Review.Where(x => x.ReviewId == serp.TableId).FirstOrDefaultAsync();
+                    if (rev != null)
+                    {
+                        rev.SerpId = serp.SerpId;
+                        await SaveContextChangesAsync();
+                    }
+                    break;
 
+                case ACADEMY_TYPEID:
+                    var acd = await _context.Academies.Where(x => x.AcademyId == serp.TableId).FirstOrDefaultAsync();
+                    if (acd != null)
+                    {
+                        acd.SerpId = serp.SerpId;
+                        await SaveContextChangesAsync();
+                    }
+                    break;
+
+                case PAGES_TYPEID:
+                    var page = await _context.Pages.Where(x => x.PageId == serp.TableId).FirstOrDefaultAsync();
+                    if (page != null)
+                    {
+                        page.SerpId = serp.SerpId;
+                        await SaveContextChangesAsync();
+                    }
+                    break;
+
+                case HOME_SETTINGS_TYPEID:
+                    var homeSett = await _context.HomeSettings.Where(x => x.HomeSettingsId == serp.TableId).FirstOrDefaultAsync();
+                    if (homeSett != null)
+                    {
+                        homeSett.SerpId = serp.SerpId;
+                        await SaveContextChangesAsync();
+                    }
+                    break;
+
+                case ABOUT_SETTINGS_TYPEID:
+                    var aboutSett = await _context.AboutSettings.Where(x => x.AboutSettingsId == serp.TableId).FirstOrDefaultAsync();
+                    if (aboutSett != null)
+                    {
+                        aboutSett.SerpId = serp.SerpId;
+                        await SaveContextChangesAsync();
+                    }
+                    break;
+
+                case REVIEW_SETTINGS_TYPEID:
+                    var revSett = await _context.PagesSettings.Where(x => x.PagesSettingsId == serp.TableId).FirstOrDefaultAsync();
+                    if (revSett != null)
+                    {
+                        revSett.SerpId = serp.SerpId;
+                        await SaveContextChangesAsync();
+                    }
+                    break;
+
+                case ACADEMY_SETTINGS_TYPEID:
+                    var acdSett = await _context.PagesSettings.Where(x => x.PagesSettingsId == serp.TableId).FirstOrDefaultAsync();
+                    if (acdSett != null)
+                    {
+                        acdSett.SerpId = serp.SerpId;
+                        await SaveContextChangesAsync();
+                    }
+                    break;
+
+                case NEWS_SETTINGS_TYPEID:
+                    var newsSett = await _context.PagesSettings.Where(x => x.PagesSettingsId == serp.TableId).FirstOrDefaultAsync();
+                    if (newsSett != null)
+                    {
+                        newsSett.SerpId = serp.SerpId;
+                        await SaveContextChangesAsync();
+                    }
+                    break;
+
+                case BONUS_SETTINGS_TYPEID:
+                    var bonusSett = await _context.PagesSettings.Where(x => x.PagesSettingsId == serp.TableId).FirstOrDefaultAsync();
+                    if (bonusSett != null)
+                    {
+                        bonusSett.SerpId = serp.SerpId;
+                        await SaveContextChangesAsync();
+                    }
+                    break;
+
+                default:
+                    break;
+            }
             return await GetSerpById(serp.SerpId);
         }
 
@@ -1426,7 +1510,7 @@ namespace P2P.Services
                                      where (x.UrlTable.URL == url)
                                      && (x.LanguageId == langId)
                                      select x.ReviewId).FirstOrDefaultAsync();
-            var review = await _context.Review.FirstOrDefaultAsync(x => x.ReviewId == UrlReviewId);
+            var review = await _context.Review.Include(x => x.Serp).FirstOrDefaultAsync(x => x.ReviewId == UrlReviewId);
 
             var newsfeed = await (from x in _context.NewsFeeds
                                   where (x.ReviewId == review.ReviewId)
@@ -1449,7 +1533,7 @@ namespace P2P.Services
             };
             var ReviewBoxTwo = new ReviewBoxTwoODTO()
             {
-                Highlights = _context.ReviewAttributes.Where(x => x.ReviewId == UrlReviewId && x.DataTypeId == BENEFIT_ATTR_TYPEID).Select(x => _mapper.Map<ReviewAttributeODTO>(x)).ToList(),
+                Highlights = _context.ReviewAttributes.Where(x => x.ReviewId == UrlReviewId && x.DataTypeId == HIGHLIGHT_ATTR_TYPEID).Select(x => _mapper.Map<ReviewAttributeODTO>(x)).ToList(),
                 Ratings = new decimal?[] { review.RiskAndReturn, review.Usability, review.Liquidity, review.Support }
             };
 
@@ -1507,6 +1591,9 @@ namespace P2P.Services
                 UpdatedDate = review.UpdatedDate,
                 Availability = review.Availability,
                 SerpId = review.SerpId,
+                SerpDescription = review.Serp.SerpDescription,
+                SerpTitle = review.Serp.SerpTitle,
+                Subtitle = review.Serp.Subtitle,
                 RiskReturn = review.RiskAndReturn,
                 Address = review.OfficeAddress,
                 Content = review.ReviewContent,
