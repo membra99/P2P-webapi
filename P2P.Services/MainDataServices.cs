@@ -200,6 +200,11 @@ namespace P2P.Services
             return await GetDataType(id, null).AsNoTracking().SingleOrDefaultAsync();
         }
 
+        public async Task<List<DataTypeODTO>> GetAllDataTypes()
+        {
+            return await GetDataType(0, null).AsNoTracking().ToListAsync();
+        }
+
         public async Task<DataTypeODTO> EditDataType(DataTypeIDTO dataTypeIDTO)
         {
             var dataType = _mapper.Map<DataType>(dataTypeIDTO);
@@ -2419,10 +2424,13 @@ namespace P2P.Services
         public async Task<BlogODTO> GetBlogById(int id)
         {
             var blog = await GetBlog(id, 0, 0).AsNoTracking().SingleOrDefaultAsync();
-            var serp = await GetSerp((int)blog.SerpId, 0).AsNoTracking().SingleOrDefaultAsync();
-            blog.SerpTitle = serp.SerpTitle;
-            blog.Subtitle = serp.Subtitle;
-            blog.SerpDescription = serp.SerpDescription;
+            if (blog.SerpId != null)
+            {
+                var serp = (await GetSerp((int)blog.SerpId, 0).AsNoTracking().SingleOrDefaultAsync());
+                blog.SerpTitle = serp.SerpTitle;
+                blog.Subtitle = serp.Subtitle;
+                blog.SerpDescription = serp.SerpDescription;
+            }
             return blog;
         }
 
