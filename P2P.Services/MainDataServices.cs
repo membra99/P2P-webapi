@@ -1401,6 +1401,14 @@ namespace P2P.Services
         private IQueryable<ReviewODTO> GetReview(int id, int urlId)
         {
             return from x in _context.Review
+                   .Include(z => z.Serp)
+                   .Include(z => z.Language)
+                   .Include(x => x.Rev_FacebookUrl)
+                   .Include(x => x.Rev_InstagramUrl)
+                   .Include(x => x.Rev_LinkedInUrl)
+                   .Include(x => x.Rev_TwitterUrl)
+                   .Include(x => x.Rev_YoutubeUrl)
+                   .Include(x => x.Rev_ReportLink)
                    join y in _context.Routes on x.ReviewId equals y.ReviewId
                    where (id == 0 || x.ReviewId == id
                    && (urlId == 0 || y.UrlTableId == urlId))
@@ -2032,6 +2040,14 @@ namespace P2P.Services
 
         public async Task<List<HomeSettingsODTO>> GetHomeSettingsByLangId(int langId)
         {
+            List<string> test = new List<string>();
+            foreach (var platform in await (from x in _context.HomeSettings
+                                               where x.LanguageId == langId
+                                               select x.Platform).ToListAsync())
+            { 
+                test = platform.Split(',').ToList();               
+            }
+
             List<HomeSettingsODTO> homeSettings = await (from x in _context.HomeSettings
                                                          where x.LanguageId == langId
                                                          select new HomeSettingsODTO
@@ -2057,7 +2073,18 @@ namespace P2P.Services
                                                              Investment = x.Investment,
                                                              TestimonialH2 = x.TestimonialH2,
                                                              FeaturedH2 = x.FeaturedH2,
-                                                             Platform = x.Platform,
+                                                             Platform = $"[{x.Platform}]",
+                                                             ReviewList = (from a in _context.Review
+                                                                           .Include(x => x.Serp)
+                                                                           .Include(x => x.Language)
+                                                                           .Include(x => x.Rev_FacebookUrl)
+                                                                           .Include(x => x.Rev_InstagramUrl)
+                                                                           .Include(x => x.Rev_LinkedInUrl)
+                                                                           .Include(x => x.Rev_TwitterUrl)
+                                                                           .Include(x => x.Rev_YoutubeUrl)
+                                                                           .Include(x => x.Rev_ReportLink)
+                                                                           where test.Contains(a.ReviewId.ToString())
+                                                                           select _mapper.Map<ReviewODTO>(a)).ToList() ,
                                                              TrackH2 = (from a in _context.SettingsAttributes
                                                                               .Include(x => x.Language)
                                                                               .Include(x => x.DataType)
