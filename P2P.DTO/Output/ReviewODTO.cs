@@ -11,6 +11,8 @@ namespace P2P.DTO.Output
         public int ReviewId { get; set; }
         public int? SerpId { get; set; }
         public string SerpTitle { get; set; }
+        public string SerpDescription { get; set; }
+        public string Subtitle { get; set; }
         public int LanguageId { get; set; }
         public string Languagename { get; set; }
         public int? FacebookUrl { get; set; } //Url Table

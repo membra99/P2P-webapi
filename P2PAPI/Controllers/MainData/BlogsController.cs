@@ -59,6 +59,15 @@ namespace P2P.WebApi.Controllers.MainData
             return blog;
         }
 
+        //GET: api/Blogs/GetItemContent
+        [HttpGet("GetItemContent")]
+        public async Task<ActionResult<GetItemContentODTO>> GetItemContent(int id)
+        {
+            var blog = await _mainDataServices.GetBlogItemContent(id);
+            if (blog == null) return NotFound();
+            return blog;
+        }
+
         //PUT: api/Blogs
         [HttpPut]
         public async Task<ActionResult<BlogODTO>> PutBlog(BlogIDTO blogIDTO)
