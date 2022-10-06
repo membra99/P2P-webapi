@@ -1534,7 +1534,7 @@ namespace P2P.Services
             var ReviewBoxTwo = new ReviewBoxTwoODTO()
             {
                 Highlights = _context.ReviewAttributes.Where(x => x.ReviewId == UrlReviewId && x.DataTypeId == HIGHLIGHT_ATTR_TYPEID).Select(x => _mapper.Map<ReviewAttributeODTO>(x)).ToList(),
-                Ratings = new decimal?[] { review.RiskAndReturn, review.Usability, review.Liquidity, review.Support }
+                Ratings = new decimal?[] { review.RiskReturn, review.Usability, review.Liquidity, review.Support }
             };
 
             var ReviewBoxThree = new ReviewBoxThreeODTO()
@@ -2129,10 +2129,10 @@ namespace P2P.Services
         {
             List<string> test = new List<string>();
             foreach (var platform in await (from x in _context.HomeSettings
-                                               where x.LanguageId == langId
-                                               select x.Platform).ToListAsync())
-            { 
-                test = platform.Split(',').ToList();               
+                                            where x.LanguageId == langId
+                                            select x.Platform).ToListAsync())
+            {
+                test = platform.Split(',').ToList();
             }
 
             List<HomeSettingsODTO> homeSettings = await (from x in _context.HomeSettings
@@ -2171,7 +2171,7 @@ namespace P2P.Services
                                                                            .Include(x => x.Rev_YoutubeUrl)
                                                                            .Include(x => x.Rev_ReportLink)
                                                                            where test.Contains(a.ReviewId.ToString())
-                                                                           select _mapper.Map<ReviewODTO>(a)).ToList() ,
+                                                                           select _mapper.Map<ReviewODTO>(a)).ToList(),
                                                              TrackH2 = (from a in _context.SettingsAttributes
                                                                               .Include(x => x.Language)
                                                                               .Include(x => x.DataType)
@@ -2445,15 +2445,15 @@ namespace P2P.Services
         {
             try
             {
-                    var page = _context.Blogs.FirstOrDefault(e => e.BlogId == id);
+                var page = _context.Blogs.FirstOrDefault(e => e.BlogId == id);
 
-                    var retVal = new GetItemContentODTO
-                    {
-                        PageId = page.BlogId,
-                        Content = page.Content,
-                    };
+                var retVal = new GetItemContentODTO
+                {
+                    PageId = page.BlogId,
+                    Content = page.Content,
+                };
 
-                    return retVal;            
+                return retVal;
             }
             catch (Exception ex)
             {
@@ -2486,11 +2486,14 @@ namespace P2P.Services
             _context.Blogs.Add(blog);
             await SaveContextChangesAsync();
 
-            var serp = new Serp { SerpTitle = blogIDTO.SerpTitle,
+            var serp = new Serp
+            {
+                SerpTitle = blogIDTO.SerpTitle,
                 SerpDescription = blogIDTO.SerpDescription,
                 Subtitle = blogIDTO.Subtitle,
                 DataTypeId = BLOG_SETTINGS_TYPEID,
-                TableId = blog.BlogId };
+                TableId = blog.BlogId
+            };
 
             _context.Serps.Add(serp);
             await SaveContextChangesAsync();
