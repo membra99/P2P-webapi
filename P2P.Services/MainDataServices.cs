@@ -2445,15 +2445,15 @@ namespace P2P.Services
         {
             try
             {
-                    var page = _context.Blogs.FirstOrDefault(e => e.BlogId == id);
+                var page = _context.Blogs.FirstOrDefault(e => e.BlogId == id);
 
-                    var retVal = new GetItemContentODTO
-                    {
-                        PageId = page.BlogId,
-                        Content = page.Content,
-                    };
+                var retVal = new GetItemContentODTO
+                {
+                    PageId = page.BlogId,
+                    Content = page.Content,
+                };
 
-                    return retVal;            
+                return retVal;
             }
             catch (Exception ex)
             {
@@ -2486,11 +2486,14 @@ namespace P2P.Services
             _context.Blogs.Add(blog);
             await SaveContextChangesAsync();
 
-            var serp = new Serp { SerpTitle = blogIDTO.SerpTitle,
+            var serp = new Serp
+            {
+                SerpTitle = blogIDTO.SerpTitle,
                 SerpDescription = blogIDTO.SerpDescription,
                 Subtitle = blogIDTO.Subtitle,
                 DataTypeId = BLOG_SETTINGS_TYPEID,
-                TableId = blog.BlogId };
+                TableId = blog.BlogId
+            };
 
             _context.Serps.Add(serp);
             await SaveContextChangesAsync();
