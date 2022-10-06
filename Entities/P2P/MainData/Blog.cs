@@ -24,6 +24,8 @@ namespace Entities.P2P.MainData
         [StringLength(200)]
         public string Excerpt { get; set; }
 
+        public string Content { get; set; }
+
         public Language Language { get; set; }
         public Serp Serp { get; set; }
         public Academy SelectedPopularArticles { get; set; }

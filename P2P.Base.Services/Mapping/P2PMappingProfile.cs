@@ -84,13 +84,15 @@ namespace P2P.Base.Services.Mapping
 
             CreateMap<Review, ReviewODTO>()
                .ForMember(dest => dest.Languagename, source => source.MapFrom(m => m.Language.LanguageName))
-               .ForMember(dest => dest.SerpTitle, source => source.MapFrom(m => m.Serp.SerpTitle))
                .ForMember(dest => dest.FacebookUrl, source => source.MapFrom(m => m.Rev_FacebookUrl.Rev_FacebookUrls))
                .ForMember(dest => dest.InstagramUrl, source => source.MapFrom(m => m.Rev_InstagramUrl.Rev_InstagramUrls))
                .ForMember(dest => dest.LinkedInUrl, source => source.MapFrom(m => m.Rev_LinkedInUrl.Rev_LinkedIdUrls))
                .ForMember(dest => dest.TwitterUrl, source => source.MapFrom(m => m.Rev_TwitterUrl.Rev_TwitterUrls))
                .ForMember(dest => dest.YoutubeUrl, source => source.MapFrom(m => m.Rev_YoutubeUrl.Rev_YoutubeUrls))
-               .ForMember(dest => dest.ReportLink, source => source.MapFrom(m => m.Rev_ReportLink.Rev_ReportLinks));
+               .ForMember(dest => dest.ReportLink, source => source.MapFrom(m => m.Rev_ReportLink.Rev_ReportLinks))
+               .ForMember(dest => dest.SerpTitle, source => source.MapFrom(m => m.Serp.SerpTitle))
+               .ForMember(dest => dest.SerpDescription, source => source.MapFrom(m => m.Serp.SerpDescription))
+               .ForMember(dest => dest.Subtitle, source => source.MapFrom(m => m.Serp.Subtitle));
 
             CreateMap<ReviewIDTO, Review>();
 
@@ -110,7 +112,10 @@ namespace P2P.Base.Services.Mapping
             CreateMap<Page, PageODTO>()
                 .ForMember(dest => dest.LanguageName, source => source.MapFrom(m => m.Language.LanguageName))
                 .ForMember(dest => dest.Name, source => source.MapFrom(m => m.Review.Name))
-                .ForMember(dest => dest.DataTypeName, source => source.MapFrom(m => m.DataType.DataTypeName));
+                .ForMember(dest => dest.DataTypeName, source => source.MapFrom(m => m.DataType.DataTypeName))
+                .ForMember(dest => dest.Subtitle, source => source.MapFrom(m => m.Serp.Subtitle))
+                .ForMember(dest => dest.SerpTitle, source => source.MapFrom(m => m.Serp.SerpTitle))
+                .ForMember(dest => dest.SerpDescription, source => source.MapFrom(m => m.Serp.SerpDescription));
             CreateMap<PageIDTO, Page>();
 
             CreateMap<Page, GetPageListODTO>()
@@ -119,6 +124,8 @@ namespace P2P.Base.Services.Mapping
             CreateMap<Academy, AcademyODTO>()
                 .ForMember(dest => dest.LanguageName, source => source.MapFrom(m => m.Language.LanguageName))
                 .ForMember(dest => dest.SerpTitle, source => source.MapFrom(m => m.Serp.SerpTitle))
+                .ForMember(dest => dest.SerpDescription, source => source.MapFrom(m => m.Serp.SerpDescription))
+              .ForMember(dest => dest.Subtitle, source => source.MapFrom(m => m.Serp.Subtitle))
                 .ForMember(dest => dest.Url, source => source.MapFrom(m => m.UrlTable.URL));
             CreateMap<AcademyIDTO, Academy>();
 
@@ -173,9 +180,9 @@ namespace P2P.Base.Services.Mapping
             CreateMap<CategoryIDTO, Category>();
 
             CreateMap<Blog, BlogODTO>()
-                .ForMember(dest => dest.SerpTitle, source => source.MapFrom(m => m.Serp.SerpTitle))
-                .ForMember(dest => dest.SerpDescription, source => source.MapFrom(m => m.Serp.SerpDescription))
-                .ForMember(dest => dest.Subtitle, source => source.MapFrom(m => m.Serp.Subtitle))
+               .ForMember(dest => dest.SerpTitle, source => source.MapFrom(m => m.Serp.SerpTitle))
+               .ForMember(dest => dest.SerpDescription, source => source.MapFrom(m => m.Serp.SerpDescription))
+               .ForMember(dest => dest.Subtitle, source => source.MapFrom(m => m.Serp.Subtitle))
                 .ForMember(dest => dest.CategoryName, source => source.MapFrom(m => m.Category.CategoryName));
             CreateMap<BlogIDTO, Blog>();
 
