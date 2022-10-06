@@ -14,6 +14,7 @@ namespace P2P.DTO.Output
         public string SerpTitle { get; set; }
         public string SerpDescription { get; set; }
         public string Subtitle { get; set; }
+        public string Content { get; set; }
         public int? SelectedPopularArticle { get; set; } //aray // kada se uradi post mora da se doda i serp// i kontent se dodaje // getitemcontent dodati u blogove//i faq answer i title
         public int? CategoryId { get; set; }
         public string CategoryName { get; set; }

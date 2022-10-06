@@ -66,8 +66,8 @@ namespace P2P.Services
         public const int MEMBER_IMAGE_TYPEID = 39;
         public const int MEMBER_NAME_TYPEID = 40;
         public const int MEMBER_ROLE_TYPEID = 41;
-        public const int BLOG_SETTINGS_TYPEID = 42;
         public const int NAV_SETTINGS_REVIEWS_TYPEID = 42;
+        public const int BLOG_SETTINGS_TYPEID = 43;
 
         private async Task<List<ReviewContentDropdownODTO>> ListOfReviews()
         {
@@ -1485,7 +1485,14 @@ namespace P2P.Services
         private IQueryable<ReviewODTO> GetReview(int id, int urlId)
         {
             return from x in _context.Review
-                   .Include(x => x.Serp)
+                   .Include(z => z.Serp)
+                   .Include(z => z.Language)
+                   .Include(x => x.Rev_FacebookUrl)
+                   .Include(x => x.Rev_InstagramUrl)
+                   .Include(x => x.Rev_LinkedInUrl)
+                   .Include(x => x.Rev_TwitterUrl)
+                   .Include(x => x.Rev_YoutubeUrl)
+                   .Include(x => x.Rev_ReportLink)
                    join y in _context.Routes on x.ReviewId equals y.ReviewId
                    where (id == 0 || x.ReviewId == id
                    && (urlId == 0 || y.UrlTableId == urlId))
@@ -2120,6 +2127,14 @@ namespace P2P.Services
 
         public async Task<List<HomeSettingsODTO>> GetHomeSettingsByLangId(int langId)
         {
+            List<string> test = new List<string>();
+            foreach (var platform in await (from x in _context.HomeSettings
+                                               where x.LanguageId == langId
+                                               select x.Platform).ToListAsync())
+            { 
+                test = platform.Split(',').ToList();               
+            }
+
             List<HomeSettingsODTO> homeSettings = await (from x in _context.HomeSettings
                                                          where x.LanguageId == langId
                                                          select new HomeSettingsODTO
@@ -2145,7 +2160,18 @@ namespace P2P.Services
                                                              Investment = x.Investment,
                                                              TestimonialH2 = x.TestimonialH2,
                                                              FeaturedH2 = x.FeaturedH2,
-                                                             Platform = x.Platform,
+                                                             Platform = $"[{x.Platform}]",
+                                                             ReviewList = (from a in _context.Review
+                                                                           .Include(x => x.Serp)
+                                                                           .Include(x => x.Language)
+                                                                           .Include(x => x.Rev_FacebookUrl)
+                                                                           .Include(x => x.Rev_InstagramUrl)
+                                                                           .Include(x => x.Rev_LinkedInUrl)
+                                                                           .Include(x => x.Rev_TwitterUrl)
+                                                                           .Include(x => x.Rev_YoutubeUrl)
+                                                                           .Include(x => x.Rev_ReportLink)
+                                                                           where test.Contains(a.ReviewId.ToString())
+                                                                           select _mapper.Map<ReviewODTO>(a)).ToList() ,
                                                              TrackH2 = (from a in _context.SettingsAttributes
                                                                               .Include(x => x.Language)
                                                                               .Include(x => x.DataType)
@@ -2373,6 +2399,7 @@ namespace P2P.Services
             return from x in _context.Blogs
                    .Include(x => x.Language)
                    .Include(x => x.Category)
+                   .Include(x => x.Serp)
                    where (id == 0 || x.BlogId == id)
                    && (languageId == 0 || x.LanguageId == languageId)
                    && (categoryId == 0 || x.CategoryId == categoryId)
@@ -2391,7 +2418,12 @@ namespace P2P.Services
 
         public async Task<BlogODTO> GetBlogById(int id)
         {
-            return await GetBlog(id, 0, 0).AsNoTracking().SingleOrDefaultAsync();
+            var blog = await GetBlog(id, 0, 0).AsNoTracking().SingleOrDefaultAsync();
+            var serp = await GetSerp((int)blog.SerpId, 0).AsNoTracking().SingleOrDefaultAsync();
+            blog.SerpTitle = serp.SerpTitle;
+            blog.Subtitle = serp.Subtitle;
+            blog.SerpDescription = serp.SerpDescription;
+            return blog;
         }
 
         public async Task<List<BlogODTO>> GetBlogsByLang(int languageId)
@@ -2407,6 +2439,26 @@ namespace P2P.Services
         public async Task<List<UserODTO>> GetAuthorsByLanguageId(int languageId)
         {
             return await GetAuthors(languageId).AsNoTracking().ToListAsync();
+        }
+
+        public async Task<GetItemContentODTO> GetBlogItemContent(int? id)
+        {
+            try
+            {
+                    var page = _context.Blogs.FirstOrDefault(e => e.BlogId == id);
+
+                    var retVal = new GetItemContentODTO
+                    {
+                        PageId = page.BlogId,
+                        Content = page.Content,
+                    };
+
+                    return retVal;            
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
         }
 
         public async Task<BlogODTO> EditBlog(BlogIDTO blogIDTO)
@@ -2430,8 +2482,20 @@ namespace P2P.Services
             blog.CategoryId = blog.CategoryId == 0 ? null : blog.CategoryId;
             blog.AuthorId = blog.AuthorId == 0 ? null : blog.AuthorId;
             blog.SelectedPopularArticle = blog.SelectedPopularArticle == 0 ? null : blog.SelectedPopularArticle;
-            _context.Blogs.Add(blog);
 
+            _context.Blogs.Add(blog);
+            await SaveContextChangesAsync();
+
+            var serp = new Serp { SerpTitle = blogIDTO.SerpTitle,
+                SerpDescription = blogIDTO.SerpDescription,
+                Subtitle = blogIDTO.Subtitle,
+                DataTypeId = BLOG_SETTINGS_TYPEID,
+                TableId = blog.BlogId };
+
+            _context.Serps.Add(serp);
+            await SaveContextChangesAsync();
+
+            blog.SerpId = serp.SerpId;
             await SaveContextChangesAsync();
 
             return await GetBlogById(blog.BlogId);
