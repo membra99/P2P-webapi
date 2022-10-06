@@ -1533,7 +1533,7 @@ namespace P2P.Services
             };
             var ReviewBoxTwo = new ReviewBoxTwoODTO()
             {
-                Highlights = _context.ReviewAttributes.Where(x => x.ReviewId == UrlReviewId && x.DataTypeId == HIGHLIGHT_ATTR_TYPEID).Select(x => _mapper.Map<ReviewAttributeODTO>(x)).ToList(),
+                Highlights = _context.ReviewAttributes.Include(x => x.DataType).Where(x => x.ReviewId == UrlReviewId && x.DataTypeId == HIGHLIGHT_ATTR_TYPEID).Select(x => _mapper.Map<ReviewAttributeODTO>(x)).ToList(),
                 Ratings = new decimal?[] { review.RiskAndReturn, review.Usability, review.Liquidity, review.Support }
             };
 
@@ -1558,8 +1558,8 @@ namespace P2P.Services
             var reviewBoxFive =
             new ReviewBoxFiveODTO()
             {
-                Benefits = _context.ReviewAttributes.Where(x => x.ReviewId == UrlReviewId && x.DataTypeId == BENEFIT_ATTR_TYPEID).Select(x => _mapper.Map<ReviewAttributeODTO>(x)).ToList(),
-                Disadvantages = _context.ReviewAttributes.Where(x => x.ReviewId == UrlReviewId && x.DataTypeId == DISSADVANTAGE_ATTR_TYPEID).Select(x => _mapper.Map<ReviewAttributeODTO>(x)).ToList()
+                Benefits = _context.ReviewAttributes.Include(x => x.DataType).Where(x => x.ReviewId == UrlReviewId && x.DataTypeId == BENEFIT_ATTR_TYPEID).Select(x => _mapper.Map<ReviewAttributeODTO>(x)).ToList(),
+                Disadvantages = _context.ReviewAttributes.Include(x => x.DataType).Where(x => x.ReviewId == UrlReviewId && x.DataTypeId == DISSADVANTAGE_ATTR_TYPEID).Select(x => _mapper.Map<ReviewAttributeODTO>(x)).ToList()
             };
             var statistics = new StatisticsODTO()
             {
@@ -2127,12 +2127,12 @@ namespace P2P.Services
 
         public async Task<List<HomeSettingsODTO>> GetHomeSettingsByLangId(int langId)
         {
-            List<string> test = new List<string>();
+            List<string> reviewPlatforms = new List<string>();
             foreach (var platform in await (from x in _context.HomeSettings
                                                where x.LanguageId == langId
                                                select x.Platform).ToListAsync())
-            { 
-                test = platform.Split(',').ToList();               
+            {
+                 reviewPlatforms = platform.Split(',').ToList();               
             }
 
             List<HomeSettingsODTO> homeSettings = await (from x in _context.HomeSettings
@@ -2170,7 +2170,7 @@ namespace P2P.Services
                                                                            .Include(x => x.Rev_TwitterUrl)
                                                                            .Include(x => x.Rev_YoutubeUrl)
                                                                            .Include(x => x.Rev_ReportLink)
-                                                                           where test.Contains(a.ReviewId.ToString())
+                                                                           where reviewPlatforms.Contains(a.ReviewId.ToString())
                                                                            select _mapper.Map<ReviewODTO>(a)).ToList() ,
                                                              TrackH2 = (from a in _context.SettingsAttributes
                                                                               .Include(x => x.Language)
