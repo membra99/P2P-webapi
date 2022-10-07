@@ -1157,6 +1157,7 @@ namespace P2P.Services
         {
             return from x in _context.FaqTitles
                    .Include(x => x.Page)
+                   .Include(x => x.Blog)
                    where (id == 0 || x.FaqTitleId == id)
                    && (pageId == 0 || x.PageId == pageId)
                    select _mapper.Map<FaqTitleODTO>(x);
@@ -1164,7 +1165,7 @@ namespace P2P.Services
 
         public async Task<FaqTitleODTO> GetFaqTitleById(int id)
         {
-            return await GetFaqTitle(id, 0).AsNoTracking().SingleOrDefaultAsync();
+            return await GetFaqTitle(id, 0).AsNoTracking().FirstOrDefaultAsync();
         }
 
         public async Task<List<GetFaqTitleByReviewIdODTO>> GetFaqTitleByReviewId(int reviewId)
@@ -1683,6 +1684,16 @@ namespace P2P.Services
             return await ReviewRoute;
         }
 
+        //public async Task<PageContentODTO> GetPageContent(int langId,string url)
+        //{
+        //    var urlId = await _context.UrlTables.Where(x => x.URL == url && x.DataTypeId == ROUTES_TYPEID).Select(x => x.UrlTableId).FirstOrDefaultAsync();
+
+        //    var reviewId = await _context.Routes.Where(x => x.LanguageId == langId && x.UrlTableId == urlId).Select(x => x.ReviewId).FirstOrDefaultAsync();
+
+        //    var academy = await _context.Academies.Where(x => x.UrlTableId == urlId).FirstOrDefaultAsync();
+
+        //    if(urlId==null)
+        //}
         public async Task<ReviewODTO> EditReview(ReviewIDTO reviewIDTO)
         {
             var review = _mapper.Map<Review>(reviewIDTO);
@@ -2134,10 +2145,10 @@ namespace P2P.Services
         {
             List<string> reviewPlatforms = new List<string>();
             foreach (var platform in await (from x in _context.HomeSettings
-                                               where x.LanguageId == langId
-                                               select x.Platform).ToListAsync())
+                                            where x.LanguageId == langId
+                                            select x.Platform).ToListAsync())
             {
-                 reviewPlatforms = platform.Split(',').ToList();               
+                reviewPlatforms = platform.Split(',').ToList();
             }
 
             List<HomeSettingsODTO> homeSettings = await (from x in _context.HomeSettings
@@ -2176,7 +2187,7 @@ namespace P2P.Services
                                                                            .Include(x => x.Rev_YoutubeUrl)
                                                                            .Include(x => x.Rev_ReportLink)
                                                                            where reviewPlatforms.Contains(a.ReviewId.ToString())
-                                                                           select _mapper.Map<ReviewODTO>(a)).ToList() ,
+                                                                           select _mapper.Map<ReviewODTO>(a)).ToList(),
                                                              TrackH2 = (from a in _context.SettingsAttributes
                                                                               .Include(x => x.Language)
                                                                               .Include(x => x.DataType)
