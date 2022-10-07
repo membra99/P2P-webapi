@@ -84,6 +84,18 @@ namespace P2P.WebApi.Controllers.MainData
             return review;
         }
 
+        //GET: api/Review
+        [HttpGet("GetReviewBoxInfo/{Id}")]
+        public async Task<ActionResult<GetCampaignBonusODTO>> GetReviewBoxInfo(int Id)
+        {
+            var review = await _mainDataServices.GetReviewBoxInfo(Id);
+            if (review == null)
+            {
+                return NotFound();
+            }
+            return review;
+        }
+
         //POST: api/Review
         [HttpPost("AddCount/{name}")]
         public async Task<ActionResult> AddCount(string name)
