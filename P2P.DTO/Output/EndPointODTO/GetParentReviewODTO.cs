@@ -13,6 +13,7 @@ namespace P2P.DTO.Output.EndPointODTO
         public string Logo { get; set; }
         public string Name { get; set; }
         public int? LinkTo { get; set; }
+        public string LinkToUrl { get; set; }
         public bool? NewPlatform { get; set; }
         public decimal? Interest { get; set; }
         public int? SecuredBy { get; set; }

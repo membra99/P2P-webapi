@@ -1581,10 +1581,11 @@ namespace P2P.Services
         public async Task<GetReviewsByRouteODTO> GetReviewsByRoute(string url, int langId)
         {
             int UrlReviewId = await (from x in _context.Routes
+                                     .Include(x => x.UrlTable)
                                      where (x.UrlTable.URL == url)
                                      && (x.LanguageId == langId)
                                      select x.ReviewId).FirstOrDefaultAsync();
-            var review = await _context.Review.Include(x => x.Serp).FirstOrDefaultAsync(x => x.ReviewId == UrlReviewId);
+            var review = await _context.Review.Include(x => x.Serp).Include(x=>x.Rev_ReportLink).FirstOrDefaultAsync(x => x.ReviewId == UrlReviewId);
 
             var newsfeed = await (from x in _context.NewsFeeds
                                   where (x.ReviewId == review.ReviewId)
@@ -1646,6 +1647,7 @@ namespace P2P.Services
                 InvestorsLoss = review.InvestorsLoss,
                 StatisticsOtherCurrency = review.StatisticsOtherCurrency,
                 ReportLink = review.ReportLink,
+                ReportLinkUrl = review.Rev_ReportLink.URL,
                 StatisticsCurrency = review.StatisticsCurrency
             };
             var CompanyInfo = new CompanyInfoODTO()
@@ -1783,6 +1785,7 @@ namespace P2P.Services
                                    Logo = x.Logo,
                                    Name = x.Name,
                                    LinkTo = a.UrlTableId,
+                                   LinkToUrl = a.UrlTable.URL,
                                    NewPlatform = x.NewPlatform,
                                    Interest = x.Interest,
                                    SecuredBy = x.SecuredBy,

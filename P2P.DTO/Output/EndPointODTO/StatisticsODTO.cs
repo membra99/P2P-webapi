@@ -17,6 +17,7 @@ namespace P2P.DTO.Output.EndPointODTO
         public long? InvestorsLoss { get; set; }
         public string StatisticsOtherCurrency { get; set; }
         public int? ReportLink { get; set; }
+        public string ReportLinkUrl { get; set; }
         public string StatisticsCurrency { get; set; }
     }
 }
