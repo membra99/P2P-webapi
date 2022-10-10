@@ -1647,8 +1647,8 @@ namespace P2P.Services
                 FinancialReport = review.FinancialReport,
                 InvestorsLoss = review.InvestorsLoss,
                 StatisticsOtherCurrency = review.StatisticsOtherCurrency,
-                ReportLink = review.ReportLink,
-                ReportLinkUrl = review.Rev_ReportLink.URL,
+                ReportLink = (review.ReportLink!=null)? review.ReportLink : null,
+                ReportLinkUrl = (review.ReportLink != null) ? review.Rev_ReportLink.URL : "",
                 StatisticsCurrency = review.StatisticsCurrency
             };
             var CompanyInfo = new CompanyInfoODTO()
