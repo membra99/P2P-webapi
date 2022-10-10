@@ -1425,6 +1425,7 @@ namespace P2P.Services
 
             if (urlId == null) return null;
             var pd = await _context.Pages.Include(x => x.Serp).Where(x => x.ReviewId == reviewId).FirstOrDefaultAsync();
+            if (pd == null) return null;
             var rData = await GetReviewBoxInfo((int)pd.ReviewId);
             var page = new PageContentODTO
             {
@@ -1585,7 +1586,7 @@ namespace P2P.Services
                                      where (x.UrlTable.URL == url)
                                      && (x.LanguageId == langId)
                                      select x.ReviewId).FirstOrDefaultAsync();
-            var review = await _context.Review.Include(x => x.Serp).Include(x=>x.Rev_ReportLink).FirstOrDefaultAsync(x => x.ReviewId == UrlReviewId);
+            var review = await _context.Review.Include(x => x.Serp).Include(x => x.Rev_ReportLink).FirstOrDefaultAsync(x => x.ReviewId == UrlReviewId);
 
             var newsfeed = await (from x in _context.NewsFeeds
                                   where (x.ReviewId == review.ReviewId)
@@ -1670,7 +1671,7 @@ namespace P2P.Services
                 SerpDescription = review.Serp.SerpDescription,
                 SerpTitle = review.Serp.SerpTitle,
                 Subtitle = review.Serp.Subtitle,
-                RiskReturn = review.RiskAndReturn,
+                RiskReturn = review.RiskReturn,
                 Address = review.OfficeAddress,
                 Content = review.ReviewContent,
                 Count = (review.Count != null) ? review.Count : 0,

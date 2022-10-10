@@ -37,7 +37,7 @@ namespace P2P.WebApi.Controllers.MainData
         public async Task<ActionResult<IEnumerable<GetFaqTitleByReviewIdODTO>>> GetFaqTitleByReview(int reviewId)
         {
             var faqTitles = await _mainDataServices.GetFaqTitleByReviewId(reviewId);
-            if (faqTitles == null) return NotFound();
+            if (faqTitles.Count==0 || faqTitles==null) return NotFound();
             return faqTitles;
         }
 
