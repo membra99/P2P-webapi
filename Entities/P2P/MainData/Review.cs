@@ -171,7 +171,6 @@ namespace Entities.P2P.MainData
         public UrlTable Rev_ReportLink { get; set; }
 
         public Serp Serp { get; set; }
-        public ICollection<Routes> Routes { get; set; }
         public ICollection<FaqTitle> FaqTitles { get; set; }
         public ICollection<Page> Pages { get; set; }
         public ICollection<ReviewAttribute> ReviewAttribute { get; set; }

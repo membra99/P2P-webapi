@@ -293,10 +293,6 @@ namespace Entities.Context
                 entity.HasOne(x => x.UrlTable)
                     .WithMany(x => x.Routes)
                     .OnDelete(DeleteBehavior.Restrict);
-
-                entity.HasOne(x => x.Review)
-                    .WithMany(x => x.Routes)
-                    .OnDelete(DeleteBehavior.Restrict);
             });
 
             modelBuilder.Entity<Academy>(entity =>
@@ -327,7 +323,6 @@ namespace Entities.Context
                 entity.HasOne(x => x.DataType)
                         .WithMany(x => x.PagesSettings)
                         .OnDelete(DeleteBehavior.Restrict);
-                
 
                 entity.HasOne(x => x.Serp)
                     .WithMany(x => x.PagesSettings)

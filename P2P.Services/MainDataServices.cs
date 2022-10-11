@@ -778,7 +778,7 @@ namespace P2P.Services
                                    Stars = (decimal)(((d.RiskAndReturn != null ? d.RiskAndReturn : 0) + (d.Usability != null ? d.Usability : 0) +
                                                (d.Liquidity != null ? d.Liquidity : 0) + (d.Support != null ? d.Support : 0)) / 4),
                                    ExternalLinkKey = d.Name.ToLower(),
-                                   ReviewUrlId = _context.Routes.FirstOrDefault(e => e.DataTypeId == REVIEW_TYPEID && e.ReviewId == d.ReviewId).UrlTableId,
+                                   ReviewUrlId = _context.Routes.FirstOrDefault(e => e.DataTypeId == REVIEW_TYPEID && e.TableId == d.ReviewId).UrlTableId,
                                    Terms = x.CashBack_terms,
                                    ReviewBoxThree = new ReviewBoxThreeODTO
                                    {
@@ -821,7 +821,7 @@ namespace P2P.Services
                                       Stars = (decimal)(((d.RiskAndReturn != null ? d.RiskAndReturn : 0) + (d.Usability != null ? d.Usability : 0) +
                                          (d.Liquidity != null ? d.Liquidity : 0) + (d.Support != null ? d.Support : 0)) / 4),
                                       ExternalLinkKey = d.Name.ToLower(),
-                                      ReviewUrlId = _context.Routes.FirstOrDefault(e => e.DataTypeId == REVIEW_TYPEID && e.ReviewId == d.ReviewId).UrlTableId,
+                                      ReviewUrlId = _context.Routes.FirstOrDefault(e => e.DataTypeId == REVIEW_TYPEID && e.TableId == d.ReviewId).UrlTableId,
                                       Terms = x.CashBack_terms,
                                   }).OrderByDescending(e => e.Stars).ToListAsync();
 
@@ -920,7 +920,6 @@ namespace P2P.Services
                    .Include(x => x.Language)
                    .Include(x => x.DataType)
                    .Include(x => x.UrlTable)
-                   .Include(x => x.Review)
                    where (id == 0 || x.RoutesId == id)
                    && (languageId == 0 || x.LanguageId == languageId)
                    select _mapper.Map<RoutesODTO>(x);
@@ -1387,8 +1386,8 @@ namespace P2P.Services
                                        && x.UrlTableId == urlId
                                        select x).FirstOrDefaultAsync();
 
-                    if (route.ReviewId == null) throw new Exception("No data available.");
-                    var pd = _context.Pages.FirstOrDefault(e => e.ReviewId == route.RoutesId);
+                    if (route.TableId == null) throw new Exception("No data available.");
+                    var pd = await _context.Pages.Where(e => e.ReviewId == route.TableId && route.DataTypeId == REVIEW_TYPEID).FirstOrDefaultAsync();
                     var retVal = new GetItemContentODTO
                     {
                         PageId = pd.PageId,
@@ -1419,7 +1418,7 @@ namespace P2P.Services
                 urlId = await _context.UrlTables.Where(x => x.URL == url && (x.DataTypeId == ROUTES_TYPEID || x.DataTypeId == ACADEMY_TYPEID)).Select(x => x.UrlTableId).FirstOrDefaultAsync();
                 urlAcd = await _context.UrlTables.Where(x => x.URL == url && (x.DataTypeId == ROUTES_TYPEID || x.DataTypeId == ACADEMY_TYPEID)).Select(x => x.UrlTableId).FirstOrDefaultAsync();
             }
-            var reviewId = await _context.Routes.Where(x => x.LanguageId == langId && x.UrlTableId == urlId).Select(x => x.ReviewId).FirstOrDefaultAsync();
+            var reviewId = await _context.Routes.Where(x => x.LanguageId == langId && x.UrlTableId == urlId).Select(x => x.TableId).FirstOrDefaultAsync();
 
             var academy = await _context.Academies.Where(x => x.UrlTableId == urlAcd).FirstOrDefaultAsync();
 
@@ -1568,7 +1567,7 @@ namespace P2P.Services
                    .Include(x => x.Rev_TwitterUrl)
                    .Include(x => x.Rev_YoutubeUrl)
                    .Include(x => x.Rev_ReportLink)
-                   join y in _context.Routes on x.ReviewId equals y.ReviewId
+                   join y in _context.Routes.Where(x => x.DataTypeId == REVIEW_TYPEID) on x.ReviewId equals y.TableId
                    where (id == 0 || x.ReviewId == id
                    && (urlId == 0 || y.UrlTableId == urlId))
                    select _mapper.Map<ReviewODTO>(x);
@@ -1585,7 +1584,7 @@ namespace P2P.Services
                                      .Include(x => x.UrlTable)
                                      where (x.UrlTable.URL == url)
                                      && (x.LanguageId == langId)
-                                     select x.ReviewId).FirstOrDefaultAsync();
+                                     select x.TableId).FirstOrDefaultAsync();
             var review = await _context.Review.Include(x => x.Serp).Include(x => x.Rev_ReportLink).FirstOrDefaultAsync(x => x.ReviewId == UrlReviewId);
 
             var newsfeed = await (from x in _context.NewsFeeds
@@ -1647,7 +1646,7 @@ namespace P2P.Services
                 FinancialReport = review.FinancialReport,
                 InvestorsLoss = review.InvestorsLoss,
                 StatisticsOtherCurrency = review.StatisticsOtherCurrency,
-                ReportLink = (review.ReportLink!=null)? review.ReportLink : null,
+                ReportLink = (review.ReportLink != null) ? review.ReportLink : null,
                 ReportLinkUrl = (review.ReportLink != null) ? review.Rev_ReportLink.URL : "",
                 StatisticsCurrency = review.StatisticsCurrency
             };
@@ -1711,7 +1710,7 @@ namespace P2P.Services
                                   //(decimal)(((d.RiskAndReturn != null ? d.RiskAndReturn : 0) + (d.Usability != null ? d.Usability : 0) +
                                   //(d.Liquidity != null ? d.Liquidity : 0) + (d.Support != null ? d.Support : 0)) / 4),
                                   ExternalLinkKey = d.Name.ToLower(),
-                                  ReviewUrlId = _context.Routes.FirstOrDefault(e => e.DataTypeId == REVIEW_TYPEID && e.ReviewId == d.ReviewId).UrlTableId,
+                                  ReviewUrlId = _context.Routes.FirstOrDefault(e => e.DataTypeId == REVIEW_TYPEID && e.TableId == d.ReviewId).UrlTableId,
                                   Terms = x.CashBack_terms,
                                   ReviewBoxThree = new ReviewBoxThreeODTO
                                   {
@@ -1776,7 +1775,7 @@ namespace P2P.Services
         {
             var lang = _context.Languages.First(e => e.LanguageId == langId);
             var ReviewRoute = (from x in _context.Review
-                               join r in _context.Routes on x.ReviewId equals r.ReviewId into c
+                               join r in _context.Routes.Where(x => x.DataTypeId == REVIEW_TYPEID) on x.ReviewId equals r.TableId into c
                                from a in c.DefaultIfEmpty()
                                where (a.DataTypeId == REVIEW_TYPEID && x.LanguageId == langId)
                                select new GetParentReviewODTO
@@ -2090,7 +2089,7 @@ namespace P2P.Services
                 UrlTableId = x.UrlTableId,
                 URL = x.UrlTable.URL,
                 RedFlag = x.RedFlag,
-                Route = _context.Routes.Where(e => e.DataTypeId == REVIEW_TYPEID && e.ReviewId == x.ReviewId).Select(e => e.UrlTableId).FirstOrDefault(),
+                Route = _context.Routes.Where(e => e.DataTypeId == REVIEW_TYPEID && e.TableId == x.ReviewId).Select(e => e.UrlTableId).FirstOrDefault(),
                 Logo = _context.Review.Where(e => e.ReviewId == x.ReviewId).Select(e => e.Logo).FirstOrDefault()
             }).OrderBy(x => x.CreatedDate).ToListAsync();
 
@@ -2104,7 +2103,7 @@ namespace P2P.Services
                 return await (from x in _context.NewsFeeds
                               select new GetNewsFeedListODTO
                               {
-                                  Route = _context.Routes.Where(e => e.DataTypeId == REVIEW_TYPEID && e.ReviewId == x.ReviewId).Select(e => e.UrlTableId).FirstOrDefault(),
+                                  Route = _context.Routes.Where(e => e.DataTypeId == REVIEW_TYPEID && e.TableId == x.ReviewId).Select(e => e.UrlTableId).FirstOrDefault(),
                                   NewsText = x.NewsText,
                                   CreatedDate = x.CreatedDate,
                                   NewsFeedId = x.NewsFeedId,
@@ -2119,7 +2118,7 @@ namespace P2P.Services
             else
             {
                 return await (from x in _context.NewsFeeds
-                              join r in _context.Routes.Where(e => e.DataTypeId == REVIEW_TYPEID) on x.ReviewId equals r.ReviewId into c
+                              join r in _context.Routes.Where(e => e.DataTypeId == REVIEW_TYPEID) on x.ReviewId equals r.TableId into c
                               from b in c.DefaultIfEmpty()
                               select new GetNewsFeedListODTO
                               {
