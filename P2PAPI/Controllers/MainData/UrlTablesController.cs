@@ -47,6 +47,15 @@ namespace P2P.WebApi.Controllers.MainData
             return url;
         }
 
+        //GET: api/UrlTables
+        [HttpGet("GetUrl")]
+        public async Task<ActionResult<IEnumerable<GetUrlODTO>>> GetUrl(string urlLink)
+        {
+            var url = await _mainDataServices.GetUrl(urlLink);
+            if (url == null) return NotFound();
+            return url;
+        }
+
         //PUT: api/UrlTables
         [HttpPut]
         public async Task<ActionResult<UrlTableODTO>> PutUrlTable(UrlTableIDTO urlTableIDTO)

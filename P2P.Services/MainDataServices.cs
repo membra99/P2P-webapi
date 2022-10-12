@@ -18,6 +18,7 @@ using System.Data;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
+using System.Security.Policy;
 using System.Threading.Tasks;
 using System.Xml.Linq;
 using DataType = Entities.P2P.MainData.DataType;
@@ -529,6 +530,23 @@ namespace P2P.Services
         public async Task<List<UrlTableODTO>> GetUrlTableByDataTypeId(int dataTypeId)
         {
             return await GetUrlTable(0, dataTypeId).ToListAsync();
+        }
+
+        public async Task<List<GetUrlODTO>> GetUrl(string url)
+        {
+            return await (from x in _context.Routes
+                         .Include(x => x.DataType)
+                         .Include(x => x.UrlTable)
+                          where (x.UrlTable.URL == url)
+                          select new GetUrlODTO
+                          {
+                              UrlTableID = x.UrlTableId,
+                              Url = x.UrlTable.URL,
+                              DataTypeID = x.DataTypeId,
+                              DataTypeName = x.DataType.DataTypeName,
+                              LanguageID = x.LanguageId,
+                              TableId = x.TableId,
+                          }).ToListAsync();
         }
 
         public async Task<List<GetUrlTableByDataTypeIdAndLangODTO>> GetUrlTableByDataTypeIdAndLang(int dataTypeId, int langId)
@@ -1336,7 +1354,7 @@ namespace P2P.Services
 
             foreach (var faqList in faqLists)
             {
-                faqList.FaqTitleId = 0;
+                faqList.FaqPageListId = 0;
                 _context.FaqLists.Add(faqList);
             }
             await SaveContextChangesAsync();
