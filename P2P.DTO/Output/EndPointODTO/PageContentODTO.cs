@@ -18,5 +18,7 @@ namespace P2P.DTO.Output.EndPointODTO
         public string Subtitle { get; set; }
         public string SerpTitle { get; set; }
         public string SerpDescription { get; set; }
+        public int DataTypeId { get; set; }
+        public string DataTypeName { get; set; }
     }
 }

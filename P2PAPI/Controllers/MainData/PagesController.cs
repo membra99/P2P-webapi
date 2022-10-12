@@ -73,9 +73,9 @@ namespace P2P.WebApi.Controllers.MainData
         }
 
         [HttpGet("GetPageContent")]
-        public async Task<ActionResult<PageContentODTO>> GetPageContent(int langId, string url)
+        public async Task<ActionResult<PageContentODTO>> GetPageContent(int langId, int url, int dataType)
         {
-            var page = await _mainDataServices.GetPageContent(langId, url);
+            var page = await _mainDataServices.GetPageContent(langId, url, dataType);
             if (page == null) return NotFound();
             return page;
         }

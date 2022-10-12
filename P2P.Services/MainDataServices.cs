@@ -5,6 +5,7 @@ using Entities.P2P;
 using Entities.P2P.MainData;
 using Entities.P2P.MainData.Settings;
 using Microsoft.EntityFrameworkCore;
+using NetTopologySuite.Index.HPRtree;
 using NetTopologySuite.Noding;
 using P2P.Base.Services;
 using P2P.DTO.Input;
@@ -47,10 +48,17 @@ namespace P2P.Services
         public const int FOOTER_SETTINGS_TYPEID = 13;
         public const int HOME_SETTINGS_TYPEID = 14;
         public const int ABOUT_SETTINGS_TYPEID = 15;
+        public const int GENERAL_TYPEID = 16;
+        public const int CASHBACK_BONUS_TYPEID = 17;
+        public const int ABOUT_TYPEID = 18;
         public const int NEWS_SETTINGS_TYPEID = 19;
         public const int BONUS_SETTINGS_TYPEID = 20;
         public const int ACADEMY_SETTINGS_TYPEID = 21;
         public const int REVIEW_SETTINGS_TYPEID = 22;
+        public const int MENU_ACADEMY_TYPEID = 23;
+        public const int MENU_HOME_TYPEID = 24;
+        public const int MENU_NEWS_TYPEID = 25;
+        public const int MENU_REVIEW_TYPEID = 26;
         public const int NAVIGATION_SETTINGS_TYPEID = 27;
         public const int HIGHLIGHT_ATTR_TYPEID = 28;
         public const int BENEFIT_ATTR_TYPEID = 29;
@@ -1333,8 +1341,8 @@ namespace P2P.Services
             {
                 PageId = page.PageId,
                 Page_Title = page.PageTitle,
-                SerpId = page.SerpId,
-                DataTypeId = page.DataTypeId,
+                SerpId = (int)page.SerpId,
+                DataTypeId = (int)page.DataTypeId,
                 ReviewContentDropdowns = reviews,
                 ReviewId = (int)page.ReviewId,
                 PopularArticles = popularArticles,
@@ -1356,7 +1364,7 @@ namespace P2P.Services
                            {
                                PageId = x.PageId,
                                Page_Title = x.PageTitle,
-                               DataTypeId = x.DataTypeId,
+                               DataTypeId = (int)x.DataTypeId,
                                DataTypeName = x.DataType.DataTypeName
                            }).OrderByDescending(x => x.PageId).ToListAsync();
 
@@ -1404,42 +1412,51 @@ namespace P2P.Services
 
         //TODO /Pages/GetPageContent
 
-        public async Task<PageContentODTO> GetPageContent(int langId, string url)
+        public async Task<PageContentODTO> GetPageContent(int langId, int urlId, int dataTypeId)
         {
-            int? urlId;
-            int? urlAcd;
-            if (url.StartsWith('/'))
-            {
-                urlId = await _context.UrlTables.Where(x => x.URL == url.Substring(4) && (x.DataTypeId == ROUTES_TYPEID || x.DataTypeId == ACADEMY_TYPEID)).Select(x => x.UrlTableId).FirstOrDefaultAsync();
-                urlAcd = await _context.UrlTables.Where(x => x.URL == url && (x.DataTypeId == ROUTES_TYPEID || x.DataTypeId == ACADEMY_TYPEID)).Select(x => x.UrlTableId).FirstOrDefaultAsync();
-            }
-            else
-            {
-                urlId = await _context.UrlTables.Where(x => x.URL == url && (x.DataTypeId == ROUTES_TYPEID || x.DataTypeId == ACADEMY_TYPEID)).Select(x => x.UrlTableId).FirstOrDefaultAsync();
-                urlAcd = await _context.UrlTables.Where(x => x.URL == url && (x.DataTypeId == ROUTES_TYPEID || x.DataTypeId == ACADEMY_TYPEID)).Select(x => x.UrlTableId).FirstOrDefaultAsync();
-            }
-            var reviewId = await _context.Routes.Where(x => x.LanguageId == langId && x.UrlTableId == urlId).Select(x => x.TableId).FirstOrDefaultAsync();
+            var tableId = await _context.Routes.Where(x => x.LanguageId == langId && x.UrlTableId == urlId && x.DataTypeId == dataTypeId).Select(x => x.TableId).FirstOrDefaultAsync();
+            var url = await _context.Routes.Include(x => x.UrlTable).Where(x => x.LanguageId == langId && x.UrlTableId == urlId && x.DataTypeId == dataTypeId).Select(x => x.UrlTable.URL).FirstOrDefaultAsync();
 
-            var academy = await _context.Academies.Where(x => x.UrlTableId == urlAcd).FirstOrDefaultAsync();
+            if (langId == 1)
+            {
+                url = "/en/" + url;
+            }
+            if (langId == 2)
+            {
+                url = "/de/" + url;
+            }
+
+            var academy = await _context.Academies.Include(x => x.UrlTable).Where(x => x.UrlTable.URL == url).FirstOrDefaultAsync();
 
             if (urlId == null) return null;
-            var pd = await _context.Pages.Include(x => x.Serp).Where(x => x.ReviewId == reviewId).FirstOrDefaultAsync();
-            if (pd == null) return null;
-            var rData = await GetReviewBoxInfo((int)pd.ReviewId);
-            var page = new PageContentODTO
+            var page = new PageContentODTO();
+            var rData = new GetCampaignBonusODTO();
+            if (dataTypeId == CASHBACK_BONUS_TYPEID || dataTypeId == ACADEMY_TYPEID || dataTypeId == GENERAL_TYPEID || dataTypeId == ABOUT_TYPEID)
             {
-                Page_Title = pd.PageTitle,
-                Content = pd.Content,
-                PageId = pd.PageId,
-                ReviewData = rData,
-                SerpId = pd.SerpId,
-                SerpDescription = pd.Serp.SerpDescription,
-                SerpTitle = pd.Serp.SerpTitle,
-                Subtitle = pd.Serp.Subtitle
-            };
+                var pd = await _context.Pages.Include(x => x.Serp).Include(x => x.DataType).Where(x => x.PageId == tableId).FirstOrDefaultAsync();
+
+                if (pd == null) return null;
+                if (pd.ReviewId != null)
+                {
+                    rData = await GetReviewBoxInfo((int)pd.ReviewId);
+                }
+                page = new PageContentODTO
+                {
+                    Page_Title = pd.PageTitle,
+                    Content = pd.Content,
+                    PageId = pd.PageId,
+                    ReviewData = pd.ReviewId != null ? rData : null,
+                    SerpId = (int)pd.SerpId,
+                    SerpDescription = pd.Serp.SerpDescription,
+                    SerpTitle = pd.Serp.SerpTitle,
+                    Subtitle = pd.Serp.Subtitle,
+                    DataTypeId = (int)pd.DataTypeId,
+                    DataTypeName = pd.DataType.DataTypeName
+                };
+            }
             if (academy != null)
             {
-                var popularArticles = (from pa in _context.PageArticles.Where(e => e.PageId == pd.PageId)
+                var popularArticles = (from pa in _context.PageArticles.Where(e => e.PageId == page.PageId)
                                        join a in _context.Academies on pa.AcademyId equals a.AcademyId into g
                                        from b in g.DefaultIfEmpty()
                                        select new PopularArticlesForPageContentODTO
@@ -1858,6 +1875,16 @@ namespace P2P.Services
         public async Task<List<AcademyODTO>> GetAcademyByLangId(int langId)
         {
             return await GetAcademy(0, langId, null).ToListAsync();
+        }
+
+        public async Task<List<PopularArticlesODTO>> GetAcademyValueByLangId(int langId)
+        {
+            var popularArticles = _context.Academies.Select(e => new PopularArticlesODTO
+            {
+                Value = e.AcademyId,
+                Label = e.Title
+            }).ToList();
+            return popularArticles;
         }
 
         public async Task<List<AcademyODTO>> GetListByLangOrTag(int langId, string tag)

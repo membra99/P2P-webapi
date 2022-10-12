@@ -37,6 +37,18 @@ namespace P2P.WebApi.Controllers.MainData
         }
 
         //GET: api/Academy
+        [HttpGet("GetAcademyValueByLangId")]
+        public async Task<ActionResult<IEnumerable<PopularArticlesODTO>>> GetAcademyValueByLangId(int langId)
+        {
+            var academy = await _mainDataServices.GetAcademyValueByLangId(langId);
+            if (academy == null)
+            {
+                return NotFound();
+            }
+            return academy;
+        }
+
+        //GET: api/Academy
         [HttpGet("GetAcademy/{langId}")]
         public async Task<ActionResult<IEnumerable<AcademyODTO>>> GetAcademyByLangId(int langId)
         {
