@@ -1622,7 +1622,7 @@ namespace P2P.Services
 
         #region Review
 
-        private IQueryable<ReviewODTO> GetReview(int id, int urlId)
+        private IQueryable<ReviewODTO> GetReview(int id)
         {
             return from x in _context.Review
                    .Include(z => z.Serp)
@@ -1633,15 +1633,13 @@ namespace P2P.Services
                    .Include(x => x.Rev_TwitterUrl)
                    .Include(x => x.Rev_YoutubeUrl)
                    .Include(x => x.Rev_ReportLink)
-                   join y in _context.Routes.Where(x => x.DataTypeId == REVIEW_TYPEID) on x.ReviewId equals y.TableId
-                   where (id == 0 || x.ReviewId == id
-                   && (urlId == 0 || y.UrlTableId == urlId))
+                   where (id == 0 || x.ReviewId == id)
                    select _mapper.Map<ReviewODTO>(x);
         }
 
         public async Task<ReviewODTO> GetReviewById(int id)
         {
-            return await GetReview(id, 0).AsNoTracking().FirstOrDefaultAsync();
+            return await GetReview(id).AsNoTracking().FirstOrDefaultAsync();
         }
 
         public async Task<GetReviewsByRouteODTO> GetReviewsByRoute(string url, int langId)
