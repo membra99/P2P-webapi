@@ -456,6 +456,25 @@ namespace P2P.Services
             return await GetReviewAttr(id).AsNoTracking().SingleOrDefaultAsync();
         }
 
+        public async Task<List<ReviewAttributeODTO>> GetReviewAttributeByReviewID(int ReviewId)
+        {
+            List<ReviewAttributeODTO> reviews = await (from x in _context.ReviewAttributes
+                                                       .Include(x => x.DataType)
+                                                       .Include(x => x.Review)
+                                                       where x.ReviewId == ReviewId
+                                                       select new ReviewAttributeODTO
+                                                       {
+                                                           ReviewAttributeId = x.ReviewAttributeId,
+                                                           ReviewId = x.ReviewId,
+                                                           Name = x.Review.Name,
+                                                           DataTypeId = x.DataTypeId,
+                                                           DataTypeName = x.DataType.DataTypeName,
+                                                           Index = x.Index,
+                                                           Value = x.Value
+                                                       }).ToListAsync();
+            return reviews;
+        }
+
         public async Task<ReviewAttributeODTO> EditReviewAttribute(ReviewAttributeIDTO reviewAttributeIDTO)
         {
             var reviewAttribute = _mapper.Map<ReviewAttribute>(reviewAttributeIDTO);
@@ -1324,7 +1343,6 @@ namespace P2P.Services
 
             return faqLists.Select(x => _mapper.Map<FaqListODTO>(x)).ToList();
         }
-
 
         public async Task<FaqListODTO> DeleteFaqList(int id)
         {

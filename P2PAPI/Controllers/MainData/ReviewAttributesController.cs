@@ -5,6 +5,8 @@ using P2P.DTO.Output;
 using P2P.Services;
 using System.Threading.Tasks;
 using System;
+using System.Collections;
+using System.Collections.Generic;
 
 namespace P2P.WebApi.Controllers.MainData
 {
@@ -25,6 +27,15 @@ namespace P2P.WebApi.Controllers.MainData
         public async Task<ActionResult<ReviewAttributeODTO>> GetById(int id)
         {
             var review = await _mainDataServices.GetReviewAttribute(id);
+            if (review == null) return NotFound();
+            return review;
+        }
+
+        //GET: api/ReviewAttribute
+        [HttpGet("GetReviewAttributeByReviewID/{ReviewId}")]
+        public async Task<ActionResult<IEnumerable<ReviewAttributeODTO>>> GetReviewAttributeByReviewID(int ReviewId)
+        {
+            var review = await _mainDataServices.GetReviewAttributeByReviewID(ReviewId);
             if (review == null) return NotFound();
             return review;
         }
