@@ -12,7 +12,8 @@ namespace P2P.DTO.Output
         public int? PageId { get; set; }
         public string Page_Title { get; set; }
         public int? ReviewId { get; set; }
-        public string Name { get; set; } 
+        public string Name { get; set; }
+        public int? BlogId { get; set; }
         public string Title { get; set; }
     }
 }

@@ -35,6 +35,17 @@ namespace P2P.WebApi.Controllers.MainData
             return dataType;
         }
 
+        [HttpGet("GetAllDataTypes")]
+        public async Task<ActionResult<IEnumerable<DataTypeODTO>>> GetAllDataTypes()
+        {
+            var dataType = await _mainDataServices.GetAllDataTypes();
+            if (dataType == null)
+            {
+                return NotFound();
+            }
+            return dataType;
+        }
+
         //PUT: api/DataTypes
         [HttpPut]
         public async Task<ActionResult<DataTypeODTO>> PutDataType(DataTypeIDTO dataTypeIDTO)

@@ -29,7 +29,9 @@ namespace P2P.DTO.Output
         public int? Investment { get; set; }
         public string TestimonialH2 { get; set; }
         public string FeaturedH2 { get; set; }
+
         public string Platform { get; set; }
+        public List<ReviewODTO> ReviewList { get; set; } = new List<ReviewODTO>();
 
         public List<SettingsAttributeODTO> TrackH2 { get; set; }
         public List<SettingsAttributeODTO> TrackH3 { get; set; }

@@ -64,8 +64,7 @@ namespace P2P.Base.Services.Mapping
             CreateMap<Routes, RoutesODTO>()
               .ForMember(dest => dest.DataTypeName, source => source.MapFrom(m => m.DataType.DataTypeName))
               .ForMember(dest => dest.LanguageName, source => source.MapFrom(m => m.Language.LanguageName))
-              .ForMember(dest => dest.URL, source => source.MapFrom(m => m.UrlTable.URL))
-              .ForMember(dest => dest.Name, source => source.MapFrom(m => m.Review.Name));
+              .ForMember(dest => dest.URL, source => source.MapFrom(m => m.UrlTable.URL));
 
             CreateMap<RoutesIDTO, Routes>();
 
@@ -84,12 +83,12 @@ namespace P2P.Base.Services.Mapping
 
             CreateMap<Review, ReviewODTO>()
                .ForMember(dest => dest.Languagename, source => source.MapFrom(m => m.Language.LanguageName))
-               .ForMember(dest => dest.FacebookUrl, source => source.MapFrom(m => m.Rev_FacebookUrl.Rev_FacebookUrls))
-               .ForMember(dest => dest.InstagramUrl, source => source.MapFrom(m => m.Rev_InstagramUrl.Rev_InstagramUrls))
-               .ForMember(dest => dest.LinkedInUrl, source => source.MapFrom(m => m.Rev_LinkedInUrl.Rev_LinkedIdUrls))
-               .ForMember(dest => dest.TwitterUrl, source => source.MapFrom(m => m.Rev_TwitterUrl.Rev_TwitterUrls))
-               .ForMember(dest => dest.YoutubeUrl, source => source.MapFrom(m => m.Rev_YoutubeUrl.Rev_YoutubeUrls))
-               .ForMember(dest => dest.ReportLink, source => source.MapFrom(m => m.Rev_ReportLink.Rev_ReportLinks))
+               .ForMember(dest => dest.FacebookUrlName, source => source.MapFrom(m => m.Rev_FacebookUrl.URL))
+               .ForMember(dest => dest.InstagramUrlName, source => source.MapFrom(m => m.Rev_InstagramUrl.URL))
+               .ForMember(dest => dest.LinkedInUrlName, source => source.MapFrom(m => m.Rev_LinkedInUrl.URL))
+               .ForMember(dest => dest.TwitterUrlName, source => source.MapFrom(m => m.Rev_TwitterUrl.URL))
+               .ForMember(dest => dest.YoutubeUrlName, source => source.MapFrom(m => m.Rev_YoutubeUrl.URL))
+               .ForMember(dest => dest.ReportUrlName, source => source.MapFrom(m => m.Rev_ReportLink.URL))
                .ForMember(dest => dest.SerpTitle, source => source.MapFrom(m => m.Serp.SerpTitle))
                .ForMember(dest => dest.SerpDescription, source => source.MapFrom(m => m.Serp.SerpDescription))
                .ForMember(dest => dest.Subtitle, source => source.MapFrom(m => m.Serp.Subtitle));
