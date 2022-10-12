@@ -87,6 +87,20 @@ namespace P2P.WebApi.Controllers.MainData
             }
         }
 
+        //POST: api/FaqList/FaqTitles
+        [HttpPost("FaqTitles")]
+        public async Task<ActionResult<List<FaqTitleODTO>>> PostFaqTitles(List<FaqTitleIDTO> faqTitleIDTO)
+        {
+            try
+            {
+                return await _mainDataServices.AddFaqTitles(faqTitleIDTO);
+            }
+            catch (Exception e)
+            {
+                throw new Exception(e.Message);
+            }
+        }
+
         //DELETE: api/FaqTitle/1
         [HttpDelete("{id}")]
         public async Task<ActionResult<FaqTitleODTO>> DeleteFaqTitle(int id)

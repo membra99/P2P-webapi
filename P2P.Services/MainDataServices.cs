@@ -1125,6 +1125,22 @@ namespace P2P.Services
             return await GetFaqTitleById(faqTitle.FaqTitleId);
         }
 
+        public async Task<List<FaqTitleODTO>> AddFaqTitles(List<FaqTitleIDTO> faqTitleIDTO)
+        {
+            var faqTitles = faqTitleIDTO.Select(x => _mapper.Map<FaqTitle>(x)).ToList();
+
+            foreach (var faqTitle in faqTitles)
+            {
+                faqTitle.FaqTitleId = 0;
+                faqTitle.ReviewId = faqTitle.ReviewId == 0 ? faqTitle.ReviewId = null : faqTitle.ReviewId;
+                faqTitle.PageId = faqTitle.PageId == 0 ? faqTitle.PageId = null : faqTitle.PageId;
+                _context.FaqTitles.Add(faqTitle);
+            }
+            await SaveContextChangesAsync();
+
+            return faqTitles.Select(x => _mapper.Map<FaqTitleODTO>(x)).ToList();
+        }
+
         public async Task<FaqTitleODTO> DeleteFaqTitle(int id)
         {
             var faqTitle = await _context.FaqTitles.FindAsync(id);
@@ -1197,6 +1213,21 @@ namespace P2P.Services
 
             return await GetFaqListById(faqList.FaqPageListId);
         }
+
+        public async Task<List<FaqListODTO>> AddFaqLists(List<FaqListIDTO> faqListIDTO)
+        {
+            var faqLists = faqListIDTO.Select(x => _mapper.Map<FaqList>(x)).ToList();
+
+            foreach (var faqList in faqLists)
+            {
+                faqList.FaqTitleId = 0;
+                _context.FaqLists.Add(faqList);
+            }
+            await SaveContextChangesAsync();
+
+            return faqLists.Select(x => _mapper.Map<FaqListODTO>(x)).ToList();
+        }
+
 
         public async Task<FaqListODTO> DeleteFaqList(int id)
         {
