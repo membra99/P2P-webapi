@@ -1879,7 +1879,7 @@ namespace P2P.Services
                                    CustomMessage = x.CustomMessage,
                                    Recommended = x.Recommended,
                                    CompareButton = (bool)x.CompareButton ? true : false,
-                               }).ToListAsync();
+                               }).OrderBy(x => x.ReviewId).ToListAsync();
             return await ReviewRoute;
         }
 
@@ -2375,6 +2375,12 @@ namespace P2P.Services
                                                              Investment = x.Investment,
                                                              TestimonialH2 = x.TestimonialH2,
                                                              FeaturedH2 = x.FeaturedH2,
+                                                             LinkToUrl = (from a in _context.Routes
+                                                                           .Include(x => x.UrlTable)
+                                                                           .Include(x => x.Language)
+                                                                           .Include(x => x.DataType)
+                                                                          where reviewPlatforms.Contains(a.TableId.ToString()) && a.DataTypeId == 1
+                                                                          select _mapper.Map<RoutesODTO>(a)).ToList(),
                                                              Platform = $"[{x.Platform}]",
                                                              ReviewList = (from a in _context.Review
                                                                            .Include(x => x.Serp)

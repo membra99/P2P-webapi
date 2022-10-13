@@ -31,6 +31,8 @@ namespace P2P.DTO.Output
         public string FeaturedH2 { get; set; }
 
         public string Platform { get; set; }
+
+        public List<RoutesODTO> LinkToUrl { get; set; }
         public List<ReviewODTO> ReviewList { get; set; } = new List<ReviewODTO>();
 
         public List<SettingsAttributeODTO> TrackH2 { get; set; }
