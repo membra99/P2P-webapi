@@ -1630,9 +1630,12 @@ namespace P2P.Services
                             Image = academy.FeaturedImage,
                             Tag = academy.Tag,
                             Content = page.Content,
+                            SerpId = page.SerpId,
                             Subtitle = page.Subtitle,
                             SerpDescription = page.SerpDescription,
-                            SerpTitle = page.SerpTitle
+                            SerpTitle = page.SerpTitle,
+                            DataTypeId = page.DataTypeId,
+                            DataTypeName = page.DataTypeName,
                         };
                         return retVal;
                     }
