@@ -1554,12 +1554,12 @@ namespace P2P.Services
                                            Excerpt = b.Excerpt,
                                            Tag = b.Tag
                                        }).FirstOrDefault();
-                var topReviews = await GetParentReview(langId);
+                //var topReviews = await GetParentReview(langId);
                 var retVal = new PageContentODTO
                 {
                     Title = academy.Title,
                     PageId = page.PageId,
-                    PopularReviews = topReviews,
+                    //PopularReviews = topReviews,
                     PopularArticles = popularArticles,
                     Image = academy.FeaturedImage,
                     Tag = academy.Tag,
