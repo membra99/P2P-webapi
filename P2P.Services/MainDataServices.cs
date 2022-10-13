@@ -1,4 +1,5 @@
-﻿using AutoMapper;
+﻿using Amazon.S3.Model;
+using AutoMapper;
 using Entities.Context;
 using Entities.Migrations;
 using Entities.P2P;
@@ -1498,6 +1499,22 @@ namespace P2P.Services
             if (urlId == null) return null;
             var page = new PageContentODTO();
             var rData = new GetCampaignBonusODTO();
+            if (dataTypeId == REVIEW_SETTINGS_TYPEID)
+            {
+                var pd = await _context.PagesSettings.Include(x => x.Serp).Include(x => x.DataType).Where(x => x.PagesSettingsId == tableId && dataTypeId == REVIEW_SETTINGS_TYPEID).FirstOrDefaultAsync();
+                if (pd == null) return null;
+                page = new PageContentODTO
+                {
+                    Page_Title = pd.Title,
+                    SerpId = (int)pd.SerpId,
+                    SerpDescription = pd.Serp.SerpDescription,
+                    SerpTitle = pd.Serp.SerpTitle,
+                    Subtitle = pd.Serp.Subtitle,
+                    DataTypeId = (int)pd.DataTypeId,
+                    DataTypeName = pd.DataType.DataTypeName,
+                    Platform = pd.Platform
+                };
+            }
             if (dataTypeId == CASHBACK_BONUS_TYPEID || dataTypeId == ACADEMY_TYPEID || dataTypeId == GENERAL_TYPEID || dataTypeId == ABOUT_TYPEID)
             {
                 var pd = await _context.Pages.Include(x => x.Serp).Include(x => x.DataType).Where(x => x.PageId == tableId).FirstOrDefaultAsync();
@@ -2349,7 +2366,14 @@ namespace P2P.Services
             {
                 reviewPlatforms = platform.Split(',').ToList();
             }
+            List<RoutesODTO> data = (from a in _context.Routes
+                                                                           .Include(x => x.UrlTable)
+                                                                           .Include(x => x.Language)
+                                                                           .Include(x => x.DataType)
+                                     where reviewPlatforms.Contains(a.TableId.ToString()) && a.DataTypeId == 1
+                                     select _mapper.Map<RoutesODTO>(a)).ToList();
 
+            List<RoutesODTO> SortedList = data.OrderBy(o => o.TableId).ToList();
             List<HomeSettingsODTO> homeSettings = await (from x in _context.HomeSettings
                                                          where x.LanguageId == langId
                                                          select new HomeSettingsODTO
@@ -2375,12 +2399,7 @@ namespace P2P.Services
                                                              Investment = x.Investment,
                                                              TestimonialH2 = x.TestimonialH2,
                                                              FeaturedH2 = x.FeaturedH2,
-                                                             LinkToUrl = (from a in _context.Routes
-                                                                           .Include(x => x.UrlTable)
-                                                                           .Include(x => x.Language)
-                                                                           .Include(x => x.DataType)
-                                                                          where reviewPlatforms.Contains(a.TableId.ToString()) && a.DataTypeId == 1
-                                                                          select _mapper.Map<RoutesODTO>(a)).ToList(),
+                                                             LinkToUrl = SortedList,
                                                              Platform = $"[{x.Platform}]",
                                                              ReviewList = (from a in _context.Review
                                                                            .Include(x => x.Serp)
