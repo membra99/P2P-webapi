@@ -68,6 +68,20 @@ namespace P2P.WebApi.Controllers.MainData
             }
         }
 
+        //POST: api/ReviewAttribute
+        [HttpPost("PostReviewAttributes")]
+        public async Task<ActionResult<IEnumerable<ReviewAttributeODTO>>> PostReviewAttributes(List<ReviewAttributeIDTO> reviewAttributeIDTO)
+        {
+            try
+            {
+                return await _mainDataServices.AddReviewAttributes(reviewAttributeIDTO);
+            }
+            catch (Exception e)
+            {
+                throw new Exception(e.Message);
+            }
+        }
+
         //DELETE: api/ReviewAttribute/1
         [HttpDelete("{id}")]
         public async Task<ActionResult<ReviewAttributeODTO>> DeleteReviewAttribute(int id)

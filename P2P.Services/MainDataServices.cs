@@ -499,6 +499,20 @@ namespace P2P.Services
             return await GetReviewAttribute(reviewAttribute.ReviewAttributeId);
         }
 
+        public async Task<List<ReviewAttributeODTO>> AddReviewAttributes(List<ReviewAttributeIDTO> reviewAttributeIDTO)
+        {
+            var reviewAttributes = reviewAttributeIDTO.Select(x => _mapper.Map<ReviewAttribute>(x)).ToList();
+
+            foreach (var revAttr in reviewAttributes)
+            {
+                revAttr.ReviewAttributeId = 0;
+                _context.ReviewAttributes.Add(revAttr);
+            }
+            await SaveContextChangesAsync();
+
+            return reviewAttributes.Select(x => _mapper.Map<ReviewAttributeODTO>(x)).ToList();
+        }
+
         public async Task<ReviewAttributeODTO> DeleteReviewAttribute(int id)
         {
             var reviewAttribute = await _context.ReviewAttributes.FindAsync(id);
@@ -1499,76 +1513,130 @@ namespace P2P.Services
             if (urlId == null) return null;
             var page = new PageContentODTO();
             var rData = new GetCampaignBonusODTO();
-            if (dataTypeId == REVIEW_SETTINGS_TYPEID)
-            {
-                var pd = await _context.PagesSettings.Include(x => x.Serp).Include(x => x.DataType).Where(x => x.PagesSettingsId == tableId && dataTypeId == REVIEW_SETTINGS_TYPEID).FirstOrDefaultAsync();
-                if (pd == null) return null;
-                page = new PageContentODTO
-                {
-                    Page_Title = pd.Title,
-                    SerpId = (int)pd.SerpId,
-                    SerpDescription = pd.Serp.SerpDescription,
-                    SerpTitle = pd.Serp.SerpTitle,
-                    Subtitle = pd.Serp.Subtitle,
-                    DataTypeId = (int)pd.DataTypeId,
-                    DataTypeName = pd.DataType.DataTypeName,
-                    Platform = pd.Platform
-                };
-            }
-            if (dataTypeId == CASHBACK_BONUS_TYPEID || dataTypeId == ACADEMY_TYPEID || dataTypeId == GENERAL_TYPEID || dataTypeId == ABOUT_TYPEID)
-            {
-                var pd = await _context.Pages.Include(x => x.Serp).Include(x => x.DataType).Where(x => x.PageId == tableId).FirstOrDefaultAsync();
 
-                if (pd == null) return null;
-                if (pd.ReviewId != null)
-                {
-                    rData = await GetReviewBoxInfo((int)pd.ReviewId);
-                }
-                page = new PageContentODTO
-                {
-                    Page_Title = pd.PageTitle,
-                    Content = pd.Content,
-                    PageId = pd.PageId,
-                    ReviewData = pd.ReviewId != null ? rData : null,
-                    SerpId = (int)pd.SerpId,
-                    SerpDescription = pd.Serp.SerpDescription,
-                    SerpTitle = pd.Serp.SerpTitle,
-                    Subtitle = pd.Serp.Subtitle,
-                    DataTypeId = (int)pd.DataTypeId,
-                    DataTypeName = pd.DataType.DataTypeName
-                };
-            }
-            if (academy != null)
+            switch (dataTypeId)
             {
-                var popularArticles = (from pa in _context.PageArticles.Where(e => e.PageId == page.PageId)
-                                       join a in _context.Academies on pa.AcademyId equals a.AcademyId into g
-                                       from b in g.DefaultIfEmpty()
-                                       select new PopularArticlesForPageContentODTO
-                                       {
-                                           AcademyId = b.AcademyId,
-                                           Title = b.Title,
-                                           Image = b.FeaturedImage,
-                                           UpdateDate = b.UpdatedDate,
-                                           Stars = 4,
-                                           Path = b.UrlTable.URL,
-                                           Excerpt = b.Excerpt,
-                                           Tag = b.Tag
-                                       }).FirstOrDefault();
-                //var topReviews = await GetParentReview(langId);
-                var retVal = new PageContentODTO
-                {
-                    Title = academy.Title,
-                    PageId = page.PageId,
-                    //PopularReviews = topReviews,
-                    PopularArticles = popularArticles,
-                    Image = academy.FeaturedImage,
-                    Tag = academy.Tag,
-                    Content = page.Content,
-                    Subtitle = page.Subtitle,
-                    SerpDescription = page.SerpDescription,
-                    SerpTitle = page.SerpTitle
-                };
-                return retVal;
+                case REVIEW_SETTINGS_TYPEID:
+                    var reviewSett = await _context.PagesSettings.Include(x => x.Serp).Include(x => x.DataType).Where(x => x.PagesSettingsId == tableId && dataTypeId == REVIEW_SETTINGS_TYPEID).FirstOrDefaultAsync();
+                    if (reviewSett == null) return null;
+                    page = new PageContentODTO
+                    {
+                        Page_Title = reviewSett.Title,
+                        SerpId = (int)reviewSett.SerpId,
+                        SerpDescription = reviewSett.Serp.SerpDescription,
+                        SerpTitle = reviewSett.Serp.SerpTitle,
+                        Subtitle = reviewSett.Serp.Subtitle,
+                        DataTypeId = (int)reviewSett.DataTypeId,
+                        DataTypeName = reviewSett.DataType.DataTypeName,
+                        Platform = reviewSett.Platform
+                    };
+                    break;
+
+                case NEWS_SETTINGS_TYPEID:
+                    var newsSett = await _context.PagesSettings.Include(x => x.Serp).Include(x => x.DataType).Where(x => x.PagesSettingsId == tableId && dataTypeId == NEWS_SETTINGS_TYPEID).FirstOrDefaultAsync();
+                    if (newsSett == null) return null;
+                    page = new PageContentODTO
+                    {
+                        Page_Title = newsSett.Title,
+                        SerpId = (int)newsSett.SerpId,
+                        SerpDescription = newsSett.Serp.SerpDescription,
+                        SerpTitle = newsSett.Serp.SerpTitle,
+                        Subtitle = newsSett.Serp.Subtitle,
+                        DataTypeId = (int)newsSett.DataTypeId,
+                        DataTypeName = newsSett.DataType.DataTypeName,
+                        Platform = newsSett.Platform
+                    };
+                    break;
+
+                case BONUS_SETTINGS_TYPEID:
+                    var bonusSett = await _context.PagesSettings.Include(x => x.Serp).Include(x => x.DataType).Where(x => x.PagesSettingsId == tableId && dataTypeId == BONUS_SETTINGS_TYPEID).FirstOrDefaultAsync();
+                    if (bonusSett == null) return null;
+                    page = new PageContentODTO
+                    {
+                        Page_Title = bonusSett.Title,
+                        SerpId = (int)bonusSett.SerpId,
+                        SerpDescription = bonusSett.Serp.SerpDescription,
+                        SerpTitle = bonusSett.Serp.SerpTitle,
+                        Subtitle = bonusSett.Serp.Subtitle,
+                        DataTypeId = (int)bonusSett.DataTypeId,
+                        DataTypeName = bonusSett.DataType.DataTypeName,
+                        Platform = bonusSett.Platform
+                    };
+                    break;
+
+                case ACADEMY_SETTINGS_TYPEID:
+                    var academySett = await _context.PagesSettings.Include(x => x.Serp).Include(x => x.DataType).Where(x => x.PagesSettingsId == tableId && dataTypeId == ACADEMY_SETTINGS_TYPEID).FirstOrDefaultAsync();
+                    if (academySett == null) return null;
+                    page = new PageContentODTO
+                    {
+                        Page_Title = academySett.Title,
+                        SerpId = (int)academySett.SerpId,
+                        SerpDescription = academySett.Serp.SerpDescription,
+                        SerpTitle = academySett.Serp.SerpTitle,
+                        Subtitle = academySett.Serp.Subtitle,
+                        DataTypeId = (int)academySett.DataTypeId,
+                        DataTypeName = academySett.DataType.DataTypeName,
+                        Platform = academySett.Platform
+                    };
+                    break;
+
+                case CASHBACK_BONUS_TYPEID:
+                case ACADEMY_TYPEID:
+                case GENERAL_TYPEID:
+                case ABOUT_TYPEID:
+                    var pd1 = await _context.Pages.Include(x => x.Serp).Include(x => x.DataType).Where(x => x.PageId == tableId).FirstOrDefaultAsync();
+
+                    if (pd1 == null) return null;
+                    if (pd1.ReviewId != null)
+                    {
+                        rData = await GetReviewBoxInfo((int)pd1.ReviewId);
+                    }
+                    page = new PageContentODTO
+                    {
+                        Page_Title = pd1.PageTitle,
+                        Content = pd1.Content,
+                        PageId = pd1.PageId,
+                        ReviewData = pd1.ReviewId != null ? rData : null,
+                        SerpId = (int)pd1.SerpId,
+                        SerpDescription = pd1.Serp.SerpDescription,
+                        SerpTitle = pd1.Serp.SerpTitle,
+                        Subtitle = pd1.Serp.Subtitle,
+                        DataTypeId = (int)pd1.DataTypeId,
+                        DataTypeName = pd1.DataType.DataTypeName
+                    };
+                    if (academy != null)
+                    {
+                        var popularArticles = (from pa in _context.PageArticles.Where(e => e.PageId == page.PageId)
+                                               join a in _context.Academies on pa.AcademyId equals a.AcademyId into g
+                                               from b in g.DefaultIfEmpty()
+                                               select new PopularArticlesForPageContentODTO
+                                               {
+                                                   AcademyId = b.AcademyId,
+                                                   Title = b.Title,
+                                                   Image = b.FeaturedImage,
+                                                   UpdateDate = b.UpdatedDate,
+                                                   Stars = 4,
+                                                   Path = b.UrlTable.URL,
+                                                   Excerpt = b.Excerpt,
+                                                   Tag = b.Tag
+                                               }).FirstOrDefault();
+                        //var topReviews = await GetParentReview(langId);
+                        var retVal = new PageContentODTO
+                        {
+                            Title = academy.Title,
+                            PageId = page.PageId,
+                            //PopularReviews = topReviews,
+                            PopularArticles = popularArticles,
+                            Image = academy.FeaturedImage,
+                            Tag = academy.Tag,
+                            Content = page.Content,
+                            Subtitle = page.Subtitle,
+                            SerpDescription = page.SerpDescription,
+                            SerpTitle = page.SerpTitle
+                        };
+                        return retVal;
+                    }
+                    break;
             }
             return page;
         }
