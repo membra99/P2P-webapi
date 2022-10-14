@@ -10,7 +10,7 @@ namespace P2P.DTO.Output.EndPointODTO
         public string Page_Title { get; set; }
         public GetCampaignBonusODTO ReviewData { get; set; }
         public List<GetParentReviewODTO> PopularReviews { get; set; }
-        public PopularArticlesForPageContentODTO PopularArticles { get; set; }
+        public List<PopularArticlesForPageContentODTO> PopularArticles { get; set; }
         public string Image { get; set; }
         public string Tag { get; set; }
         public string Content { get; set; }

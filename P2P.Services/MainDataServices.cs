@@ -1606,7 +1606,7 @@ namespace P2P.Services
                     };
                     if (academy != null)
                     {
-                        var popularArticles = (from pa in _context.PageArticles.Where(e => e.PageId == page.PageId)
+                        List<PopularArticlesForPageContentODTO> popularArticles = (from pa in _context.PageArticles.Where(e => e.PageId == page.PageId)
                                                join a in _context.Academies on pa.AcademyId equals a.AcademyId into g
                                                from b in g.DefaultIfEmpty()
                                                select new PopularArticlesForPageContentODTO
@@ -1619,7 +1619,7 @@ namespace P2P.Services
                                                    Path = b.UrlTable.URL,
                                                    Excerpt = b.Excerpt,
                                                    Tag = b.Tag
-                                               }).FirstOrDefault();
+                                               }).ToList();
                         //var topReviews = await GetParentReview(langId);
                         var retVal = new PageContentODTO
                         {
