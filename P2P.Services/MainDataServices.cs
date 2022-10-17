@@ -1607,19 +1607,19 @@ namespace P2P.Services
                     if (academy != null)
                     {
                         List<PopularArticlesForPageContentODTO> popularArticles = (from pa in _context.PageArticles.Where(e => e.PageId == page.PageId)
-                                               join a in _context.Academies on pa.AcademyId equals a.AcademyId into g
-                                               from b in g.DefaultIfEmpty()
-                                               select new PopularArticlesForPageContentODTO
-                                               {
-                                                   AcademyId = b.AcademyId,
-                                                   Title = b.Title,
-                                                   Image = b.FeaturedImage,
-                                                   UpdateDate = b.UpdatedDate,
-                                                   Stars = 4,
-                                                   Path = b.UrlTable.URL,
-                                                   Excerpt = b.Excerpt,
-                                                   Tag = b.Tag
-                                               }).ToList();
+                                                                                   join a in _context.Academies on pa.AcademyId equals a.AcademyId into g
+                                                                                   from b in g.DefaultIfEmpty()
+                                                                                   select new PopularArticlesForPageContentODTO
+                                                                                   {
+                                                                                       AcademyId = b.AcademyId,
+                                                                                       Title = b.Title,
+                                                                                       Image = b.FeaturedImage,
+                                                                                       UpdateDate = b.UpdatedDate,
+                                                                                       Stars = 4,
+                                                                                       Path = b.UrlTable.URL,
+                                                                                       Excerpt = b.Excerpt,
+                                                                                       Tag = b.Tag
+                                                                                   }).ToList();
                         //var topReviews = await GetParentReview(langId);
                         var retVal = new PageContentODTO
                         {
@@ -1911,20 +1911,23 @@ namespace P2P.Services
 
         public async Task AddCount(string name)
         {
-            var reviewCount = await _context.Review.Where(x => x.Name.ToLower() == name.ToLower()).SingleOrDefaultAsync();
+            var reviewCount = await _context.Review.Where(x => x.Name.ToLower() == name.ToLower()).ToListAsync();
 
-            if (reviewCount != null)
+            foreach (var item in reviewCount)
             {
-                if (reviewCount.Count != null)
+                if (item != null)
                 {
-                    reviewCount.Count += 1;
+                    if (item.Count != null)
+                    {
+                        item.Count += 1;
+                    }
+                    else
+                    {
+                        item.Count = 1;
+                    }
+                    _context.Entry(item).State = EntityState.Modified;
+                    await SaveContextChangesAsync();
                 }
-                else
-                {
-                    reviewCount.Count = 1;
-                }
-                _context.Entry(reviewCount).State = EntityState.Modified;
-                await SaveContextChangesAsync();
             }
         }
 
@@ -1974,23 +1977,141 @@ namespace P2P.Services
         public async Task<ReviewODTO> EditReview(ReviewIDTO reviewIDTO)
         {
             var review = _mapper.Map<Review>(reviewIDTO);
+            review.SerpId = review.SerpId != 0 ? review.SerpId : null;
+            review.SecuredBy = review.SecuredBy != 0 ? review.SecuredBy : null;
+            review.MinInvestment = review.MinInvestment != 0 ? review.MinInvestment : null;
+            review.Countries = review.Countries != 0 ? review.Countries : null;
+            review.LoanOriginators = review.LoanOriginators != 0 ? review.LoanOriginators : null;
+            review.MinLoanPerion = review.MinLoanPerion != 0 ? review.MinLoanPerion : null;
+            review.MaxLoanPerion = review.MaxLoanPerion != 0 ? review.MaxLoanPerion : null;
+            review.OperatingSince = review.OperatingSince != 0 ? review.OperatingSince : null;
+            review.LoanType = review.LoanType != 0 ? review.LoanType : null;
+            review.PortfolioSize = review.PortfolioSize != 0 ? review.PortfolioSize : null;
+            review.Availability = review.Availability != 0 ? review.Availability : null;
+            review.Count = review.Count != 0 ? review.Count : null;
+            review.Earnings = review.Earnings != 0 ? review.Earnings : null;
+            review.Cryptoloan = review.Cryptoloan != 0 ? review.Cryptoloan : null;
+            review.DiversificationMinInvest = review.DiversificationMinInvest != 0 ? review.DiversificationMinInvest : null;
+            review.TotalLoanValue = review.TotalLoanValue != 0 ? review.TotalLoanValue : null;
+            review.NumberOfInvestors = review.NumberOfInvestors != 0 ? review.NumberOfInvestors : null;
+            review.InvestorsLoss = review.InvestorsLoss != 0 ? review.InvestorsLoss : null;
+            review.RiskReturn = review.RiskReturn != 0 ? review.RiskReturn : null;
+            review.Usability = review.Usability != 0 ? review.Usability : null;
+            review.Liquidity = review.Liquidity != 0 ? review.Liquidity : null;
+            review.Support = review.Support != 0 ? review.Support : null;
+            review.Interest = review.Interest != 0 ? review.Interest : null;
+            review.RiskReturn = review.RiskReturn != 0 ? review.RiskReturn : null;
+            review.RatingCalculated = review.RatingCalculated != 0 ? review.RatingCalculated : null;
+            review.StatisticsCurrency = review.StatisticsCurrency != "string" ? review.StatisticsCurrency : null;
+            review.UpdatedDate = DateTime.Now;
 
+            var urlName = await _context.UrlTables.Where(x => x.URL.ToLower() == reviewIDTO.ReportLinkURL.ToLower()).Select(x => x.UrlTableId).FirstOrDefaultAsync();
+
+            if (urlName != 0 && review.ReportLink == 0)
+            {
+                review.ReportLink = urlName;
+            }
+            else if (review.ReportLink == 0)
+            {
+                review.ReportLink = null;
+            }
             _context.Entry(review).State = EntityState.Modified;
-
             await SaveContextChangesAsync();
+
+            if (review.ReportLink != null)
+            {
+                return await GetReviewById(review.ReviewId);
+            }
+            else
+            {
+                var url = new UrlTable
+                {
+                    DataTypeId = REVIEW_TYPEID,
+                    TableId = review.ReviewId,
+                    URL = reviewIDTO.ReportLinkURL
+                };
+                _context.UrlTables.Add(url);
+                await SaveContextChangesAsync();
+                review.ReportLink = url.UrlTableId;
+                _context.Entry(review).State = EntityState.Modified;
+                await SaveContextChangesAsync();
+                return await GetReviewById(review.ReviewId);
+            }
 
             return await GetReviewById(review.ReviewId);
         }
 
         public async Task<ReviewODTO> AddReview(ReviewIDTO reviewIDTO)
         {
-            var review = _mapper.Map<Review>(reviewIDTO);
-            review.ReviewId = 0;
-            _context.Review.Add(review);
+            try
+            {
+                var review = _mapper.Map<Review>(reviewIDTO);
+                review.ReviewId = 0;
+                review.SerpId = review.SerpId != 0 ? review.SerpId : null;
+                review.SecuredBy = review.SecuredBy != 0 ? review.SecuredBy : null;
+                review.MinInvestment = review.MinInvestment != 0 ? review.MinInvestment : null;
+                review.Countries = review.Countries != 0 ? review.Countries : null;
+                review.LoanOriginators = review.LoanOriginators != 0 ? review.LoanOriginators : null;
+                review.MinLoanPerion = review.MinLoanPerion != 0 ? review.MinLoanPerion : null;
+                review.MaxLoanPerion = review.MaxLoanPerion != 0 ? review.MaxLoanPerion : null;
+                review.OperatingSince = review.OperatingSince != 0 ? review.OperatingSince : null;
+                review.LoanType = review.LoanType != 0 ? review.LoanType : null;
+                review.PortfolioSize = review.PortfolioSize != 0 ? review.PortfolioSize : null;
+                review.Availability = review.Availability != 0 ? review.Availability : null;
+                review.Count = review.Count != 0 ? review.Count : null;
+                review.Earnings = review.Earnings != 0 ? review.Earnings : null;
+                review.Cryptoloan = review.Cryptoloan != 0 ? review.Cryptoloan : null;
+                review.DiversificationMinInvest = review.DiversificationMinInvest != 0 ? review.DiversificationMinInvest : null;
+                review.TotalLoanValue = review.TotalLoanValue != 0 ? review.TotalLoanValue : null;
+                review.NumberOfInvestors = review.NumberOfInvestors != 0 ? review.NumberOfInvestors : null;
+                review.InvestorsLoss = review.InvestorsLoss != 0 ? review.InvestorsLoss : null;
+                review.RiskReturn = review.RiskReturn != 0 ? review.RiskReturn : null;
+                review.Usability = review.Usability != 0 ? review.Usability : null;
+                review.Liquidity = review.Liquidity != 0 ? review.Liquidity : null;
+                review.Support = review.Support != 0 ? review.Support : null;
+                review.Interest = review.Interest != 0 ? review.Interest : null;
+                review.RiskReturn = review.RiskReturn != 0 ? review.RiskReturn : null;
+                review.RatingCalculated = review.RatingCalculated != 0 ? review.RatingCalculated : null;
+                review.StatisticsCurrency = review.StatisticsCurrency != "string" ? review.StatisticsCurrency : null;
+                review.UpdatedDate = DateTime.Now;
 
-            await SaveContextChangesAsync();
+                var urlName = await _context.UrlTables.Where(x => x.URL.ToLower() == reviewIDTO.ReportLinkURL.ToLower()).Select(x => x.UrlTableId).FirstOrDefaultAsync();
 
-            return await GetReviewById(review.ReviewId);
+                if (urlName != 0 && review.ReportLink == 0)
+                {
+                    review.ReportLink = urlName;
+                }
+                else if (review.ReportLink == 0)
+                {
+                    review.ReportLink = null;
+                }
+                _context.Review.Add(review);
+                await SaveContextChangesAsync();
+
+                if (review.ReportLink != null)
+                {
+                    return await GetReviewById(review.ReviewId);
+                }
+                else
+                {
+                    var url = new UrlTable
+                    {
+                        DataTypeId = REVIEW_TYPEID,
+                        TableId = review.ReviewId,
+                        URL = reviewIDTO.ReportLinkURL
+                    };
+                    _context.UrlTables.Add(url);
+                    await SaveContextChangesAsync();
+                    review.ReportLink = url.UrlTableId;
+                    await SaveContextChangesAsync();
+                    return await GetReviewById(review.ReviewId);
+                }
+                return await GetReviewById(review.ReviewId);
+            }
+            catch (Exception ex)
+            {
+                throw ex.InnerException.InnerException;
+            }
         }
 
         public async Task<ReviewODTO> DeleteReview(int id)
@@ -2437,14 +2558,32 @@ namespace P2P.Services
             {
                 reviewPlatforms = platform.Split(',').ToList();
             }
-            List<RoutesODTO> data = (from a in _context.Routes
-                                                                           .Include(x => x.UrlTable)
-                                                                           .Include(x => x.Language)
-                                                                           .Include(x => x.DataType)
-                                     where reviewPlatforms.Contains(a.TableId.ToString()) && a.DataTypeId == 1
-                                     select _mapper.Map<RoutesODTO>(a)).ToList();
+            List<RoutesForHomeSettingsByLangODTO> data = (from a in _context.Routes
+                                     .Include(x => x.UrlTable)
+                                     .Include(x => x.Language)
+                                     .Include(x => x.DataType)
+                                                          where reviewPlatforms.Contains(a.TableId.ToString()) && a.DataTypeId == 1
+                                                          select new RoutesForHomeSettingsByLangODTO
+                                                          {
+                                                              RoutesId = a.RoutesId,
+                                                              DataTypeId = a.DataTypeId,
+                                                              DataTypeName = a.DataType.DataTypeName,
+                                                              UrlTableId = a.UrlTableId,
+                                                              URL = a.UrlTable.URL,
+                                                              LanguageId = a.LanguageId,
+                                                              LanguageName = a.Language.LanguageName,
+                                                              TableId = a.TableId,
+                                                          }).ToList();
 
-            List<RoutesODTO> SortedList = data.OrderBy(o => o.TableId).ToList();
+            List<RoutesForHomeSettingsByLangODTO> SortedList = data.OrderBy(o => o.TableId).ToList();
+
+            foreach (var item in SortedList)
+            {
+                var review = await _context.Review.Where(x => x.ReviewId == item.TableId && item.DataTypeId == 1).Select(x => x.Name).FirstOrDefaultAsync();
+                if (review != null)
+                    item.ExternalLinkKey = await _context.Links.Include(x => x.UrlTable).Where(x => x.Key.ToLower() == review.ToLower()).Select(x => x.UrlTable.URL).FirstOrDefaultAsync();
+            }
+
             List<HomeSettingsODTO> homeSettings = await (from x in _context.HomeSettings
                                                          where x.LanguageId == langId
                                                          select new HomeSettingsODTO

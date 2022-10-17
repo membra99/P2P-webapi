@@ -1,4 +1,5 @@
-﻿using System;
+﻿using P2P.DTO.Output.EndPointODTO;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -32,7 +33,7 @@ namespace P2P.DTO.Output
 
         public string Platform { get; set; }
 
-        public List<RoutesODTO> LinkToUrl { get; set; }
+        public List<RoutesForHomeSettingsByLangODTO> LinkToUrl { get; set; }
         public List<ReviewODTO> ReviewList { get; set; } = new List<ReviewODTO>();
 
         public List<SettingsAttributeODTO> TrackH2 { get; set; }
