@@ -48,6 +48,10 @@ namespace Entities.Context
             modelBuilder.Entity<User>(entity =>
             {
                 entity.HasKey(x => x.UserId);
+
+                entity.HasOne(x => x.Language)
+                      .WithMany(x => x.Users)
+                      .OnDelete(DeleteBehavior.Restrict);
             });
 
             modelBuilder.Entity<Testimonial>(entity =>

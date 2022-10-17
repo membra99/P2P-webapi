@@ -4,14 +4,16 @@ using Entities.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Entities.Migrations
 {
     [DbContext(typeof(MainContext))]
-    partial class MainContextModelSnapshot : ModelSnapshot
+    [Migration("20221017083819_AddedUserFields")]
+    partial class AddedUserFields
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1124,7 +1126,8 @@ namespace Entities.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("LanguageId")
+                    b.Property<int?>("LanguageId")
+                        .IsRequired()
                         .HasColumnType("int");
 
                     b.Property<string>("LastName")

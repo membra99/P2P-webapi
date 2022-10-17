@@ -11,11 +11,17 @@ namespace Entities.P2P.MainData
     [Table("Users", Schema = "P2P")]
     public class User
     {
-        [Required]
+
         public int UserId { get; set; }
+
+        public int LanguageId { get; set; }
 
         [Required]
         public string Username { get; set; }
+        [Required]
+        public string FirstName { get; set; }
+        [Required]
+        public string LastName { get; set; }
 
         [Required]
         public string Password { get; set; }
@@ -24,5 +30,8 @@ namespace Entities.P2P.MainData
         public string Role { get; set; }
 
         public ICollection<Blog> Blogs { get; set; }
+
+        
+        public Language Language { get; set; }
     }
 }
