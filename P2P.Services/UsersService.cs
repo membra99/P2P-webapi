@@ -16,7 +16,9 @@ namespace P2P.Services
     {
         UserODTO GetUser(UserIDTO userMode);
         UserODTO GetUserById(int id);
+        List<UserODTO> GetUsersByLangId(int langId);
         UserODTO RegisterUser(UserIDTO userModel);
+        UserODTO UpdateUser(UserIDTO userModel);
     }
     public class UsersService : BaseService, IUsersService
     {
@@ -38,6 +40,17 @@ namespace P2P.Services
             }
             return null;
         }
+
+        public List<UserODTO> GetUsersByLangId(int langId)
+        {
+            var users = _context.Users.Where(x => x.LanguageId == langId).Select(x => _mapper.Map<UserODTO>(x)).ToList();
+            if (users != null)
+            {
+                return users;
+            }
+            return null;
+        }
+
         public UserODTO RegisterUser(UserIDTO userModel)
         {
             var user = _mapper.Map<User>(userModel);
@@ -45,6 +58,22 @@ namespace P2P.Services
             _context.Users.Add(user);
             _context.SaveChanges();
             return _mapper.Map<UserODTO>(user);
+        }
+        public UserODTO UpdateUser(UserIDTO userModel)
+        {
+            var users = _context.Users.Where(x => x.UserId == userModel.UserId).FirstOrDefault();
+            if (users != null)
+            {
+                    users.Username = userModel.Username;
+                users.LastName = userModel.LastName;
+                users.FirstName = userModel.FirstName;
+                users.Role = userModel.Role;
+                users.LanguageId = userModel.LanguageId;
+                    users.Password = BCrypt.Net.BCrypt.HashPassword(users.Password);
+                    _context.SaveChanges();
+                    return _mapper.Map<UserODTO>(users);
+            }
+            return null;
         }
         public UserODTO GetUserById(int id)
         {

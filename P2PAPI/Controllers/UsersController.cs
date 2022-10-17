@@ -64,6 +64,15 @@ namespace P2P.WebApi.Controllers
             var user = _userServices.RegisterUser(userModel);
             return Ok(user);
         }
+            
+        [Authorize]
+        [Route("UpdateUser")]
+        [HttpPost]
+        public IActionResult UpdateUser(UserIDTO userModel)
+        {
+            var user = _userServices.UpdateUser(userModel);
+            return Ok(user);
+        }
 
         [Authorize]
         [Route("GetUserbyId")]
@@ -71,6 +80,15 @@ namespace P2P.WebApi.Controllers
         public IActionResult GetUserbyId(int id)
         {
             var user = _userServices.GetUserById(id);
+            return Ok(user);
+        }
+
+        [Authorize]
+        [Route("GetUsersByLangId")]
+        [HttpGet]
+        public IActionResult GetUsersByLangId(int langId)
+        {
+            var user = _userServices.GetUsersByLangId(langId);
             return Ok(user);
         }
     }
