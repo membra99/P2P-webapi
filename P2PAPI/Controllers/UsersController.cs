@@ -75,13 +75,14 @@ namespace P2P.WebApi.Controllers
         }
 
         [Authorize]
-        [Route("GetUserbyId")]
-        [HttpGet]
-        public IActionResult GetUserbyId(int id)
+        [HttpGet("GetUserbyId")]
+        public async Task<ActionResult<UserODTO>> GetUserById(int id)
         {
-            var user = _userServices.GetUserById(id);
+            var user = await _userServices.GetUserById(id);
             return Ok(user);
         }
+            
+        
 
         [Authorize]
         [Route("GetUsersByLangId")]

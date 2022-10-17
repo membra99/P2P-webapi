@@ -15,6 +15,7 @@ namespace Entities.P2P.MainData
         public int UserId { get; set; }
 
         public int LanguageId { get; set; }
+
         [Required]
         public string Username { get; set; }
         [Required]

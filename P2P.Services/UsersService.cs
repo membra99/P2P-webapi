@@ -80,7 +80,7 @@ namespace P2P.Services
         public async Task<UserODTO> GetUserById(int id)
         {
             var users = await (from x in _context.Users
-                         .Include(x => x.Language)
+                               .Include(x => x.Language)
                                where (x.UserId == id)
                                select _mapper.Map<UserODTO>(x)).FirstOrDefaultAsync();
 
