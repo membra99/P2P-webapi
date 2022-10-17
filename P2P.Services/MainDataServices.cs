@@ -500,6 +500,19 @@ namespace P2P.Services
             return await GetReviewAttribute(reviewAttribute.ReviewAttributeId);
         }
 
+        public async Task<List<ReviewAttributeODTO>> EditReviewAttributes(List<ReviewAttributeIDTO> reviewAttributeIDTO)
+        {
+            var reviewAttributes = reviewAttributeIDTO.Select(x => _mapper.Map<ReviewAttribute>(x)).ToList();
+
+            foreach (var revAttr in reviewAttributes)
+            {
+                _context.Entry(revAttr).State = EntityState.Modified;
+            }
+            await SaveContextChangesAsync();
+
+            return reviewAttributes.Select(x => _mapper.Map<ReviewAttributeODTO>(x)).ToList();
+        }
+
         public async Task<List<ReviewAttributeODTO>> AddReviewAttributes(List<ReviewAttributeIDTO> reviewAttributeIDTO)
         {
             var reviewAttributes = reviewAttributeIDTO.Select(x => _mapper.Map<ReviewAttribute>(x)).ToList();
