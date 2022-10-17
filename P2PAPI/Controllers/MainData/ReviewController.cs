@@ -9,6 +9,7 @@ using System;
 using System.Collections;
 using P2P.DTO.Output.EndPointODTO;
 using System.Collections.Generic;
+using P2P.DTO.Input.EndpointIDTO;
 
 namespace P2P.WebApi.Controllers.MainData
 {
@@ -112,6 +113,20 @@ namespace P2P.WebApi.Controllers.MainData
             try
             {
                 return await _mainDataServices.EditReview(reviewIDTO);
+            }
+            catch (Exception e)
+            {
+                throw new Exception(e.Message);
+            }
+        }
+
+        //PUT: api/Review
+        [HttpPut("Content")]
+        public async Task<ActionResult<ReviewODTO>> PutReviewContent(PutContentIDTO contentIDTO)
+        {
+            try
+            {
+                return await _mainDataServices.EditReviewContent(contentIDTO);
             }
             catch (Exception e)
             {

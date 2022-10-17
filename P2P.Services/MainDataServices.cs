@@ -10,6 +10,7 @@ using NetTopologySuite.Index.HPRtree;
 using NetTopologySuite.Noding;
 using P2P.Base.Services;
 using P2P.DTO.Input;
+using P2P.DTO.Input.EndpointIDTO;
 using P2P.DTO.Output;
 using P2P.DTO.Output.EndPointODTO;
 using System;
@@ -1654,6 +1655,15 @@ namespace P2P.Services
             return await GetPage(0, 0, id).ToListAsync();
         }
 
+        public async Task<PageODTO> EditPageContent(PutContentIDTO contentIDTO)
+        {
+            var page = await _context.Pages.Where(x => x.PageId == contentIDTO.Id).FirstOrDefaultAsync();
+            page.Content = contentIDTO.Content;
+            _context.Entry(page).State = EntityState.Modified;
+            await SaveContextChangesAsync();
+            return await GetPageById(page.PageId);
+        }
+
         public async Task<PageODTO> EditPage(PageIDTO pageIDTO)
         {
             var page = _mapper.Map<Page>(pageIDTO);
@@ -1974,6 +1984,15 @@ namespace P2P.Services
             return await ReviewRoute;
         }
 
+        public async Task<ReviewODTO> EditReviewContent(PutContentIDTO contentIDTO)
+        {
+            var review = await _context.Review.Where(x => x.ReviewId == contentIDTO.Id).FirstOrDefaultAsync();
+            review.ReviewContent = contentIDTO.Content;
+            _context.Entry(review).State = EntityState.Modified;
+            await SaveContextChangesAsync();
+            return await GetReviewById(review.ReviewId);
+        }
+
         public async Task<ReviewODTO> EditReview(ReviewIDTO reviewIDTO)
         {
             try
@@ -2047,7 +2066,7 @@ namespace P2P.Services
 
                 return await GetReviewById(review.ReviewId);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 throw new Exception();
             }
@@ -2972,6 +2991,15 @@ namespace P2P.Services
             blog.SerpId = serp.SerpId;
             await SaveContextChangesAsync();
 
+            return await GetBlogById(blog.BlogId);
+        }
+
+        public async Task<BlogODTO> EditBlogContent(PutContentIDTO contentIDTO)
+        {
+            var blog = await _context.Blogs.Where(x => x.BlogId == contentIDTO.Id).FirstOrDefaultAsync();
+            blog.Content = contentIDTO.Content;
+            _context.Entry(blog).State = EntityState.Modified;
+            await SaveContextChangesAsync();
             return await GetBlogById(blog.BlogId);
         }
 

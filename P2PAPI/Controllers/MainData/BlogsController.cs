@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using System;
 using P2P.DTO.Output.EndPointODTO;
+using P2P.DTO.Input.EndpointIDTO;
 
 namespace P2P.WebApi.Controllers.MainData
 {
@@ -75,6 +76,20 @@ namespace P2P.WebApi.Controllers.MainData
             try
             {
                 return await _mainDataServices.EditBlog(blogIDTO);
+            }
+            catch (Exception e)
+            {
+                throw new Exception(e.Message);
+            }
+        }
+
+        //PUT: api/Blogs
+        [HttpPut("Content")]
+        public async Task<ActionResult<BlogODTO>> PutBlogContent(PutContentIDTO contentIDTO)
+        {
+            try
+            {
+                return await _mainDataServices.EditBlogContent(contentIDTO);
             }
             catch (Exception e)
             {
