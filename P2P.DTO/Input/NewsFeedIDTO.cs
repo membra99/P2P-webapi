@@ -19,5 +19,6 @@ namespace P2P.DTO.Input
         public bool Market { get; set; }
         public bool RedFlag { get; set; }
         public string TagLine { get; set; }
+
     }
 }
