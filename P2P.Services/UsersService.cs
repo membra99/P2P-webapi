@@ -9,13 +9,15 @@ using Entities.P2P.MainData;
 using P2P.Base.Services;
 using Entities.Context;
 using AutoMapper;
+using System.Security.Cryptography;
+using Microsoft.EntityFrameworkCore;
 
 namespace P2P.Services
 {
     public interface IUsersService
     {
         UserODTO GetUser(UserIDTO userMode);
-        UserODTO GetUserById(int id);
+        Task<UserODTO> GetUserById(int id);
         List<UserODTO> GetUsersByLangId(int langId);
         UserODTO RegisterUser(UserIDTO userModel);
         UserODTO UpdateUser(UserIDTO userModel);
@@ -75,10 +77,14 @@ namespace P2P.Services
             }
             return null;
         }
-        public UserODTO GetUserById(int id)
+        public async Task<UserODTO> GetUserById(int id)
         {
-            var users = _context.Users.Where(x => x.UserId == id).FirstOrDefault();
-            return _mapper.Map<UserODTO>(users);
+            var users = await (from x in _context.Users
+                         .Include(x => x.Language)
+                               where (x.UserId == id)
+                               select _mapper.Map<UserODTO>(x)).FirstOrDefaultAsync();
+
+            return users;
         }
     }
 }
