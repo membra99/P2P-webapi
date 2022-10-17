@@ -3026,5 +3026,61 @@ namespace P2P.Services
         }
 
         #endregion Categories
+
+        #region Roles
+
+        private IQueryable<RoleODTO> GetRole(int id, string roleName)
+        {
+            return from x in _context.Roles
+                   where (id == 0 || x.RoleId == id)
+                   && (string.IsNullOrEmpty(roleName) || x.RoleName.StartsWith(roleName))
+                   select _mapper.Map<RoleODTO>(x);
+        }
+
+        public async Task<RoleODTO> GetRoleById(int id)
+        {
+            return await GetRole(id, null).AsNoTracking().SingleOrDefaultAsync();
+        }
+
+
+        public async Task<List<RoleODTO>> GetAllRoles()
+        {
+            return await GetRole(0, null).AsNoTracking().ToListAsync();
+        }
+
+        public async Task<RoleODTO> EditRole(RoleIDTO roleIDTO)
+        {
+            var role = _mapper.Map<Role>(roleIDTO);
+
+            _context.Entry(role).State = EntityState.Modified;
+
+            await SaveContextChangesAsync();
+
+            return await GetRoleById(role.RoleId);
+        }
+
+        public async Task<RoleODTO> AddRole(RoleIDTO roleIDTO)
+        {
+            var role = _mapper.Map<Role>(roleIDTO);
+            role.RoleId = 0;
+            _context.Roles.Add(role);
+
+            await SaveContextChangesAsync();
+
+            return await GetRoleById(role.RoleId);
+        }
+
+        public async Task<RoleODTO> DeleteRole(int id)
+        {
+            var role = await _context.Roles.FindAsync(id);
+            if (role == null) return null;
+
+            var roleODTO = await GetRoleById(id);
+            _context.Roles.Remove(role);
+            await SaveContextChangesAsync();
+            return roleODTO;
+        }
+
+        #endregion Roles
     }
 }

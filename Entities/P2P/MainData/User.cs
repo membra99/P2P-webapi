@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Entities.P2P.MainData
 {
-    [Table("Users", Schema = "P2P")]
+    [Table("Users", Schema = "Users")]
     public class User
     {
 
@@ -16,22 +16,18 @@ namespace Entities.P2P.MainData
 
         public int LanguageId { get; set; }
 
+        public int RoleId { get; set; }
+
         [Required]
         public string Username { get; set; }
         [Required]
         public string FirstName { get; set; }
         [Required]
         public string LastName { get; set; }
-
         [Required]
         public string Password { get; set; }
-
-        [Required]
-        public string Role { get; set; }
-
-        public ICollection<Blog> Blogs { get; set; }
-
-        
+        public ICollection<Blog> Blogs { get; set; }    
         public Language Language { get; set; }
+        public Role Role { get; set; }
     }
 }

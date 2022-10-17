@@ -4,14 +4,16 @@ using Entities.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Entities.Migrations
 {
     [DbContext(typeof(MainContext))]
-    partial class MainContextModelSnapshot : ModelSnapshot
+    [Migration("20221017131545_RolesAdded")]
+    partial class RolesAdded
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -730,11 +732,16 @@ namespace Entities.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
+                    b.Property<int>("LanguageId")
+                        .HasColumnType("int");
+
                     b.Property<string>("RoleName")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("RoleId");
+
+                    b.HasIndex("LanguageId");
 
                     b.ToTable("Roles", "Users");
                 });
@@ -1494,6 +1501,17 @@ namespace Entities.Migrations
                     b.Navigation("Review");
                 });
 
+            modelBuilder.Entity("Entities.P2P.MainData.Role", b =>
+                {
+                    b.HasOne("Entities.P2P.MainData.Language", "Language")
+                        .WithMany("Roles")
+                        .HasForeignKey("LanguageId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Language");
+                });
+
             modelBuilder.Entity("Entities.P2P.MainData.Routes", b =>
                 {
                     b.HasOne("Entities.P2P.MainData.DataType", "DataType")
@@ -1831,6 +1849,8 @@ namespace Entities.Migrations
                     b.Navigation("PagesSettings");
 
                     b.Navigation("Reviews");
+
+                    b.Navigation("Roles");
 
                     b.Navigation("Routes");
 
