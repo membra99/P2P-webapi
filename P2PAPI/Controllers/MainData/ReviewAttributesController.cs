@@ -54,6 +54,20 @@ namespace P2P.WebApi.Controllers.MainData
             }
         }
 
+        //PUT: api/ReviewAttribute
+        [HttpPut("ReviewAttributes")]
+        public async Task<ActionResult<IEnumerable<ReviewAttributeODTO>>> PutReviewAttributes(List<ReviewAttributeIDTO> reviewAttributeIDTO)
+        {
+            try
+            {
+                return await _mainDataServices.EditReviewAttributes(reviewAttributeIDTO);
+            }
+            catch (Exception e)
+            {
+                throw new Exception(e.Message);
+            }
+        }
+
         //POST: api/ReviewAttribute
         [HttpPost]
         public async Task<ActionResult<ReviewAttributeODTO>> PostReviewAttribute(ReviewAttributeIDTO reviewAttributeIDTO)
