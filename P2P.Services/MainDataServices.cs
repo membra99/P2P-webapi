@@ -3026,7 +3026,7 @@ namespace P2P.Services
         public async Task<BlogODTO> EditBlog(BlogIDTO blogIDTO)
         {
             var blog = _mapper.Map<Blog>(blogIDTO);
-
+            blog.UpdatedDate = DateTime.Now;
             _context.Entry(blog).State = EntityState.Modified;
 
             await SaveContextChangesAsync();
@@ -3044,7 +3044,7 @@ namespace P2P.Services
             blog.CategoryId = blog.CategoryId == 0 ? null : blog.CategoryId;
             blog.AuthorId = blog.AuthorId == 0 ? null : blog.AuthorId;
             blog.SelectedPopularArticle = blog.SelectedPopularArticle == 0 ? null : blog.SelectedPopularArticle;
-
+            blog.UpdatedDate = DateTime.Now;
             _context.Blogs.Add(blog);
             await SaveContextChangesAsync();
 

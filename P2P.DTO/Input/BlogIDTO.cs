@@ -21,5 +21,6 @@ namespace P2P.DTO.Input
         public int? AuthorId { get; set; }
         public string PageTitle { get; set; }
         public string Excerpt { get; set; }
+        public DateTime? UpdatedDate { get; set; }
     }
 }
