@@ -1515,11 +1515,13 @@ namespace P2P.Services
 
             if (langId == 1)
             {
-                url = "/en/" + url;
+                if (url != "en")
+                    url = "/en/" + url;
             }
             if (langId == 2)
             {
-                url = "/de/" + url;
+                if (url != "de")
+                    url = "/de/" + url;
             }
 
             var academy = await _context.Academies.Include(x => x.UrlTable).Where(x => x.UrlTable.URL == url).FirstOrDefaultAsync();
@@ -1530,6 +1532,26 @@ namespace P2P.Services
 
             switch (dataTypeId)
             {
+                case REVIEW_TYPEID:
+                    var review = await _context.Review.Include(x => x.Serp).Where(x => x.ReviewId == tableId && dataTypeId == REVIEW_TYPEID).FirstOrDefaultAsync();
+                    if (review == null) return null;
+                    if (review.ReviewId != null)
+                    {
+                        rData = await GetReviewBoxInfo((int)review.ReviewId);
+                    }
+                    page = new PageContentODTO
+                    {
+                        ReviewData = review.ReviewId != null ? rData : null,
+                        SerpId = (int)review.SerpId,
+                        SerpDescription = review.Serp.SerpDescription,
+                        SerpTitle = review.Serp.SerpTitle,
+                        Subtitle = review.Serp.Subtitle,
+                        Content = review.ReviewContent,
+                        DataTypeId = REVIEW_TYPEID,
+                        DataTypeName = await _context.DataTypes.Where(x => x.DataTypeId == REVIEW_TYPEID).Select(x => x.DataTypeName).FirstOrDefaultAsync(),
+                    };
+                    break;
+
                 case REVIEW_SETTINGS_TYPEID:
                     var reviewSett = await _context.PagesSettings.Include(x => x.Serp).Include(x => x.DataType).Where(x => x.PagesSettingsId == tableId && dataTypeId == REVIEW_SETTINGS_TYPEID).FirstOrDefaultAsync();
                     if (reviewSett == null) return null;
@@ -1543,6 +1565,22 @@ namespace P2P.Services
                         DataTypeId = (int)reviewSett.DataTypeId,
                         DataTypeName = reviewSett.DataType.DataTypeName,
                         Platform = reviewSett.Platform
+                    };
+                    break;
+
+                case HOME_SETTINGS_TYPEID:
+                    var homeSett = await _context.HomeSettings.Include(x => x.Serp).Where(x => x.HomeSettingsId == tableId && dataTypeId == HOME_SETTINGS_TYPEID).FirstOrDefaultAsync();
+                    if (homeSett == null) return null;
+                    page = new PageContentODTO
+                    {
+                        Page_Title = homeSett.Title,
+                        SerpId = (int)homeSett.SerpId,
+                        SerpDescription = homeSett.Serp.SerpDescription,
+                        SerpTitle = homeSett.Serp.SerpTitle,
+                        Subtitle = homeSett.Serp.Subtitle,
+                        DataTypeId = HOME_SETTINGS_TYPEID,
+                        DataTypeName = await _context.DataTypes.Where(x => x.DataTypeId == HOME_SETTINGS_TYPEID).Select(x => x.DataTypeName).FirstOrDefaultAsync(),
+                        Platform = homeSett.Platform
                     };
                     break;
 
@@ -3117,7 +3155,6 @@ namespace P2P.Services
         {
             return await GetRole(id, null).AsNoTracking().SingleOrDefaultAsync();
         }
-
 
         public async Task<List<RoleODTO>> GetAllRoles()
         {
