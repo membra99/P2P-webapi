@@ -21,6 +21,7 @@ namespace Entities.Context
         public DbSet<FooterSettings> FooterSettings { get; set; }
         public DbSet<UrlTable> UrlTables { get; set; }
         public DbSet<User> Users { get; set; }
+        public DbSet<Role> Roles { get; set; }
         public DbSet<Links> Links { get; set; }
         public DbSet<CashBack> CashBacks { get; set; }
         public DbSet<Category> Categories { get; set; }
@@ -52,6 +53,15 @@ namespace Entities.Context
                 entity.HasOne(x => x.Language)
                       .WithMany(x => x.Users)
                       .OnDelete(DeleteBehavior.Restrict);
+
+                entity.HasOne(x => x.Role)
+                      .WithMany(x => x.Users)
+                      .OnDelete(DeleteBehavior.Restrict);
+            });
+
+            modelBuilder.Entity<Role>(entity =>
+            {
+                entity.HasKey(x => x.RoleId);
             });
 
             modelBuilder.Entity<Testimonial>(entity =>

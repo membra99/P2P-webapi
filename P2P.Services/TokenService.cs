@@ -20,7 +20,7 @@ namespace P2P.Services
     }
     public class TokenService : BaseService, ITokenService
     {
-        private const double EXPIRY_DURATION_MINUTES = 30;
+        private const double EXPIRY_DURATION_MINUTES = 240;
         public TokenService(MainContext context, IMapper mapper) : base(context, mapper)
         {
         }
@@ -28,7 +28,6 @@ namespace P2P.Services
         {
             var claims = new[] {
             new Claim(ClaimTypes.Name, user.Username),
-            new Claim(ClaimTypes.Role, user.Role),
             new Claim(ClaimTypes.NameIdentifier,
             Guid.NewGuid().ToString())
         };

@@ -4,14 +4,16 @@ using Entities.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Entities.Migrations
 {
     [DbContext(typeof(MainContext))]
-    partial class MainContextModelSnapshot : ModelSnapshot
+    [Migration("20221017134932_RolesAdded_RemovedLang")]
+    partial class RolesAdded_RemovedLang
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -103,6 +105,9 @@ namespace Entities.Migrations
                     b.Property<int?>("SelectedPopularArticle")
                         .HasColumnType("int");
 
+                    b.Property<int?>("SelectedPopularArticlesAcademyId")
+                        .HasColumnType("int");
+
                     b.Property<int?>("SerpId")
                         .HasColumnType("int");
 
@@ -113,6 +118,8 @@ namespace Entities.Migrations
                     b.HasIndex("CategoryId");
 
                     b.HasIndex("LanguageId");
+
+                    b.HasIndex("SelectedPopularArticlesAcademyId");
 
                     b.HasIndex("SerpId");
 
@@ -1203,6 +1210,11 @@ namespace Entities.Migrations
                         .HasForeignKey("LanguageId")
                         .OnDelete(DeleteBehavior.Restrict);
 
+                    b.HasOne("Entities.P2P.MainData.Academy", "SelectedPopularArticles")
+                        .WithMany("Blogs")
+                        .HasForeignKey("SelectedPopularArticlesAcademyId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
                     b.HasOne("Entities.P2P.MainData.Serp", "Serp")
                         .WithMany("Blogs")
                         .HasForeignKey("SerpId")
@@ -1211,6 +1223,8 @@ namespace Entities.Migrations
                     b.Navigation("Category");
 
                     b.Navigation("Language");
+
+                    b.Navigation("SelectedPopularArticles");
 
                     b.Navigation("Serp");
 
@@ -1251,7 +1265,7 @@ namespace Entities.Migrations
                     b.HasOne("Entities.P2P.MainData.FaqTitle", "FaqTitle")
                         .WithMany("FaqLists")
                         .HasForeignKey("FaqTitleId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("FaqTitle");
@@ -1262,7 +1276,7 @@ namespace Entities.Migrations
                     b.HasOne("Entities.P2P.MainData.Blog", "Blog")
                         .WithMany("FaqTitles")
                         .HasForeignKey("BlogId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("Entities.P2P.MainData.Page", "Page")
                         .WithMany("FaqTitles")
@@ -1753,6 +1767,8 @@ namespace Entities.Migrations
 
             modelBuilder.Entity("Entities.P2P.MainData.Academy", b =>
                 {
+                    b.Navigation("Blogs");
+
                     b.Navigation("PageArticles");
                 });
 

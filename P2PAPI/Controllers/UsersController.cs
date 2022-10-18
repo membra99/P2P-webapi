@@ -56,21 +56,21 @@ namespace P2P.WebApi.Controllers
         [AllowAnonymous]
         [Route("Register")]
         [HttpPost]
-        public IActionResult Register(UserIDTO userModel)
+        public async Task<ActionResult<UserODTO>> Register(UserIDTO userModel)
         {
-            if (string.IsNullOrEmpty(userModel.Username) || string.IsNullOrEmpty(userModel.Password) || string.IsNullOrEmpty(userModel.Role))
+            if (string.IsNullOrEmpty(userModel.Username) || string.IsNullOrEmpty(userModel.Password) || userModel.RoleId == 0)
                 return BadRequest("User must have all data assigned");
 
-            var user = _userServices.RegisterUser(userModel);
+            var user = await _userServices.RegisterUser(userModel);
             return Ok(user);
         }
             
         [Authorize]
         [Route("UpdateUser")]
         [HttpPost]
-        public IActionResult UpdateUser(UserIDTO userModel)
+        public async Task<ActionResult<UserODTO>> UpdateUser(UserIDTO userModel)
         {
-            var user = _userServices.UpdateUser(userModel);
+            var user = await _userServices.UpdateUser(userModel);
             return Ok(user);
         }
 
@@ -87,9 +87,9 @@ namespace P2P.WebApi.Controllers
         [Authorize]
         [Route("GetUsersByLangId")]
         [HttpGet]
-        public IActionResult GetUsersByLangId(int langId)
+        public async Task<ActionResult<List<UserODTO>>> GetUsersByLangId(int langId)
         {
-            var user = _userServices.GetUsersByLangId(langId);
+            var user = await _userServices.GetUsersByLangId(langId);
             return Ok(user);
         }
     }
