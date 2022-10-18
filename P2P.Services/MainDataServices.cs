@@ -78,7 +78,8 @@ namespace P2P.Services
         public const int MEMBER_NAME_TYPEID = 40;
         public const int MEMBER_ROLE_TYPEID = 41;
         public const int NAV_SETTINGS_REVIEWS_TYPEID = 42;
-        public const int BLOG_SETTINGS_TYPEID = 43;
+        public const int BLOG_TYPEID = 43;
+        public const int BLOG_SETTINGS_TYPEID = 44;
 
         private async Task<List<ReviewContentDropdownODTO>> ListOfReviews()
         {
@@ -1963,8 +1964,8 @@ namespace P2P.Services
                                   },
                                   ReviewBoxFive = new ReviewBoxFiveODTO
                                   {
-                                      Benefits = _context.ReviewAttributes.Where(x => x.ReviewId == d.ReviewId && x.DataTypeId == BENEFIT_ATTR_TYPEID).Select(x => _mapper.Map<ReviewAttributeODTO>(x)).ToList(),
-                                      Disadvantages = _context.ReviewAttributes.Where(x => x.ReviewId == d.ReviewId && x.DataTypeId == DISSADVANTAGE_ATTR_TYPEID).Select(x => _mapper.Map<ReviewAttributeODTO>(x)).ToList()
+                                      Benefits = _context.ReviewAttributes.Include(x => x.DataType).Where(x => x.ReviewId == d.ReviewId && x.DataTypeId == BENEFIT_ATTR_TYPEID).Select(x => _mapper.Map<ReviewAttributeODTO>(x)).ToList(),
+                                      Disadvantages = _context.ReviewAttributes.Include(x => x.DataType).Where(x => x.ReviewId == d.ReviewId && x.DataTypeId == DISSADVANTAGE_ATTR_TYPEID).Select(x => _mapper.Map<ReviewAttributeODTO>(x)).ToList()
                                   }
                               }).FirstOrDefaultAsync();
             return data;
@@ -2348,6 +2349,26 @@ namespace P2P.Services
                          SerpTitle = x.Serp.SerpTitle,
                          SerpDescription = x.Serp.SerpDescription,
                          Subtitle = x.Serp.Subtitle,
+                         DataTypeId = x.DataTypeId,
+                         DataTypeName = x.DataType.DataTypeName,
+                         Platform = x.Platform,
+                         Title = x.Title,
+                     }).FirstOrDefaultAsync();
+        }
+
+        public async Task<PagesSettingsODTO> GetBlogSettingsByLangId(int langId)
+        {
+            return await _context.PagesSettings.Where(x => x.LanguageId == langId && x.DataTypeId == BLOG_SETTINGS_TYPEID).Select(x =>
+                     new PagesSettingsODTO
+                     {
+                         PagesSettingsId = x.PagesSettingsId,
+                         LanguageId = x.LanguageId,
+                         LanguageName = x.Language.LanguageName,
+                         SerpId = x.SerpId,
+                         SerpTitle = x.Serp.SerpTitle,
+                         SerpDescription = x.Serp.SerpDescription,
+                         Subtitle = x.Serp.Subtitle,
+                         PageSettingsSubtitle = x.PageSettingsSubtitle,
                          DataTypeId = x.DataTypeId,
                          DataTypeName = x.DataType.DataTypeName,
                          Platform = x.Platform,
@@ -3032,7 +3053,7 @@ namespace P2P.Services
                 SerpTitle = blogIDTO.SerpTitle,
                 SerpDescription = blogIDTO.SerpDescription,
                 Subtitle = blogIDTO.Subtitle,
-                DataTypeId = BLOG_SETTINGS_TYPEID,
+                DataTypeId = BLOG_TYPEID,
                 TableId = blog.BlogId
             };
 

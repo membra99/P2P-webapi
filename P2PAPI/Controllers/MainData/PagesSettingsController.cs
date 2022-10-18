@@ -33,6 +33,7 @@ namespace P2P.WebApi.Controllers.MainData
             }
             return PagesSettings;
         }
+
         //GET: api/PagesSettings
         [HttpGet("GetBonusSettingsByLangId/{langId}")]
         public async Task<ActionResult<PagesSettingsODTO>> GetBonusSettings(int langId)
@@ -44,6 +45,7 @@ namespace P2P.WebApi.Controllers.MainData
             }
             return PagesSettings;
         }
+
         //GET: api/PagesSettings
         [HttpGet("GetNewsSettingsByLangId/{langId}")]
         public async Task<ActionResult<PagesSettingsODTO>> GetNewsSettings(int langId)
@@ -55,6 +57,19 @@ namespace P2P.WebApi.Controllers.MainData
             }
             return PagesSettings;
         }
+
+        //GET: api/PagesSettings
+        [HttpGet("GetBlogsSettingsByLangId/{langId}")]
+        public async Task<ActionResult<PagesSettingsODTO>> GetBlogsSettings(int langId)
+        {
+            var PagesSettings = await _mainDataServices.GetBlogSettingsByLangId(langId);
+            if (PagesSettings == null)
+            {
+                return NotFound();
+            }
+            return PagesSettings;
+        }
+
         //GET: api/PagesSettings
         [HttpGet("GetAcademySettingsByLangId/{langId}")]
         public async Task<ActionResult<PagesSettingsODTO>> GetAcademySettings(int langId)
@@ -66,6 +81,7 @@ namespace P2P.WebApi.Controllers.MainData
             }
             return PagesSettings;
         }
+
         //GET: api/PagesSettings
         [HttpGet("GetReviewSettingsByLangId/{langId}")]
         public async Task<ActionResult<PagesSettingsODTO>> GetReviewSettings(int langId)

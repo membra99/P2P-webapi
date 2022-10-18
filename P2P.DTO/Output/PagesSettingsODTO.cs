@@ -19,5 +19,6 @@ namespace P2P.DTO.Output
         public string DataTypeName { get; set; }
         public string Platform { get; set; }
         public string Title { get; set; }
+        public string PageSettingsSubtitle { get; set; }
     }
 }

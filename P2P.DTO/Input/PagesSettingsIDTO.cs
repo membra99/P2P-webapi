@@ -15,5 +15,6 @@ namespace P2P.DTO.Input
         public int DataTypeId { get; set; }
         public string Platform { get; set; }
         public string Title { get; set; }
+        public string PageSettingsSubtitle { get; set; }
     }
 }

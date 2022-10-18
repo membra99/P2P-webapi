@@ -20,6 +20,9 @@ namespace Entities.P2P.MainData
         [StringLength(200)]
         public string Title { get; set; }
 
+        [StringLength(200)]
+        public string PageSettingsSubtitle { get; set; }
+
         public Language Language { get; set; }
         public Serp Serp { get; set; }
         public DataType DataType { get; set; }
