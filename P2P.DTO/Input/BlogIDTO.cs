@@ -16,7 +16,7 @@ namespace P2P.DTO.Input
         public string SerpDescription { get; set; }
         public string Subtitle { get; set; }
         public string Content { get; set; }
-        public int? SelectedPopularArticle { get; set; }
+        public string SelectedPopularArticle { get; set; }
         public int? CategoryId { get; set; }
         public int? AuthorId { get; set; }
         public string PageTitle { get; set; }

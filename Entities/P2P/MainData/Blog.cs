@@ -14,7 +14,7 @@ namespace Entities.P2P.MainData
         public int BlogId { get; set; }
         public int? LanguageId { get; set; }
         public int? SerpId { get; set; }
-        public int? SelectedPopularArticle { get; set; }
+        public string SelectedPopularArticle { get; set; }
         public int? CategoryId { get; set; }
         public int? AuthorId { get; set; }
 
