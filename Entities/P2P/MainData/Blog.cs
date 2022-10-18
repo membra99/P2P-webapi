@@ -28,7 +28,6 @@ namespace Entities.P2P.MainData
 
         public Language Language { get; set; }
         public Serp Serp { get; set; }
-        public Academy SelectedPopularArticles { get; set; }
         public Category Category { get; set; }
         public User User { get; set; }
         public ICollection<FaqTitle> FaqTitles { get; set; }

@@ -444,10 +444,6 @@ namespace Entities.Context
                     .WithMany(x => x.Blogs)
                     .OnDelete(DeleteBehavior.Restrict);
 
-                entity.HasOne(x => x.SelectedPopularArticles)
-                    .WithMany(x => x.Blogs)
-                    .OnDelete(DeleteBehavior.Restrict);
-
                 entity.HasOne(x => x.User)
                     .WithMany(x => x.Blogs)
                     .HasForeignKey(x => x.AuthorId)

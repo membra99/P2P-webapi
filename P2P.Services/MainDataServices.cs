@@ -3021,6 +3021,23 @@ namespace P2P.Services
             var blog = await _context.Blogs.FindAsync(id);
             if (blog == null) return null;
 
+            var faqTitles = await _context.FaqTitles.Where(x => x.BlogId == blog.BlogId).ToListAsync();
+
+            foreach (var item in faqTitles)
+            {
+                var x = await _context.FaqLists.Where(x => x.FaqTitleId == item.FaqTitleId).ToListAsync();
+                foreach (var item2 in x)
+                {
+                    _context.FaqLists.Remove(item2);
+                    await SaveContextChangesAsync();
+                }
+            }
+            foreach (var item in faqTitles)
+            {
+                _context.FaqTitles.Remove(item);
+                await SaveContextChangesAsync();
+            }
+
             var blogODTO = await GetBlogById(id);
             _context.Blogs.Remove(blog);
             await SaveContextChangesAsync();

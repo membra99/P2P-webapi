@@ -103,9 +103,6 @@ namespace Entities.Migrations
                     b.Property<int?>("SelectedPopularArticle")
                         .HasColumnType("int");
 
-                    b.Property<int?>("SelectedPopularArticlesAcademyId")
-                        .HasColumnType("int");
-
                     b.Property<int?>("SerpId")
                         .HasColumnType("int");
 
@@ -116,8 +113,6 @@ namespace Entities.Migrations
                     b.HasIndex("CategoryId");
 
                     b.HasIndex("LanguageId");
-
-                    b.HasIndex("SelectedPopularArticlesAcademyId");
 
                     b.HasIndex("SerpId");
 
@@ -1191,11 +1186,6 @@ namespace Entities.Migrations
                         .HasForeignKey("LanguageId")
                         .OnDelete(DeleteBehavior.Restrict);
 
-                    b.HasOne("Entities.P2P.MainData.Academy", "SelectedPopularArticles")
-                        .WithMany("Blogs")
-                        .HasForeignKey("SelectedPopularArticlesAcademyId")
-                        .OnDelete(DeleteBehavior.Restrict);
-
                     b.HasOne("Entities.P2P.MainData.Serp", "Serp")
                         .WithMany("Blogs")
                         .HasForeignKey("SerpId")
@@ -1204,8 +1194,6 @@ namespace Entities.Migrations
                     b.Navigation("Category");
 
                     b.Navigation("Language");
-
-                    b.Navigation("SelectedPopularArticles");
 
                     b.Navigation("Serp");
 
@@ -1246,7 +1234,7 @@ namespace Entities.Migrations
                     b.HasOne("Entities.P2P.MainData.FaqTitle", "FaqTitle")
                         .WithMany("FaqLists")
                         .HasForeignKey("FaqTitleId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("FaqTitle");
@@ -1257,7 +1245,7 @@ namespace Entities.Migrations
                     b.HasOne("Entities.P2P.MainData.Blog", "Blog")
                         .WithMany("FaqTitles")
                         .HasForeignKey("BlogId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.HasOne("Entities.P2P.MainData.Page", "Page")
                         .WithMany("FaqTitles")
@@ -1740,8 +1728,6 @@ namespace Entities.Migrations
 
             modelBuilder.Entity("Entities.P2P.MainData.Academy", b =>
                 {
-                    b.Navigation("Blogs");
-
                     b.Navigation("PageArticles");
                 });
 
