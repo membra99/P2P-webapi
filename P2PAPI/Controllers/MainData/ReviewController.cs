@@ -121,7 +121,7 @@ namespace P2P.WebApi.Controllers.MainData
         }
 
         [HttpPut("Parent")]
-        public async Task<ActionResult<ReviewODTO>> PutParentReview(ReviewIDTO reviewIDTO)
+        public async Task<ActionResult<IEnumerable<ReviewODTO>>> PutParentReview(ReviewIDTO reviewIDTO)
         {
             try
             {

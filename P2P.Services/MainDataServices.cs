@@ -2128,7 +2128,7 @@ namespace P2P.Services
             }
         }
 
-        public async Task<ReviewODTO> EditParentReview(ReviewIDTO reviewIDTO)
+        public async Task<List<ReviewODTO>> EditParentReview(ReviewIDTO reviewIDTO)
         {
             try
             {
@@ -2182,7 +2182,7 @@ namespace P2P.Services
                         await SaveContextChangesAsync();
                         if (review.ReportLink != null)
                         {
-                            return await GetReviewById(review.ReviewId);
+                            return null; //await GetReviewById(review.ReviewId);
                         }
                         else
                         {
@@ -2269,7 +2269,20 @@ namespace P2P.Services
                         _context.Entry(item).State = EntityState.Modified;
                         await SaveContextChangesAsync();
                     }
-                    return await GetReviewById(review.ReviewId);
+                    var ParentID = review.ReviewId;
+                    var ChildsID = new List<int>();
+                    var ParentChild = new List<ReviewODTO>();
+                    foreach (var item in childReviews)
+                    {
+                        ChildsID.Add(item.ReviewId);
+                    }
+                    ChildsID.Add(ParentID);
+                    foreach (var item in ChildsID)
+                    {
+                        var reviews = await _context.Review.Where(x => x.ReviewId == item).FirstOrDefaultAsync();
+                        ParentChild.Add(_mapper.Map<ReviewODTO>(reviews));
+                    }
+                    return ParentChild;
                 }
                 return null;
             }
