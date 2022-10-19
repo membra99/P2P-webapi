@@ -2601,13 +2601,32 @@ namespace P2P.Services
 
         public async Task<PagesSettingsODTO> AddPagesSettings(PagesSettingsIDTO pagesSettingsIDTO)
         {
-            var pagesSettings = _mapper.Map<PagesSettings>(pagesSettingsIDTO);
-            pagesSettings.PagesSettingsId = 0;
-            _context.PagesSettings.Add(pagesSettings);
+            try
+            {
+                var pageSett = _mapper.Map<PagesSettings>(pagesSettingsIDTO);
+                var serp = new Serp
+                {
+                    DataTypeId = pagesSettingsIDTO.DataTypeId,
+                    SerpTitle = pagesSettingsIDTO.SerpTitle,
+                    SerpDescription = pagesSettingsIDTO.SerpDescription,
+                    Subtitle = pagesSettingsIDTO.Subtitle
+                };
+                _context.Serps.Add(serp);
+                await SaveContextChangesAsync();
+                pageSett.PagesSettingsId = 0;
+                pageSett.SerpId = serp.SerpId;
+                _context.PagesSettings.Add(pageSett);
+                await SaveContextChangesAsync();
 
-            await SaveContextChangesAsync();
+                serp.TableId = pageSett.PagesSettingsId;
+                await SaveContextChangesAsync();
 
-            return await GetPagesSettingsById(pagesSettings.PagesSettingsId);
+                return await GetPagesSettingsById(pageSett.PagesSettingsId);
+            }
+            catch (Exception ex)
+            {
+                throw ex.InnerException.InnerException;
+            }
         }
 
         public async Task<PagesSettingsODTO> DeletePagesSettings(int id)
