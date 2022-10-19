@@ -733,11 +733,21 @@ namespace P2P.Services
         public async Task<LinkODTO> AddLink(LinkIDTO linkIDTO)
         {
             var links = _mapper.Map<Links>(linkIDTO);
-            links.LinkId = 0;
-            _context.Links.Add(links);
-
+            var url = new UrlTable
+            {
+                DataTypeId = LINKS_TYPEID,
+                URL = linkIDTO.UrlTableName
+            };
+            _context.UrlTables.Add(url);
             await SaveContextChangesAsync();
 
+            links.LinkId = 0;
+            links.UrlTableId = url.UrlTableId;
+            _context.Links.Add(links);
+            await SaveContextChangesAsync();
+
+            url.TableId = links.LinkId;
+            await SaveContextChangesAsync();
             return await GetLinkById(links.LinkId);
         }
 
