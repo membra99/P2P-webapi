@@ -2985,8 +2985,11 @@ namespace P2P.Services
                 blog.Subtitle = serp.Subtitle;
                 blog.SerpDescription = serp.SerpDescription;
             }
-
-            blog.SelectedPopularArticles = blog.SelectedPopularArticle.Split(",").Select(x => Convert.ToInt32(x)).ToArray();
+            if(blog.SelectedPopularArticle != null)
+            {
+                blog.SelectedPopularArticles = blog.SelectedPopularArticle.Split(",").Select(x => Convert.ToInt32(x)).ToArray();
+            }
+            
 
             return blog;
         }
