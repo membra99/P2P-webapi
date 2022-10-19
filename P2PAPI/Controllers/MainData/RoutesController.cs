@@ -55,9 +55,9 @@ namespace P2P.WebApi.Controllers.MainData
         }
 
         [HttpGet("DropdownValues/{key}")]
-        public async Task<ActionResult<IEnumerable<GetDropdownValuesODTO>>> GetDropdownValues(string key)
+        public async Task<ActionResult<IEnumerable<GetDropdownValuesODTO>>> GetDropdownValues(string key, int lang)
         {
-            var routes = await _mainDataServices.GetDropdownValues(key);
+            var routes = await _mainDataServices.GetDropdownValues(key, lang);
             if (routes == null)
             {
                 return NotFound();

@@ -1049,11 +1049,12 @@ namespace P2P.Services
             return routesODTO;
         }
 
-        public async Task<List<GetDropdownValuesODTO>> GetDropdownValues(string key)
+        public async Task<List<GetDropdownValuesODTO>> GetDropdownValues(string key, int lang)
         {
             var reviews = new List<GetDropdownValuesODTO>();
 
             reviews = await (from x in _context.Review
+                             where x.LanguageId == lang
                              select new GetDropdownValuesODTO
                              {
                                  Value = "review_" + x.ReviewId.ToString(),
@@ -1063,6 +1064,7 @@ namespace P2P.Services
             var pages = new List<GetDropdownValuesODTO>();
 
             pages = await (from x in _context.Pages
+                           where x.LanguageId == lang
                            select new GetDropdownValuesODTO
                            {
                                Value = "pages__" + x.PageId.ToString(),
