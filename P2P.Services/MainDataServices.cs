@@ -3108,7 +3108,7 @@ namespace P2P.Services
 
         #region Blog
 
-        private IQueryable<BlogODTO> GetBlog(int id, int languageId, int categoryId)
+        private IQueryable<BlogODTO> GetBlog(int id, int languageId, int categoryId, string blogName)
         {
             return from x in _context.Blogs
                    .Include(x => x.Language)
@@ -3117,6 +3117,7 @@ namespace P2P.Services
                    where (id == 0 || x.BlogId == id)
                    && (languageId == 0 || x.LanguageId == languageId)
                    && (categoryId == 0 || x.CategoryId == categoryId)
+                   && (string.IsNullOrEmpty(blogName) || x.Name.StartsWith(blogName))
                    select _mapper.Map<BlogODTO>(x);
         }
 
@@ -3132,7 +3133,7 @@ namespace P2P.Services
 
         public async Task<BlogODTO> GetBlogById(int id)
         {
-            var blog = await GetBlog(id, 0, 0).AsNoTracking().SingleOrDefaultAsync();
+            var blog = await GetBlog(id, 0, 0, null).AsNoTracking().SingleOrDefaultAsync();
             if (blog.SerpId != null)
             {
                 var serp = (await GetSerp((int)blog.SerpId, 0).AsNoTracking().SingleOrDefaultAsync());
@@ -3140,23 +3141,27 @@ namespace P2P.Services
                 blog.Subtitle = serp.Subtitle;
                 blog.SerpDescription = serp.SerpDescription;
             }
-            if(blog.SelectedPopularArticle != null)
+            if (blog.SelectedPopularArticle != null)
             {
                 blog.SelectedPopularArticles = blog.SelectedPopularArticle.Split(",").Select(x => Convert.ToInt32(x)).ToArray();
             }
-            
 
             return blog;
         }
 
+        public async Task<BlogODTO> GetBlogByName(string blogName)
+        {
+            return await GetBlog(0, 0, 0, blogName).AsNoTracking().FirstOrDefaultAsync();
+        }
+
         public async Task<List<BlogODTO>> GetBlogsByLang(int languageId)
         {
-            return await GetBlog(0, languageId, 0).AsNoTracking().ToListAsync();
+            return await GetBlog(0, languageId, 0, null).AsNoTracking().ToListAsync();
         }
 
         public async Task<List<BlogODTO>> GetBlogsByCategory(int categoryId)
         {
-            return await GetBlog(0, 0, categoryId).AsNoTracking().ToListAsync();
+            return await GetBlog(0, 0, categoryId, null).AsNoTracking().ToListAsync();
         }
 
         public async Task<List<UserODTO>> GetAuthorsByLanguageId(int languageId)
