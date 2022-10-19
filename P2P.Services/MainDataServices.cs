@@ -1059,42 +1059,69 @@ namespace P2P.Services
             return routesODTO;
         }
 
-        public async Task<List<GetDropdownValuesODTO>> GetDropdownValues(string key, int lang)
+        public async Task<List<GetDropdownValuesODTO>> GetDropdownValues(string DataTypeName, int lang)
         {
-            var reviews = new List<GetDropdownValuesODTO>();
+            var dataTypeId = await _context.DataTypes.Where(x => x.DataTypeName.ToLower() == DataTypeName.ToLower()).Select(x => x.DataTypeId).FirstOrDefaultAsync();
 
-            reviews = await (from x in _context.Review
-                             where x.LanguageId == lang
-                             select new GetDropdownValuesODTO
-                             {
-                                 Value = "review_" + x.ReviewId.ToString(),
-                                 Name = x.Name,
-                             }).OrderByDescending(x => x.Value).ToListAsync();
-
-            var pages = new List<GetDropdownValuesODTO>();
-
-            pages = await (from x in _context.Pages
-                           where x.LanguageId == lang
-                           select new GetDropdownValuesODTO
-                           {
-                               Value = "pages__" + x.PageId.ToString(),
-                               Name = x.PageTitle,
-                           }).OrderByDescending(x => x.Value).ToListAsync();
-
-            if (key.ToLower() == "review")
+            switch (dataTypeId)
             {
-                return reviews;
-            }
-            if (key.ToLower() == "academy" || key.ToLower() == "cashback-bonus" || key.ToLower() == "general")
-            {
-                return pages;
-            }
-            if (key.ToLower() == "specific")
-            {
-                return reviews.Concat(pages).ToList();
-            }
+                case REVIEW_TYPEID:
+                    return await (from x in _context.Review
+                                  where x.LanguageId == lang
+                                  select new GetDropdownValuesODTO
+                                  {
+                                      Value = "review_" + x.ReviewId.ToString(),
+                                      Name = x.Name,
+                                  }).OrderByDescending(x => x.Value).ToListAsync();
 
-            return reviews.Concat(pages).ToList();
+                case ACADEMY_TYPEID:
+                    return await (from x in _context.Pages
+                                  where (x.LanguageId == lang && x.DataTypeId == ACADEMY_TYPEID)
+                                  select new GetDropdownValuesODTO
+                                  {
+                                      Value = "pages__" + x.PageId.ToString(),
+                                      Name = x.PageTitle,
+                                  }).OrderByDescending(x => x.Value).ToListAsync();
+
+                case CASHBACK_BONUS_TYPEID:
+                    return await (from x in _context.Pages
+                                  where (x.LanguageId == lang && x.DataTypeId == CASHBACK_BONUS_TYPEID)
+                                  select new GetDropdownValuesODTO
+                                  {
+                                      Value = "pages__" + x.PageId.ToString(),
+                                      Name = x.PageTitle,
+                                  }).OrderByDescending(x => x.Value).ToListAsync();
+
+                case GENERAL_TYPEID:
+                    return await (from x in _context.Pages
+                                  where (x.LanguageId == lang && x.DataTypeId == GENERAL_TYPEID)
+                                  select new GetDropdownValuesODTO
+                                  {
+                                      Value = "pages__" + x.PageId.ToString(),
+                                      Name = x.PageTitle,
+                                  }).OrderByDescending(x => x.Value).ToListAsync();
+
+                case ABOUT_TYPEID:
+                    return await (from x in _context.Pages
+                                  where (x.LanguageId == lang && x.DataTypeId == ABOUT_TYPEID)
+                                  select new GetDropdownValuesODTO
+                                  {
+                                      Value = "pages__" + x.PageId.ToString(),
+                                      Name = x.PageTitle,
+                                  }).OrderByDescending(x => x.Value).ToListAsync();
+
+                case BLOG_TYPEID:
+                    return await (from x in _context.Pages
+                                  where (x.LanguageId == lang && x.DataTypeId == BLOG_TYPEID)
+                                  select new GetDropdownValuesODTO
+                                  {
+                                      Value = "pages__" + x.PageId.ToString(),
+                                      Name = x.PageTitle,
+                                  }).OrderByDescending(x => x.Value).ToListAsync();
+
+                default:
+                    return null;
+            }
         }
 
         #endregion Routes
