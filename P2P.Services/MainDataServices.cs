@@ -3140,6 +3140,12 @@ namespace P2P.Services
                 blog.Subtitle = serp.Subtitle;
                 blog.SerpDescription = serp.SerpDescription;
             }
+            if(blog.SelectedPopularArticle != null)
+            {
+                blog.SelectedPopularArticles = blog.SelectedPopularArticle.Split(",").Select(x => Convert.ToInt32(x)).ToArray();
+            }
+            
+
             return blog;
         }
 
@@ -3198,7 +3204,7 @@ namespace P2P.Services
             blog.LanguageId = blog.LanguageId == 0 ? null : blog.LanguageId;
             blog.CategoryId = blog.CategoryId == 0 ? null : blog.CategoryId;
             blog.AuthorId = blog.AuthorId == 0 ? null : blog.AuthorId;
-            blog.SelectedPopularArticle = blog.SelectedPopularArticle == 0 ? null : blog.SelectedPopularArticle;
+            blog.SelectedPopularArticle = blog.SelectedPopularArticle == null || blog.SelectedPopularArticle == "" ? null : blog.SelectedPopularArticle;
             blog.UpdatedDate = DateTime.Now;
             _context.Blogs.Add(blog);
             await SaveContextChangesAsync();
