@@ -15,5 +15,6 @@ namespace P2P.DTO.Input
         public int LanguageId { get; set; }
         public string PageTitle { get; set; }
         public string Content { get; set; }
+        public string SelectedPopularArticle { get; set; }
     }
 }

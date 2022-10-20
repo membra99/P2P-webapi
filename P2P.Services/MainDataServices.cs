@@ -1472,7 +1472,15 @@ namespace P2P.Services
 
         public async Task<PageODTO> GetPageById(int id)
         {
-            return await GetPage(id, 0, 0).AsNoTracking().SingleOrDefaultAsync();
+            //return await GetPage(id, 0, 0).AsNoTracking().SingleOrDefaultAsync();
+            var page = await GetPage(id, 0, 0).AsNoTracking().SingleOrDefaultAsync();
+           
+            if (page.SelectedPopularArticle != null)
+            {
+                page.SelectedPopularArticles = page.SelectedPopularArticle.Split(",").Select(x => Convert.ToInt32(x)).ToArray();
+            }
+
+            return page;
         }
 
         public async Task<GetPageODTO> GetItem(int id)

@@ -18,6 +18,9 @@ namespace Entities.P2P.MainData
         public int LanguageId { get; set; }
 
         [StringLength(100)]
+        public string SelectedPopularArticle { get; set; }
+
+        [StringLength(100)]
         public string PageTitle { get; set; }
 
         public string Content { get; set; }
