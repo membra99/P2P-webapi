@@ -58,7 +58,7 @@ namespace P2P.WebApi.Controllers
         [HttpPost]
         public async Task<ActionResult<UserODTO>> Register(UserIDTO userModel)
         {
-            if (string.IsNullOrEmpty(userModel.Username) || string.IsNullOrEmpty(userModel.Password) || userModel.RoleId == 0)
+            if (string.IsNullOrEmpty(userModel.Username) || string.IsNullOrEmpty(userModel.Password))
                 return BadRequest("User must have all data assigned");
 
             var user = await _userServices.RegisterUser(userModel);
@@ -110,7 +110,7 @@ namespace P2P.WebApi.Controllers
         }
 
         [Authorize]
-        [HttpGet("DeleteUser")]
+        [HttpDelete("DeleteUser")]
         public async Task<ActionResult<UserODTO>> DeleteUser(int id)
         {
             var user = await _userServices.DeleteUser(id);

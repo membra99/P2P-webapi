@@ -189,13 +189,16 @@ namespace P2P.Base.Services.Mapping
 
             #region Users
 
-            CreateMap<User, UserODTO>()
-                .ForMember(dest => dest.LanguageName, source => source.MapFrom(m => m.Language.LanguageName))
-                .ForMember(dest => dest.RoleName, source => source.MapFrom(m => m.Role.RoleName));
+            CreateMap<User, UserODTO>();
             CreateMap<UserIDTO, User>();
 
             CreateMap<Role, RoleODTO>();
             CreateMap<RoleIDTO, Role>();
+
+            CreateMap<Permission, PermissionODTO>().ForMember(dest => dest.LanguageName, source => source.MapFrom(m => m.Language.LanguageName))
+                .ForMember(dest => dest.RoleName, source => source.MapFrom(m => m.Role.RoleName))
+                .ForMember(dest => dest.Username, source => source.MapFrom(m => m.User.Username));
+            CreateMap<PermissionIDTO, Permission>();
 
             #endregion Users
         }
