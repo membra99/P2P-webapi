@@ -47,7 +47,7 @@ namespace P2P.WebApi.Controllers.MainData
 
         //PUT: api/SettingsAttributes
         [HttpPut]
-        public async Task<ActionResult<SettingsAttributeODTO>> PutSettingsAttributes(SettingsAttributeIDTO settingsAttributeIDTO)
+        public async Task<ActionResult<IEnumerable<SettingsAttributeODTO>>> PutSettingsAttributes(List<SettingsAttributeIDTO> settingsAttributeIDTO)
         {
             try
             {
@@ -61,7 +61,7 @@ namespace P2P.WebApi.Controllers.MainData
 
         //POST: api/SettingsAttributes
         [HttpPost]
-        public async Task<ActionResult<SettingsAttributeODTO>> PostSettingsAttribute(SettingsAttributeIDTO settingsAttributeIDTO)
+        public async Task<ActionResult<IEnumerable<SettingsAttributeODTO>>> PostSettingsAttribute(List<SettingsAttributeIDTO> settingsAttributeIDTO)
         {
             try
             {

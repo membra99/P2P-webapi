@@ -13,6 +13,6 @@ namespace P2P.DTO.Output.EndPointODTO
         public int DataTypeId { get; set; }
         public string DataTypeName { get; set; }
 
-        public string Page_Title { get; set; }
+        public string PageTitle { get; set; }
     }
 }
