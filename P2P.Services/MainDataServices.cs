@@ -722,9 +722,19 @@ namespace P2P.Services
         public async Task<LinkODTO> EditLink(LinkIDTO linkIDTO)
         {
             var links = _mapper.Map<Links>(linkIDTO);
+            var url = new UrlTable
+            {
+                DataTypeId = LINKS_TYPEID,
+                URL = linkIDTO.UrlTableName
+            };
+            _context.UrlTables.Add(url);
+            await SaveContextChangesAsync();
 
+            links.UrlTableId = url.UrlTableId;
             _context.Entry(links).State = EntityState.Modified;
 
+            await SaveContextChangesAsync();
+            url.TableId = links.LinkId;
             await SaveContextChangesAsync();
 
             return await GetLinkById(links.LinkId);
@@ -1452,6 +1462,7 @@ namespace P2P.Services
             return from x in _context.Pages
                    .Include(x => x.Language)
                    .Include(x => x.DataType)
+                   .Include(x=>x.Serp)
                    .Include(x => x.Review)
                    where (id == 0 || x.PageId == id)
                    && (languageId == 0 || x.LanguageId == languageId)
@@ -1477,7 +1488,7 @@ namespace P2P.Services
             var retVal = new GetPageODTO
             {
                 PageId = page.PageId,
-                Page_Title = page.PageTitle,
+                PageTitle = page.PageTitle,
                 SerpId = (int)page.SerpId,
                 DataTypeId = (int)page.DataTypeId,
                 ReviewContentDropdowns = reviews,
@@ -1492,20 +1503,27 @@ namespace P2P.Services
 
         public async Task<List<GetPageListODTO>> GetList(int langId)
         {
-            var pages = new List<GetPageListODTO>();
+            try
+            {
+                var pages = new List<GetPageListODTO>();
 
-            pages = await (from x in _context.Pages
-                           .Include(x => x.DataType)
-                           where x.LanguageId == langId
-                           select new GetPageListODTO
-                           {
-                               PageId = x.PageId,
-                               Page_Title = x.PageTitle,
-                               DataTypeId = (int)x.DataTypeId,
-                               DataTypeName = x.DataType.DataTypeName
-                           }).OrderByDescending(x => x.PageId).ToListAsync();
+                pages = await (from x in _context.Pages
+                               .Include(x => x.DataType)
+                               where x.LanguageId == langId
+                               select new GetPageListODTO
+                               {
+                                   PageId = x.PageId,
+                                   PageTitle = x.PageTitle,
+                                   DataTypeId = (int)x.DataTypeId,
+                                   DataTypeName = x.DataType.DataTypeName
+                               }).OrderByDescending(x => x.PageId).ToListAsync();
 
-            return pages;
+                return pages;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception();
+            }
         }
 
         public async Task<GetItemContentODTO> GetItemContent(int? id, int urlId, int langId)
@@ -1598,7 +1616,7 @@ namespace P2P.Services
                     if (reviewSett == null) return null;
                     page = new PageContentODTO
                     {
-                        Page_Title = reviewSett.Title,
+                        PageTitle = reviewSett.Title,
                         SerpId = (int)reviewSett.SerpId,
                         SerpDescription = reviewSett.Serp.SerpDescription,
                         SerpTitle = reviewSett.Serp.SerpTitle,
@@ -1614,7 +1632,7 @@ namespace P2P.Services
                     if (homeSett == null) return null;
                     page = new PageContentODTO
                     {
-                        Page_Title = homeSett.Title,
+                        PageTitle = homeSett.Title,
                         SerpId = (int)homeSett.SerpId,
                         SerpDescription = homeSett.Serp.SerpDescription,
                         SerpTitle = homeSett.Serp.SerpTitle,
@@ -1630,7 +1648,7 @@ namespace P2P.Services
                     if (newsSett == null) return null;
                     page = new PageContentODTO
                     {
-                        Page_Title = newsSett.Title,
+                        PageTitle = newsSett.Title,
                         SerpId = (int)newsSett.SerpId,
                         SerpDescription = newsSett.Serp.SerpDescription,
                         SerpTitle = newsSett.Serp.SerpTitle,
@@ -1646,7 +1664,7 @@ namespace P2P.Services
                     if (bonusSett == null) return null;
                     page = new PageContentODTO
                     {
-                        Page_Title = bonusSett.Title,
+                        PageTitle = bonusSett.Title,
                         SerpId = (int)bonusSett.SerpId,
                         SerpDescription = bonusSett.Serp.SerpDescription,
                         SerpTitle = bonusSett.Serp.SerpTitle,
@@ -1662,7 +1680,7 @@ namespace P2P.Services
                     if (academySett == null) return null;
                     page = new PageContentODTO
                     {
-                        Page_Title = academySett.Title,
+                        PageTitle = academySett.Title,
                         SerpId = (int)academySett.SerpId,
                         SerpDescription = academySett.Serp.SerpDescription,
                         SerpTitle = academySett.Serp.SerpTitle,
@@ -1686,7 +1704,7 @@ namespace P2P.Services
                     }
                     page = new PageContentODTO
                     {
-                        Page_Title = pd1.PageTitle,
+                        PageTitle = pd1.PageTitle,
                         Content = pd1.Content,
                         PageId = pd1.PageId,
                         ReviewData = pd1.ReviewId != null ? rData : null,
@@ -2449,7 +2467,7 @@ namespace P2P.Services
 
         public async Task<List<PopularArticlesODTO>> GetAcademyValueByLangId(int langId)
         {
-            var popularArticles = _context.Academies.Select(e => new PopularArticlesODTO
+            var popularArticles = _context.Academies.Where(x => x.LanguageId == langId).Select(e => new PopularArticlesODTO
             {
                 Value = e.AcademyId,
                 Label = e.Title
@@ -3141,27 +3159,31 @@ namespace P2P.Services
             return await _mapper.ProjectTo<SettingsAttributeODTO>(GetSettingsAttribute(0, 0, datatypeId)).ToListAsync();
         }
 
-        public async Task<SettingsAttributeODTO> EditSettingsAttribute(SettingsAttributeIDTO settingsAttributeIDTO)
+        public async Task<List<SettingsAttributeODTO>> EditSettingsAttribute(List<SettingsAttributeIDTO> settingsAttributeIDTO)
         {
-            var settingsAttribute = _mapper.Map<SettingsAttribute>(settingsAttributeIDTO);
-            _context.Entry(settingsAttribute).State = EntityState.Modified;
+            var settingsAttribute = settingsAttributeIDTO.Select(x => _mapper.Map<SettingsAttribute>(x)).ToList();
 
+            foreach (var settAttr in settingsAttribute)
+            {
+                _context.Entry(settAttr).State = EntityState.Modified;
+            }
             await SaveContextChangesAsync();
 
-            return await GetSettingsAttributeById(settingsAttribute.SettingsAttributeId);
+            return settingsAttribute.Select(x => _mapper.Map<SettingsAttributeODTO>(x)).ToList();
         }
 
-        public async Task<SettingsAttributeODTO> AddSettingsAttribute(SettingsAttributeIDTO settingsAttributeIDTO)
+        public async Task<List<SettingsAttributeODTO>> AddSettingsAttribute(List<SettingsAttributeIDTO> settingsAttributeIDTO)
         {
-            var settingsAttribute = _mapper.Map<SettingsAttribute>(settingsAttributeIDTO);
+            var settingsAttribute = settingsAttributeIDTO.Select(x => _mapper.Map<SettingsAttribute>(x)).ToList();
 
-            settingsAttribute.SettingsAttributeId = 0;
-
-            _context.SettingsAttributes.Add(settingsAttribute);
-
+            foreach (var settAttr in settingsAttribute)
+            {
+                settAttr.SettingsAttributeId = 0;
+                _context.SettingsAttributes.Add(settAttr);
+            }
             await SaveContextChangesAsync();
 
-            return await GetSettingsAttributeById(settingsAttribute.SettingsAttributeId);
+            return settingsAttribute.Select(x => _mapper.Map<SettingsAttributeODTO>(x)).ToList();
         }
 
         public async Task<SettingsAttributeODTO> DeleteSettingsAttribute(int id)

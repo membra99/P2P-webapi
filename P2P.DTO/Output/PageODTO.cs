@@ -19,7 +19,7 @@ namespace P2P.DTO.Output
         public string DataTypeName { get; set; }
         public int LanguageId { get; set; }
         public string LanguageName { get; set; }
-        public string Page_Title { get; set; }
+        public string PageTitle { get; set; }
         public string Content { get; set; }
     }
 }
