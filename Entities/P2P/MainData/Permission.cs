@@ -17,8 +17,10 @@ namespace Entities.P2P.MainData
         public int LanguageId { get; set; }
 
         public int RoleId { get; set; }
+        public int? DataTypeId { get; set; }
         public Language Language { get; set; }
         public Role Role { get; set; }
         public User User { get; set; }
+        public DataType DataType { get; set; }
     }
 }

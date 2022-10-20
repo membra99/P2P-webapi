@@ -197,7 +197,8 @@ namespace P2P.Base.Services.Mapping
 
             CreateMap<Permission, PermissionODTO>().ForMember(dest => dest.LanguageName, source => source.MapFrom(m => m.Language.LanguageName))
                 .ForMember(dest => dest.RoleName, source => source.MapFrom(m => m.Role.RoleName))
-                .ForMember(dest => dest.Username, source => source.MapFrom(m => m.User.Username));
+                .ForMember(dest => dest.Username, source => source.MapFrom(m => m.User.Username))
+                .ForMember(dest => dest.DataTypeName, source => source.MapFrom(m => m.DataType.DataTypeName));
             CreateMap<PermissionIDTO, Permission>();
 
             #endregion Users

@@ -67,6 +67,10 @@ namespace Entities.Context
                 entity.HasOne(x => x.Role)
                       .WithMany(x => x.Permissions)
                       .OnDelete(DeleteBehavior.Restrict);
+
+                entity.HasOne(x => x.DataType)
+                      .WithMany(x => x.Permissions)
+                      .OnDelete(DeleteBehavior.Restrict);
             });
 
             modelBuilder.Entity<Role>(entity =>
