@@ -449,6 +449,33 @@ namespace Entities.Migrations
                     b.ToTable("PagesSettings", "Settings");
                 });
 
+            modelBuilder.Entity("Entities.P2P.MainData.Permission", b =>
+                {
+                    b.Property<int>("PermissionId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<int>("LanguageId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("RoleId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("PermissionId");
+
+                    b.HasIndex("LanguageId");
+
+                    b.HasIndex("RoleId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Permissions", "Users");
+                });
+
             modelBuilder.Entity("Entities.P2P.MainData.Review", b =>
                 {
                     b.Property<int>("ReviewId")
@@ -1145,8 +1172,8 @@ namespace Entities.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("LanguageId")
-                        .HasColumnType("int");
+                    b.Property<string>("Image")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("LastName")
                         .IsRequired()
@@ -1156,18 +1183,11 @@ namespace Entities.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("RoleId")
-                        .HasColumnType("int");
-
                     b.Property<string>("Username")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("UserId");
-
-                    b.HasIndex("LanguageId");
-
-                    b.HasIndex("RoleId");
 
                     b.ToTable("Users", "Users");
                 });
@@ -1411,6 +1431,33 @@ namespace Entities.Migrations
                     b.Navigation("Language");
 
                     b.Navigation("Serp");
+                });
+
+            modelBuilder.Entity("Entities.P2P.MainData.Permission", b =>
+                {
+                    b.HasOne("Entities.P2P.MainData.Language", "Language")
+                        .WithMany("Permissions")
+                        .HasForeignKey("LanguageId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Entities.P2P.MainData.Role", "Role")
+                        .WithMany("Permissions")
+                        .HasForeignKey("RoleId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Entities.P2P.MainData.User", "User")
+                        .WithMany("Permissions")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Language");
+
+                    b.Navigation("Role");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("Entities.P2P.MainData.Review", b =>
@@ -1742,25 +1789,6 @@ namespace Entities.Migrations
                     b.Navigation("DataType");
                 });
 
-            modelBuilder.Entity("Entities.P2P.MainData.User", b =>
-                {
-                    b.HasOne("Entities.P2P.MainData.Language", "Language")
-                        .WithMany("Users")
-                        .HasForeignKey("LanguageId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("Entities.P2P.MainData.Role", "Role")
-                        .WithMany("Users")
-                        .HasForeignKey("RoleId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("Language");
-
-                    b.Navigation("Role");
-                });
-
             modelBuilder.Entity("Entities.P2P.MainData.Academy", b =>
                 {
                     b.Navigation("PageArticles");
@@ -1826,6 +1854,8 @@ namespace Entities.Migrations
 
                     b.Navigation("PagesSettings");
 
+                    b.Navigation("Permissions");
+
                     b.Navigation("Reviews");
 
                     b.Navigation("Routes");
@@ -1833,8 +1863,6 @@ namespace Entities.Migrations
                     b.Navigation("SettingsAttributes");
 
                     b.Navigation("Testimonials");
-
-                    b.Navigation("Users");
                 });
 
             modelBuilder.Entity("Entities.P2P.MainData.Page", b =>
@@ -1859,7 +1887,7 @@ namespace Entities.Migrations
 
             modelBuilder.Entity("Entities.P2P.MainData.Role", b =>
                 {
-                    b.Navigation("Users");
+                    b.Navigation("Permissions");
                 });
 
             modelBuilder.Entity("Entities.P2P.MainData.Serp", b =>
@@ -1933,6 +1961,8 @@ namespace Entities.Migrations
             modelBuilder.Entity("Entities.P2P.MainData.User", b =>
                 {
                     b.Navigation("Blogs");
+
+                    b.Navigation("Permissions");
                 });
 #pragma warning restore 612, 618
         }

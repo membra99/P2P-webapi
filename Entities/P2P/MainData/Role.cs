@@ -14,6 +14,6 @@ namespace Entities.P2P.MainData
         public int RoleId { get; set; }
         [Required]
         public string RoleName { get; set; }
-        public ICollection<User> Users { get; set; }
+        public ICollection<Permission> Permissions { get; set; }
     }
 }

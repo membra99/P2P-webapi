@@ -3475,5 +3475,73 @@ namespace P2P.Services
         }
 
         #endregion Roles
+
+        #region Permissions
+
+        private IQueryable<Permission> GetPermissions(int id, int langId, int roleId,int userId)
+        {
+            return from x in _context.Permissions
+                   where (id == 0 || x.PermissionId == id)
+                   && (langId == 0 || x.LanguageId == langId)
+                   && (roleId == 0 || x.RoleId == roleId)
+                   && (userId == 0 || x.UserId == userId)
+                   select x;
+        }
+
+        public async Task<PermissionODTO> GetPermissionsById(int id)
+        {
+            return await _mapper.ProjectTo<PermissionODTO>(GetPermissions(id, 0, 0,0)).AsNoTracking().SingleOrDefaultAsync();
+        }
+
+        public async Task<List<PermissionODTO>> GetPermissionsByLangId(int langId)
+        {
+            return await _mapper.ProjectTo<PermissionODTO>(GetPermissions(0, langId, 0,0)).ToListAsync();
+        }
+
+        public async Task<List<PermissionODTO>> GetPermissionsByRoleId(int roleId)
+        {
+            return await _mapper.ProjectTo<PermissionODTO>(GetPermissions(0, 0, roleId,0)).ToListAsync();
+        }
+
+        public async Task<List<PermissionODTO>> GetPermissionsByUserId(int userId)
+        {
+            return await _mapper.ProjectTo<PermissionODTO>(GetPermissions(0, 0, 0, userId)).ToListAsync();
+        }
+
+        public async Task<PermissionODTO> EditPermissions(PermissionIDTO permissionIDTO)
+        {
+            var permission = _mapper.Map<Permission>(permissionIDTO);
+            _context.Entry(permission).State = EntityState.Modified;
+
+            await SaveContextChangesAsync();
+
+            return await GetPermissionsById(permission.PermissionId);
+        }
+
+        public async Task<PermissionODTO> AddPermissions(PermissionIDTO permissionIDTO)
+        {
+            var permission = _mapper.Map<Permission>(permissionIDTO);
+
+            permission.PermissionId = 0;
+
+            _context.Permissions.Add(permission);
+
+            await SaveContextChangesAsync();
+
+            return await GetPermissionsById(permission.PermissionId);
+        }
+
+        public async Task<PermissionODTO> DeletePermissions(int id)
+        {
+            var permission = await _context.Permissions.FindAsync(id);
+            if (permission == null) return null;
+
+            var permissionODTO = await GetPermissionsById(id);
+            _context.Permissions.Remove(permission);
+            await SaveContextChangesAsync();
+            return permissionODTO;
+        }
+
+        #endregion Permissions
     }
 }

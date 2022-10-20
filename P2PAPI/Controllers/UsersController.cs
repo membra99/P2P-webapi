@@ -58,13 +58,40 @@ namespace P2P.WebApi.Controllers
         [HttpPost]
         public async Task<ActionResult<UserODTO>> Register(UserIDTO userModel)
         {
-            if (string.IsNullOrEmpty(userModel.Username) || string.IsNullOrEmpty(userModel.Password) || userModel.RoleId == 0)
+            if (string.IsNullOrEmpty(userModel.Username) || string.IsNullOrEmpty(userModel.Password))
                 return BadRequest("User must have all data assigned");
 
             var user = await _userServices.RegisterUser(userModel);
             return Ok(user);
         }
-            
+
+        [Authorize]
+        [Route("GetUsersByAuthorRole")]
+        [HttpGet]
+        public async Task<ActionResult<List<UserODTO>>> GetUsersByAuthorRole()
+        {
+            var user = await _userServices.GetUserByRoleAuthors();
+            return Ok(user);
+        }
+
+        [Authorize]
+        [Route("GetAllUsers")]
+        [HttpGet]
+        public async Task<ActionResult<List<UserODTO>>> GetAllUsers()
+        {
+            var user = await _userServices.GetAllUsers();
+            return Ok(user);
+        }
+
+        [Authorize]
+        [Route("GetUsersByLangId")]
+        [HttpGet]
+        public async Task<ActionResult<List<UserODTO>>> GetUsersByLangId(int langId)
+        {
+            var user = await _userServices.GetUsersByLangId(langId);
+            return Ok(user);
+        }
+
         [Authorize]
         [Route("UpdateUser")]
         [HttpPost]
@@ -81,16 +108,14 @@ namespace P2P.WebApi.Controllers
             var user = await _userServices.GetUserById(id);
             return Ok(user);
         }
-            
-        
 
         [Authorize]
-        [Route("GetUsersByLangId")]
-        [HttpGet]
-        public async Task<ActionResult<List<UserODTO>>> GetUsersByLangId(int langId)
+        [HttpDelete("DeleteUser")]
+        public async Task<ActionResult<UserODTO>> DeleteUser(int id)
         {
-            var user = await _userServices.GetUsersByLangId(langId);
+            var user = await _userServices.DeleteUser(id);
             return Ok(user);
         }
+
     }
 }
