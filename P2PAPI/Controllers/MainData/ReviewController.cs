@@ -107,12 +107,25 @@ namespace P2P.WebApi.Controllers.MainData
         }
 
         //PUT: api/Review
-        [HttpPut]
-        public async Task<ActionResult<ReviewODTO>> PutReview(ReviewIDTO reviewIDTO)
+        [HttpPut("Child")]
+        public async Task<ActionResult<ReviewODTO>> PutChildReview(ReviewIDTO reviewIDTO)
         {
             try
             {
                 return await _mainDataServices.EditReview(reviewIDTO);
+            }
+            catch (Exception e)
+            {
+                throw new Exception(e.Message);
+            }
+        }
+
+        [HttpPut("Parent")]
+        public async Task<ActionResult<IEnumerable<ReviewODTO>>> PutParentReview(ReviewIDTO reviewIDTO)
+        {
+            try
+            {
+                return await _mainDataServices.EditParentReview(reviewIDTO);
             }
             catch (Exception e)
             {

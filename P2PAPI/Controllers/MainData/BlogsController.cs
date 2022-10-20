@@ -25,10 +25,19 @@ namespace P2P.WebApi.Controllers.MainData
         }
 
         //GET: api/Blogs
-        [HttpGet("{id}")]
+        [HttpGet("ById")]
         public async Task<ActionResult<BlogODTO>> GetById(int id)
         {
             var blog = await _mainDataServices.GetBlogById(id);
+            if (blog == null) return NotFound();
+            return blog;
+        }
+
+        //GET: api/Blogs
+        [HttpGet("ByName")]
+        public async Task<ActionResult<BlogODTO>> GetByName(string name)
+        {
+            var blog = await _mainDataServices.GetBlogByName(name);
             if (blog == null) return NotFound();
             return blog;
         }

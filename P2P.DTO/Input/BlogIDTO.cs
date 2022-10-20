@@ -10,6 +10,7 @@ namespace P2P.DTO.Input
     public class BlogIDTO
     {
         public int BlogId { get; set; }
+        public string Name { get; set; }
         public int? LanguageId { get; set; }
         public int? SerpId { get; set; }
         public string SerpTitle { get; set; }

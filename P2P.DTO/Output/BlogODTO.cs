@@ -9,6 +9,7 @@ namespace P2P.DTO.Output
     public class BlogODTO
     {
         public int BlogId { get; set; }
+        public string Name { get; set; }
         public int? LanguageId { get; set; }
         public int? SerpId { get; set; }
         public string SerpTitle { get; set; }
