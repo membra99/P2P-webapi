@@ -15,5 +15,7 @@ namespace P2P.DTO.Input
         public string FirstName { get; set; }
         public string LastName { get; set; }
         public string Password { get; set; }
+        public string TagLineBlog { get; set; }
+        public string Image { get; set; }
     }
 }

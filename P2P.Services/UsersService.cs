@@ -11,6 +11,7 @@ using Entities.Context;
 using AutoMapper;
 using System.Security.Cryptography;
 using Microsoft.EntityFrameworkCore;
+using System.IdentityModel.Tokens.Jwt;
 
 namespace P2P.Services
 {
@@ -18,12 +19,17 @@ namespace P2P.Services
     {
         UserODTO GetUser(UserIDTO userMode);
         Task<UserODTO> GetUserById(int id);
+        Task<UserODTO> DeleteUser(int id);
         Task<List<UserODTO>> GetUsersByLangId(int langId);
         Task<UserODTO> RegisterUser(UserIDTO userModel);
         Task<UserODTO> UpdateUser(UserIDTO userModel);
+        Task<List<UserODTO>> GetAllUsers();
+        Task<List<UserODTO>> GetUserByRoleAuthors();
+
     }
     public class UsersService : BaseService, IUsersService
     {
+        public static int AUTHOR_ROLEID = 5;
         public UsersService(MainContext context, IMapper mapper) : base(context, mapper)
         {
         }
@@ -53,6 +59,26 @@ namespace P2P.Services
             return null;
         }
 
+        public Task<List<UserODTO>> GetAllUsers()
+        {
+            var users = _context.Users.Include(x => x.Language).Select(x => _mapper.Map<UserODTO>(x)).ToListAsync();
+            if (users != null)
+            {
+                return users;
+            }
+            return null;
+        }
+
+        public Task<List<UserODTO>> GetUserByRoleAuthors()
+        {
+            var users = _context.Users.Include(x => x.Language).Where(x => x.RoleId == AUTHOR_ROLEID).Select(x => _mapper.Map<UserODTO>(x)).ToListAsync();
+            if (users != null)
+            {
+                return users;
+            }
+            return null;
+        }
+
         public async Task<UserODTO> RegisterUser(UserIDTO userModel)
         {
             var user = _mapper.Map<User>(userModel);
@@ -71,7 +97,6 @@ namespace P2P.Services
                 users.FirstName = userModel.FirstName;
                 users.RoleId = userModel.RoleId;
                 users.LanguageId = userModel.LanguageId;
-                    users.Password = BCrypt.Net.BCrypt.HashPassword(users.Password);
                 await SaveContextChangesAsync();
                 return await GetUserById(users.UserId);
             }
@@ -83,6 +108,20 @@ namespace P2P.Services
                 .Where(x => x.UserId == id).Select(x => _mapper.Map<UserODTO>(x)).FirstOrDefaultAsync();
 
             return await users;
+        }
+
+        public async Task<UserODTO> DeleteUser(int id)
+        {
+            var user =  _context.Users.Include(x => x.Language).Include(x => x.Role)
+                .Where(x => x.UserId == id).FirstOrDefault();
+
+            _context.Users.Remove(user);
+
+            await SaveContextChangesAsync();
+
+            var userODTO = GetUserById(id);
+
+            return await userODTO;
         }
     }
 }

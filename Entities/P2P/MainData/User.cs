@@ -26,6 +26,9 @@ namespace Entities.P2P.MainData
         public string LastName { get; set; }
         [Required]
         public string Password { get; set; }
+        public string TagLineBlog { get; set; }
+        public string Image { get; set; }
+
         public ICollection<Blog> Blogs { get; set; }    
         public Language Language { get; set; }
         public Role Role { get; set; }
