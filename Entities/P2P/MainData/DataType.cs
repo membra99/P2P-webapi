@@ -26,5 +26,6 @@ namespace Entities.P2P.MainData
         public ICollection<PagesSettings> PagesSettings { get; set; }
         public ICollection<SettingsAttribute> DataTypes { get; set; }
         public ICollection<SettingsAttribute> SettingsDataTypes { get; set; }
+        public ICollection<Permission> Permissions { get; set; }
     }
 }

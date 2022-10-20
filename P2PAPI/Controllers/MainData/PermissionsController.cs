@@ -52,6 +52,14 @@ namespace P2P.WebApi.Controllers.MainData
             return await _mainDataServices.GetPermissionsByRoleId(roleId);
         }
 
+        //GET: api/Permissions
+        [HttpGet("ByDataTypeId/{dataTypeId}")]
+        public async Task<ActionResult<IEnumerable<PermissionODTO>>> GetByDataTypeId(int dataTypeId)
+        {
+            return await _mainDataServices.GetPermissionsByDataTypeId(dataTypeId);
+        }
+
+
         //PUT: api/Permissions
         [HttpPut]
         public async Task<ActionResult<PermissionODTO>> PutPermissions(PermissionIDTO permissionsIDTO)

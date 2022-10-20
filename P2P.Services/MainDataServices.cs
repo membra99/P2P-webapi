@@ -3456,34 +3456,40 @@ namespace P2P.Services
 
         #region Permissions
 
-        private IQueryable<Permission> GetPermissions(int id, int langId, int roleId,int userId)
+        private IQueryable<Permission> GetPermissions(int id, int langId, int roleId,int userId, int dataTypeId)
         {
             return from x in _context.Permissions
                    where (id == 0 || x.PermissionId == id)
                    && (langId == 0 || x.LanguageId == langId)
                    && (roleId == 0 || x.RoleId == roleId)
                    && (userId == 0 || x.UserId == userId)
+                   && (dataTypeId == 0 || x.UserId == dataTypeId)
                    select x;
         }
 
         public async Task<PermissionODTO> GetPermissionsById(int id)
         {
-            return await _mapper.ProjectTo<PermissionODTO>(GetPermissions(id, 0, 0,0)).AsNoTracking().SingleOrDefaultAsync();
+            return await _mapper.ProjectTo<PermissionODTO>(GetPermissions(id, 0, 0,0, 0)).AsNoTracking().SingleOrDefaultAsync();
         }
 
         public async Task<List<PermissionODTO>> GetPermissionsByLangId(int langId)
         {
-            return await _mapper.ProjectTo<PermissionODTO>(GetPermissions(0, langId, 0,0)).ToListAsync();
+            return await _mapper.ProjectTo<PermissionODTO>(GetPermissions(0, langId, 0,0, 0)).ToListAsync();
         }
 
         public async Task<List<PermissionODTO>> GetPermissionsByRoleId(int roleId)
         {
-            return await _mapper.ProjectTo<PermissionODTO>(GetPermissions(0, 0, roleId,0)).ToListAsync();
+            return await _mapper.ProjectTo<PermissionODTO>(GetPermissions(0, 0, roleId,0, 0)).ToListAsync();
         }
 
         public async Task<List<PermissionODTO>> GetPermissionsByUserId(int userId)
         {
-            return await _mapper.ProjectTo<PermissionODTO>(GetPermissions(0, 0, 0, userId)).ToListAsync();
+            return await _mapper.ProjectTo<PermissionODTO>(GetPermissions(0, 0, 0, userId,0)).ToListAsync();
+        }
+
+        public async Task<List<PermissionODTO>> GetPermissionsByDataTypeId(int dataTypeId)
+        {
+            return await _mapper.ProjectTo<PermissionODTO>(GetPermissions(0, 0, 0, 0, dataTypeId)).ToListAsync();
         }
 
         public async Task<PermissionODTO> EditPermissions(PermissionIDTO permissionIDTO)
