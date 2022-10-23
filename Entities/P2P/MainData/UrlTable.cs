@@ -45,5 +45,6 @@ namespace Entities.P2P.MainData
         public ICollection<NavigationSettings> HomeRouteLinks { get; set; }
         public ICollection<NavigationSettings> NewsRouteLinks { get; set; }
         public ICollection<NavigationSettings> ReviewsRouteLinks { get; set; }
+        public ICollection<SettingsAttribute> SettingsAttributes { get; set; }
     }
 }

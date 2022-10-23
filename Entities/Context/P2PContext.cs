@@ -442,23 +442,27 @@ namespace Entities.Context
             });
 
             modelBuilder.Entity<SettingsAttribute>(entity =>
-        {
-            entity.HasKey(x => x.SettingsAttributeId);
+            {
+                entity.HasKey(x => x.SettingsAttributeId);
 
-            entity.HasOne(x => x.Language)
-                .WithMany(x => x.SettingsAttributes)
-                .OnDelete(DeleteBehavior.Restrict);
+                entity.HasOne(x => x.Language)
+                    .WithMany(x => x.SettingsAttributes)
+                    .OnDelete(DeleteBehavior.Restrict);
 
-            entity.HasOne(x => x.DataType)
-                .WithMany(x => x.DataTypes)
-                .HasForeignKey(x => x.DataTypeId)
-                .OnDelete(DeleteBehavior.Restrict);
+                entity.HasOne(x => x.DataType)
+                    .WithMany(x => x.DataTypes)
+                    .HasForeignKey(x => x.DataTypeId)
+                    .OnDelete(DeleteBehavior.Restrict);
 
-            entity.HasOne(x => x.SettingsDataType)
-                .WithMany(x => x.SettingsDataTypes)
-                .HasForeignKey(x => x.SettingsDataTypeId)
-                .OnDelete(DeleteBehavior.Restrict);
-        });
+                entity.HasOne(x => x.SettingsDataType)
+                    .WithMany(x => x.SettingsDataTypes)
+                    .HasForeignKey(x => x.SettingsDataTypeId)
+                    .OnDelete(DeleteBehavior.Restrict);
+
+                entity.HasOne(x => x.Url)
+                      .WithMany(x => x.SettingsAttributes)
+                      .OnDelete(DeleteBehavior.Restrict);
+            });
 
             modelBuilder.Entity<Blog>(entity =>
             {

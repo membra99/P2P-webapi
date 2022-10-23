@@ -16,6 +16,9 @@ namespace P2P.DTO.Input
         public int? Platforms { get; set; }
         public int? ReviewUrl { get; set; }
         public int? SerpId { get; set; }
+        public string SerpTitle { get; set; }
+        public string SerpDescription { get; set; }
+        public string Subtitle { get; set; }
         public int? AcademyUrl { get; set; }
         public int? BonusUrl { get; set; }
         public int? LanguageId { get; set; }
@@ -25,5 +28,6 @@ namespace P2P.DTO.Input
         public string TestimonialH2 { get; set; }
         public string FeaturedH2 { get; set; }
         public string Platform { get; set; }
+        public List<SettingsAttributeIDTO> SettingsAttributes { get; set; }
     }
 }

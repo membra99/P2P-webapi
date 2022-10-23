@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using P2P.DTO.Output.EndPointODTO;
 
 namespace P2P.WebApi.Controllers.MainData
 {
@@ -24,9 +25,16 @@ namespace P2P.WebApi.Controllers.MainData
 
         //GET: api/NavigationSettings
         [HttpGet("ByLanguageId/{id}")]
-        public async Task<ActionResult<IEnumerable<NavigationSettingsODTO>>> GetByLanguageId(int id)
+        public async Task<ActionResult<IEnumerable<NavigationSettingsByLanguageODTO>>> GetByLanguageId(int id)
         {
             return await _mainDataServices.GetNavigationSettingsByLangId(id);
+        }
+
+        //GET: api/NavigationSettings
+        [HttpGet("ById/{id}")]
+        public async Task<ActionResult<NavigationSettingsODTO>> GetById(int id)
+        {
+            return await _mainDataServices.GetNavigationSettingsById(id);
         }
 
         //PUT: api/NavigationSettings

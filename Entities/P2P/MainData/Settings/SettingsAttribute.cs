@@ -15,13 +15,11 @@ namespace Entities.P2P.MainData.Settings
         public int DataTypeId { get; set; }
         public int SettingsDataTypeId { get; set; }
         public int LanguageId { get; set; }
-
-        [Required]
         public string Value { get; set; }
-
+        public int? UrlTableId { get; set; }
         public int? Index { get; set; }
         public DataType DataType { get; set; }
-
+        public UrlTable Url { get; set; }
         public DataType SettingsDataType { get; set; }
         public Language Language { get; set; }
     }

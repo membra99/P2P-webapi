@@ -16,6 +16,8 @@ namespace P2P.DTO.Output
         public int LanguageId { get; set; }
         public string LanguageName { get; set; }
         public string Value { get; set; }
+        public int? UrlTableId { get; set; }
+        public string Url { get; set; }
         public int Index { get; set; }
     }
 }

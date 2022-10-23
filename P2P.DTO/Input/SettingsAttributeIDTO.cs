@@ -14,5 +14,7 @@ namespace P2P.DTO.Input
         public int SettingsDataTypeId { get; set; }
         public int LanguageId { get; set; }
         public string Value { get; set; }
+        public int? UrlTableId { get; set; }
+        public int? Index { get; set; }
     }
 }

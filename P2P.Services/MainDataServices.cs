@@ -268,43 +268,43 @@ namespace P2P.Services
 
         public async Task<NavigationSettingsODTO> GetNavigationSettingsById(int id)
         {
-            return await _mapper.ProjectTo<NavigationSettingsODTO>(GetNavigationSettings(id, 0)).AsNoTracking().SingleOrDefaultAsync();
+            return await GetNavigationSettings(id, 0).FirstOrDefaultAsync();
         }
 
-        public async Task<List<NavigationSettingsODTO>> GetNavigationSettingsByLangId(int langId)
+        public async Task<List<NavigationSettingsByLanguageODTO>> GetNavigationSettingsByLangId(int langId)
         {
-            List<NavigationSettingsODTO> NavSettings = await (from x in _context.NavigationSettings
-                                                              where x.LanguageId == langId
-                                                              select new NavigationSettingsODTO
-                                                              {
-                                                                  NavigationSettingsId = x.NavigationSettingsId,
-                                                                  LanguageId = x.LanguageId,
-                                                                  LanguageName = x.Language.LanguageName,
-                                                                  AcademyRoute = x.AcademyRoute,
-                                                                  AcademyRouteLink = x.AcademyRouteLink.URL,
-                                                                  BonusRoute = x.BonusRoute,
-                                                                  BonusRouteLink = x.BonusRouteLink.URL,
-                                                                  HomeRoute = x.HomeRoute,
-                                                                  HomeRouteLink = x.HomeRouteLink.URL,
-                                                                  NewsRoute = x.NewsRoute,
-                                                                  NewsRouteLink = x.NewsRouteLink.URL,
-                                                                  ReviewsRoute = x.ReviewsRoute,
-                                                                  ReviewsRouteLink = x.ReviewsRouteLink.URL,
-                                                                  ReviewsRoutes = (from a in _context.SettingsAttributes
-                                                                                     .Include(x => x.Language)
-                                                                                     .Include(x => x.DataType)
-                                                                                     .Include(x => x.SettingsDataType)
-                                                                                   where (a.DataTypeId == NAVIGATION_SETTINGS_TYPEID)
-                                                                                   && (a.SettingsDataTypeId == REVIEW_ROUTE_TYPEID)
-                                                                                   && (a.LanguageId == langId)
-                                                                                   select _mapper.Map<SettingsAttributeODTO>(a)).ToList(),
-                                                                  Reviews = (from b in _context.SettingsAttributes
-                                                                                     .Include(x => x.SettingsDataType)
-                                                                             where (b.DataTypeId == NAVIGATION_SETTINGS_TYPEID)
-                                                                             && (b.SettingsDataTypeId == NAV_SETTINGS_REVIEWS_TYPEID)
-                                                                             && (b.LanguageId == langId)
-                                                                             select _mapper.Map<SettingsAttributeODTO>(b)).ToList()
-                                                              }).ToListAsync();
+            List<NavigationSettingsByLanguageODTO> NavSettings = await (from x in _context.NavigationSettings
+                                                                        where x.LanguageId == langId
+                                                                        select new NavigationSettingsByLanguageODTO
+                                                                        {
+                                                                            NavigationSettingsId = x.NavigationSettingsId,
+                                                                            LanguageId = x.LanguageId,
+                                                                            LanguageName = x.Language.LanguageName,
+                                                                            AcademyRoute = x.AcademyRoute,
+                                                                            AcademyRouteLink = x.AcademyRouteLink.URL,
+                                                                            BonusRoute = x.BonusRoute,
+                                                                            BonusRouteLink = x.BonusRouteLink.URL,
+                                                                            HomeRoute = x.HomeRoute,
+                                                                            HomeRouteLink = x.HomeRouteLink.URL,
+                                                                            NewsRoute = x.NewsRoute,
+                                                                            NewsRouteLink = x.NewsRouteLink.URL,
+                                                                            ReviewsRoute = x.ReviewsRoute,
+                                                                            ReviewsRouteLink = x.ReviewsRouteLink.URL,
+                                                                            ReviewsRoutes = (from a in _context.SettingsAttributes
+                                                                                               .Include(x => x.Language)
+                                                                                               .Include(x => x.DataType)
+                                                                                               .Include(x => x.SettingsDataType)
+                                                                                             where (a.DataTypeId == NAVIGATION_SETTINGS_TYPEID)
+                                                                                             && (a.SettingsDataTypeId == REVIEW_ROUTE_TYPEID)
+                                                                                             && (a.LanguageId == langId)
+                                                                                             select _mapper.Map<SettingsAttributeODTO>(a)).ToList(),
+                                                                            Reviews = (from b in _context.SettingsAttributes
+                                                                                               .Include(x => x.SettingsDataType)
+                                                                                       where (b.DataTypeId == NAVIGATION_SETTINGS_TYPEID)
+                                                                                       && (b.SettingsDataTypeId == NAV_SETTINGS_REVIEWS_TYPEID)
+                                                                                       && (b.LanguageId == langId)
+                                                                                       select _mapper.Map<SettingsAttributeODTO>(b)).ToList()
+                                                                        }).ToListAsync();
             return NavSettings;
         }
 
@@ -324,11 +324,45 @@ namespace P2P.Services
             var navigationSettings = _mapper.Map<NavigationSettings>(navigationSettingsIDTO);
 
             navigationSettings.NavigationSettingsId = 0;
-
-            _context.NavigationSettings.Add(navigationSettings);
-
+            _context.Add(navigationSettings);
             await SaveContextChangesAsync();
 
+            var settAttr = new SettingsAttribute();
+            foreach (var item in navigationSettingsIDTO.SettingsAttributes)
+            {
+                settAttr = new SettingsAttribute
+                {
+                    DataTypeId = NAVIGATION_SETTINGS_TYPEID,
+                    SettingsDataTypeId = item.SettingsDataTypeId,
+                    LanguageId = item.LanguageId,
+                    Value = item.Value,
+                    Index = item.Index,
+                    UrlTableId = null,
+                };
+                var urlId = await _context.UrlTables.Where(x => x.URL.ToLower() == settAttr.Value && x.DataTypeId == settAttr.DataTypeId).Select(x => x.UrlTableId).FirstOrDefaultAsync();
+                settAttr.UrlTableId = settAttr.Value != null && urlId != 0 ? urlId : null;
+                _context.SettingsAttributes.Add(settAttr);
+                await SaveContextChangesAsync();
+                if (settAttr.UrlTableId != null)
+                {
+                    settAttr.Value = null;
+                    await SaveContextChangesAsync();
+                }
+                else if ((settAttr.SettingsDataTypeId == REVIEW_ROUTE_TYPEID || settAttr.SettingsDataTypeId == A_ITEM_LINK_TYPEID || settAttr.SettingsDataTypeId == P_ITEM_LINK_TYPEID) && (settAttr.Value != null))
+                {
+                    var url = new UrlTable
+                    {
+                        DataTypeId = settAttr.DataTypeId,
+                        URL = settAttr.Value,
+                        TableId = settAttr.SettingsAttributeId,
+                    };
+                    _context.UrlTables.Add(url);
+                    await SaveContextChangesAsync();
+                    settAttr.UrlTableId = url.UrlTableId;
+                    settAttr.Value = null;
+                    await SaveContextChangesAsync();
+                }
+            }
             return await GetNavigationSettingsById(navigationSettings.NavigationSettingsId);
         }
 
@@ -431,6 +465,42 @@ namespace P2P.Services
 
             await SaveContextChangesAsync();
 
+            var settAttr = new SettingsAttribute();
+            foreach (var item in footerSettingsIDTO.SettingsAttributes)
+            {
+                settAttr = new SettingsAttribute
+                {
+                    DataTypeId = FOOTER_SETTINGS_TYPEID,
+                    SettingsDataTypeId = item.SettingsDataTypeId,
+                    LanguageId = item.LanguageId,
+                    Value = item.Value,
+                    Index = item.Index,
+                    UrlTableId = null,
+                };
+                var urlId = await _context.UrlTables.Where(x => x.URL.ToLower() == settAttr.Value && x.DataTypeId == settAttr.DataTypeId).Select(x => x.UrlTableId).FirstOrDefaultAsync();
+                settAttr.UrlTableId = settAttr.Value != null && urlId != 0 ? urlId : null;
+                _context.SettingsAttributes.Add(settAttr);
+                await SaveContextChangesAsync();
+                if (settAttr.UrlTableId != null)
+                {
+                    settAttr.Value = null;
+                    await SaveContextChangesAsync();
+                }
+                else if ((settAttr.SettingsDataTypeId == REVIEW_ROUTE_TYPEID || settAttr.SettingsDataTypeId == A_ITEM_LINK_TYPEID || settAttr.SettingsDataTypeId == P_ITEM_LINK_TYPEID) && (settAttr.Value != null))
+                {
+                    var url = new UrlTable
+                    {
+                        DataTypeId = settAttr.DataTypeId,
+                        URL = settAttr.Value,
+                        TableId = settAttr.SettingsAttributeId,
+                    };
+                    _context.UrlTables.Add(url);
+                    await SaveContextChangesAsync();
+                    settAttr.UrlTableId = url.UrlTableId;
+                    settAttr.Value = null;
+                    await SaveContextChangesAsync();
+                }
+            }
             return await GetFooterSettingsById(footerSettings.FooterSettingsId);
         }
 
@@ -1462,7 +1532,7 @@ namespace P2P.Services
             return from x in _context.Pages
                    .Include(x => x.Language)
                    .Include(x => x.DataType)
-                   .Include(x=>x.Serp)
+                   .Include(x => x.Serp)
                    .Include(x => x.Review)
                    where (id == 0 || x.PageId == id)
                    && (languageId == 0 || x.LanguageId == languageId)
@@ -1474,7 +1544,7 @@ namespace P2P.Services
         {
             //return await GetPage(id, 0, 0).AsNoTracking().SingleOrDefaultAsync();
             var page = await GetPage(id, 0, 0).AsNoTracking().SingleOrDefaultAsync();
-           
+
             if (page.SelectedPopularArticle != null)
             {
                 page.SelectedPopularArticles = page.SelectedPopularArticle.Split(",").Select(x => Convert.ToInt32(x)).ToArray();
@@ -3020,15 +3090,53 @@ namespace P2P.Services
 
         public async Task<HomeSettingsODTO> AddHomeSettings(HomeSettingsIDTO homeSettingsIDTO)
         {
-            var homeSettings = _mapper.Map<HomeSettings>(homeSettingsIDTO);
+            try
+            {
+                var homeSettings = _mapper.Map<HomeSettings>(homeSettingsIDTO);
+                homeSettings.HomeSettingsId = 0;
+                homeSettings.SerpId = homeSettings.SerpId != 0 ? homeSettings.SerpId : null;
+                _context.HomeSettings.Add(homeSettings);
+                await SaveContextChangesAsync();
 
-            homeSettings.HomeSettingsId = 0;
+                var serp = new Serp
+                {
+                    SerpTitle = homeSettingsIDTO.SerpTitle,
+                    SerpDescription = homeSettingsIDTO.SerpDescription,
+                    Subtitle = homeSettingsIDTO.Subtitle,
+                    DataTypeId = HOME_SETTINGS_TYPEID,
+                    TableId = homeSettings.HomeSettingsId
+                };
 
-            _context.HomeSettings.Add(homeSettings);
+                _context.Serps.Add(serp);
+                await SaveContextChangesAsync();
 
-            await SaveContextChangesAsync();
+                homeSettings.SerpId = serp.SerpId;
+                await SaveContextChangesAsync();
+                if (homeSettingsIDTO.SettingsAttributes != null || homeSettingsIDTO.SettingsAttributes.Count == 0)
+                {
+                    var settAtr = new SettingsAttribute();
+                    foreach (var item in homeSettingsIDTO.SettingsAttributes)
+                    {
+                        settAtr = new SettingsAttribute
+                        {
+                            DataTypeId = item.DataTypeId,
+                            SettingsDataTypeId = item.SettingsDataTypeId,
+                            LanguageId = item.LanguageId,
+                            Value = item.Value,
+                            Index = item.Index,
+                            UrlTableId = null,
+                        };
+                        _context.SettingsAttributes.Add(settAtr);
+                        await SaveContextChangesAsync();
+                    }
+                }
 
-            return await GetHomeSettingsById(homeSettings.HomeSettingsId);
+                return await GetHomeSettingsById(homeSettings.HomeSettingsId);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception();
+            }
         }
 
         public async Task<HomeSettingsODTO> DeleteHomeSettings(int id)
@@ -3146,6 +3254,7 @@ namespace P2P.Services
         private IQueryable<SettingsAttribute> GetSettingsAttribute(int id, int langId, int datatypeId)
         {
             return from x in _context.SettingsAttributes
+                   .Include(x => x.Url)
                    where (id == 0 || x.SettingsAttributeId == id)
                    && (langId == 0 || x.LanguageId == langId)
                    && (datatypeId == 0 || x.DataTypeId == datatypeId)
@@ -3154,7 +3263,14 @@ namespace P2P.Services
 
         public async Task<SettingsAttributeODTO> GetSettingsAttributeById(int id)
         {
-            return await _mapper.ProjectTo<SettingsAttributeODTO>(GetSettingsAttribute(id, 0, 0)).AsNoTracking().SingleOrDefaultAsync();
+            try
+            {
+                return await _mapper.ProjectTo<SettingsAttributeODTO>(GetSettingsAttribute(id, 0, 0)).AsNoTracking().SingleOrDefaultAsync();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception();
+            }
         }
 
         public async Task<List<SettingsAttributeODTO>> GetSettingsAttributeByLangId(int langId)
@@ -3173,7 +3289,29 @@ namespace P2P.Services
 
             foreach (var settAttr in settingsAttribute)
             {
+                var urlId = await _context.UrlTables.Where(x => x.URL.ToLower() == settAttr.Value && x.DataTypeId == settAttr.DataTypeId).Select(x => x.UrlTableId).FirstOrDefaultAsync();
+                settAttr.UrlTableId = settAttr.Value != null && urlId != 0 ? urlId : null;
                 _context.Entry(settAttr).State = EntityState.Modified;
+                await SaveContextChangesAsync();
+                if (settAttr.UrlTableId != null)
+                {
+                    settAttr.Value = null;
+                    await SaveContextChangesAsync();
+                }
+                else if ((settAttr.SettingsDataTypeId == REVIEW_ROUTE_TYPEID || settAttr.SettingsDataTypeId == A_ITEM_LINK_TYPEID || settAttr.SettingsDataTypeId == P_ITEM_LINK_TYPEID) && (settAttr.Value != null))
+                {
+                    var url = new UrlTable
+                    {
+                        DataTypeId = settAttr.DataTypeId,
+                        URL = settAttr.Value,
+                        TableId = settAttr.SettingsAttributeId,
+                    };
+                    _context.UrlTables.Add(url);
+                    await SaveContextChangesAsync();
+                    settAttr.UrlTableId = url.UrlTableId;
+                    settAttr.Value = null;
+                    await SaveContextChangesAsync();
+                }
             }
             await SaveContextChangesAsync();
 
@@ -3182,16 +3320,45 @@ namespace P2P.Services
 
         public async Task<List<SettingsAttributeODTO>> AddSettingsAttribute(List<SettingsAttributeIDTO> settingsAttributeIDTO)
         {
-            var settingsAttribute = settingsAttributeIDTO.Select(x => _mapper.Map<SettingsAttribute>(x)).ToList();
-
-            foreach (var settAttr in settingsAttribute)
+            try
             {
-                settAttr.SettingsAttributeId = 0;
-                _context.SettingsAttributes.Add(settAttr);
-            }
-            await SaveContextChangesAsync();
+                var settingsAttribute = settingsAttributeIDTO.Select(x => _mapper.Map<SettingsAttribute>(x)).ToList();
 
-            return settingsAttribute.Select(x => _mapper.Map<SettingsAttributeODTO>(x)).ToList();
+                foreach (var settAttr in settingsAttribute)
+                {
+                    settAttr.SettingsAttributeId = 0;
+                    var urlId = await _context.UrlTables.Where(x => x.URL.ToLower() == settAttr.Value && x.DataTypeId == settAttr.DataTypeId).Select(x => x.UrlTableId).FirstOrDefaultAsync();
+                    settAttr.UrlTableId = settAttr.Value != null && urlId != 0 ? urlId : null;
+                    settAttr.Value = settAttr.Value != null ? settAttr.Value : null;
+                    _context.SettingsAttributes.Add(settAttr);
+                    await SaveContextChangesAsync();
+                    if (settAttr.UrlTableId != null)
+                    {
+                        settAttr.Value = null;
+                        await SaveContextChangesAsync();
+                    }
+                    else if ((settAttr.SettingsDataTypeId == REVIEW_ROUTE_TYPEID || settAttr.SettingsDataTypeId == A_ITEM_LINK_TYPEID || settAttr.SettingsDataTypeId == P_ITEM_LINK_TYPEID) && (settAttr.Value != null))
+                    {
+                        var url = new UrlTable
+                        {
+                            DataTypeId = settAttr.DataTypeId,
+                            URL = settAttr.Value,
+                            TableId = settAttr.SettingsAttributeId,
+                        };
+                        _context.UrlTables.Add(url);
+                        await SaveContextChangesAsync();
+                        settAttr.UrlTableId = url.UrlTableId;
+                        settAttr.Value = null;
+                        await SaveContextChangesAsync();
+                    }
+                }
+
+                return settingsAttribute.Select(x => _mapper.Map<SettingsAttributeODTO>(x)).ToList();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception();
+            }
         }
 
         public async Task<SettingsAttributeODTO> DeleteSettingsAttribute(int id)
@@ -3486,7 +3653,7 @@ namespace P2P.Services
 
         #region Permissions
 
-        private IQueryable<Permission> GetPermissions(int id, int langId, int roleId,int userId, int dataTypeId)
+        private IQueryable<Permission> GetPermissions(int id, int langId, int roleId, int userId, int dataTypeId)
         {
             return from x in _context.Permissions
                    where (id == 0 || x.PermissionId == id)
@@ -3499,22 +3666,22 @@ namespace P2P.Services
 
         public async Task<PermissionODTO> GetPermissionsById(int id)
         {
-            return await _mapper.ProjectTo<PermissionODTO>(GetPermissions(id, 0, 0,0, 0)).AsNoTracking().SingleOrDefaultAsync();
+            return await _mapper.ProjectTo<PermissionODTO>(GetPermissions(id, 0, 0, 0, 0)).AsNoTracking().SingleOrDefaultAsync();
         }
 
         public async Task<List<PermissionODTO>> GetPermissionsByLangId(int langId)
         {
-            return await _mapper.ProjectTo<PermissionODTO>(GetPermissions(0, langId, 0,0, 0)).ToListAsync();
+            return await _mapper.ProjectTo<PermissionODTO>(GetPermissions(0, langId, 0, 0, 0)).ToListAsync();
         }
 
         public async Task<List<PermissionODTO>> GetPermissionsByRoleId(int roleId)
         {
-            return await _mapper.ProjectTo<PermissionODTO>(GetPermissions(0, 0, roleId,0, 0)).ToListAsync();
+            return await _mapper.ProjectTo<PermissionODTO>(GetPermissions(0, 0, roleId, 0, 0)).ToListAsync();
         }
 
         public async Task<List<PermissionODTO>> GetPermissionsByUserId(int userId)
         {
-            return await _mapper.ProjectTo<PermissionODTO>(GetPermissions(0, 0, 0, userId,0)).ToListAsync();
+            return await _mapper.ProjectTo<PermissionODTO>(GetPermissions(0, 0, 0, userId, 0)).ToListAsync();
         }
 
         public async Task<List<PermissionODTO>> GetPermissionsByDataTypeId(int dataTypeId)

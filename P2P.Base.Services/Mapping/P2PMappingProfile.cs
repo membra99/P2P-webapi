@@ -29,12 +29,7 @@ namespace P2P.Base.Services.Mapping
             CreateMap<DataTypeIDTO, DataType>();
 
             CreateMap<NavigationSettings, NavigationSettingsODTO>()
-                .ForMember(dest => dest.LanguageName, source => source.MapFrom(m => m.Language.LanguageName))
-                .ForMember(dest => dest.AcademyRoute, source => source.MapFrom(m => m.AcademyRouteLink.AcademyRouteLinks))
-                .ForMember(dest => dest.BonusRoute, source => source.MapFrom(m => m.BonusRouteLink.BonusRouteLinks))
-                .ForMember(dest => dest.NewsRoute, source => source.MapFrom(m => m.NewsRouteLink.NewsRouteLinks))
-                .ForMember(dest => dest.ReviewsRoute, source => source.MapFrom(m => m.ReviewsRouteLink.ReviewsRouteLinks))
-                .ForMember(dest => dest.HomeRoute, source => source.MapFrom(m => m.HomeRouteLink.HomeRouteLinks));
+                .ForMember(dest => dest.LanguageName, source => source.MapFrom(m => m.Language.LanguageName));
             CreateMap<NavigationSettingsIDTO, NavigationSettings>();
 
             CreateMap<FooterSettings, FooterSettingsODTO>()
@@ -165,6 +160,7 @@ namespace P2P.Base.Services.Mapping
                .ForMember(dest => dest.LanguageName, source => source.MapFrom(m => m.Language.LanguageName))
                .ForMember(dest => dest.DataTypeName, source => source.MapFrom(m => m.DataType.DataTypeName))
                .ForMember(dest => dest.SettingsDataTypeName, source => source.MapFrom(m => m.SettingsDataType.DataTypeName))
+               .ForMember(dest => dest.Url, source => source.MapFrom(m => m.Url.URL))
                .ForMember(dest => dest.Index, source => source.MapFrom(m => m.Index));
 
             CreateMap<SettingsAttributeIDTO, SettingsAttribute>();
