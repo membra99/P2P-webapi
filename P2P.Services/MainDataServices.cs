@@ -1009,20 +1009,12 @@ namespace P2P.Services
                 {
                     cashBack.Exclusive = null;
                 }
-                else
-                {
-                    throw new System.Exception("Polje Valid_until mora biti popunjeno i vece od trenutnog vremena.");
-                }
             }
             else
             {
                 if (cashBack.Exclusive != null)
                 {
                     cashBack.Valid_Until = null;
-                }
-                else
-                {
-                    throw new NoNullAllowedException();
                 }
             }
             _context.Entry(cashBack).State = EntityState.Modified;
@@ -1040,10 +1032,7 @@ namespace P2P.Services
                 if (cashBack.Valid_Until != null)
                 {
                     cashBack.Exclusive = null;
-                }
-                else
-                {
-                    throw new System.Exception("Vreme mora biti popunjeno i vece od trenutnog.");
+                    cashBack.Valid_Until = DateTime.Now;
                 }
             }
             else
@@ -1051,10 +1040,7 @@ namespace P2P.Services
                 if (cashBack.Exclusive != null)
                 {
                     cashBack.Valid_Until = null;
-                }
-                else
-                {
-                    throw new NoNullAllowedException();
+                    cashBack.Valid_Until = null;
                 }
             }
             cashBack.CashBackId = 0;
