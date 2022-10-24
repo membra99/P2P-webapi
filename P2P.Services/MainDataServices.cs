@@ -3445,13 +3445,43 @@ namespace P2P.Services
 
         public async Task<BlogODTO> EditBlog(BlogIDTO blogIDTO)
         {
-            var blog = _mapper.Map<Blog>(blogIDTO);
-            blog.UpdatedDate = DateTime.Now;
-            _context.Entry(blog).State = EntityState.Modified;
+            try
+            {
+                var blog = _mapper.Map<Blog>(blogIDTO);
+                blog.UpdatedDate = DateTime.Now;
+                blog.LanguageId = blog.LanguageId == 0 ? null : blog.LanguageId;
+                blog.CategoryId = blog.CategoryId == 0 ? null : blog.CategoryId;
+                blog.AuthorId = blog.AuthorId == 0 ? null : blog.AuthorId;
+                blog.SerpId = blog.SerpId == 0 ? null : blog.SerpId;
+                blog.SelectedPopularArticle = blog.SelectedPopularArticle == null || blog.SelectedPopularArticle == "" ? null : blog.SelectedPopularArticle;
+                _context.Entry(blog).State = EntityState.Modified;
 
-            await SaveContextChangesAsync();
+                await SaveContextChangesAsync();
 
-            return await GetBlogById(blog.BlogId);
+                if (blog.SerpId == null)
+                {
+                    var serp = new Serp
+                    {
+                        SerpTitle = blogIDTO.SerpTitle,
+                        SerpDescription = blogIDTO.SerpDescription,
+                        Subtitle = blogIDTO.Subtitle,
+                        DataTypeId = BLOG_TYPEID,
+                        TableId = blog.BlogId
+                    };
+
+                    _context.Serps.Add(serp);
+                    await SaveContextChangesAsync();
+
+                    blog.SerpId = serp.SerpId;
+                    await SaveContextChangesAsync();
+                }
+
+                return await GetBlogById(blog.BlogId);
+            }
+            catch (Exception)
+            {
+                throw new Exception();
+            }
         }
 
         public async Task<BlogODTO> AddBlog(BlogIDTO blogIDTO)
