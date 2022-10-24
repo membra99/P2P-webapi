@@ -448,9 +448,180 @@ namespace P2P.Services
         public async Task<FooterSettingsODTO> EditFooterSettings(FooterSettingsIDTO footerSettingsIDTO)
         {
             var footerSettings = _mapper.Map<FooterSettings>(footerSettingsIDTO);
+            footerSettings.FacebookLink = footerSettings.FacebookLink != 0 ? footerSettings.FacebookLink : null;
+            footerSettings.TwitterLink = footerSettings.TwitterLink != 0 ? footerSettings.TwitterLink : null;
+            footerSettings.LinkedInLink = footerSettings.LinkedInLink != 0 ? footerSettings.LinkedInLink : null;
+            footerSettings.YoutubeLink = footerSettings.YoutubeLink != 0 ? footerSettings.YoutubeLink : null;
+            footerSettings.PodcastLink = footerSettings.PodcastLink != 0 ? footerSettings.PodcastLink : null;
             _context.Entry(footerSettings).State = EntityState.Modified;
-
             await SaveContextChangesAsync();
+
+            if (footerSettingsIDTO.FacebookLinkUrl != null)
+            {
+                var urlid = await _context.UrlTables.Where(x => x.URL.ToLower() == footerSettingsIDTO.FacebookLinkUrl.ToLower() && x.DataTypeId == FOOTER_SETTINGS_TYPEID).Select(x => x.UrlTableId).FirstOrDefaultAsync();
+
+                if (urlid != 0)
+                {
+                    footerSettings.FacebookLink = urlid;
+                    _context.Entry(footerSettings).State = EntityState.Modified;
+                    await _context.SaveChangesAsync();
+                }
+                else
+                {
+                    var url = new UrlTable
+                    {
+                        DataTypeId = FOOTER_SETTINGS_TYPEID,
+                        URL = footerSettingsIDTO.FacebookLinkUrl,
+                        TableId = footerSettings.FooterSettingsId,
+                    };
+                    _context.UrlTables.Add(url);
+                    await _context.SaveChangesAsync();
+
+                    footerSettings.FacebookLink = url.UrlTableId;
+                    await _context.SaveChangesAsync();
+                }
+            }
+            if (footerSettingsIDTO.TwitterLinkUrl != null)
+            {
+                var urlid = await _context.UrlTables.Where(x => x.URL.ToLower() == footerSettingsIDTO.TwitterLinkUrl.ToLower() && x.DataTypeId == FOOTER_SETTINGS_TYPEID).Select(x => x.UrlTableId).FirstOrDefaultAsync();
+
+                if (urlid != 0)
+                {
+                    footerSettings.TwitterLink = urlid;
+                    _context.Entry(footerSettings).State = EntityState.Modified;
+                    await _context.SaveChangesAsync();
+                }
+                else
+                {
+                    var url = new UrlTable
+                    {
+                        DataTypeId = FOOTER_SETTINGS_TYPEID,
+                        URL = footerSettingsIDTO.TwitterLinkUrl,
+                        TableId = footerSettings.FooterSettingsId,
+                    };
+                    _context.UrlTables.Add(url);
+                    await _context.SaveChangesAsync();
+
+                    footerSettings.TwitterLink = url.UrlTableId;
+                    await _context.SaveChangesAsync();
+                }
+            }
+            if (footerSettingsIDTO.LinkedInLinkUrl != null)
+            {
+                var urlid = await _context.UrlTables.Where(x => x.URL.ToLower() == footerSettingsIDTO.LinkedInLinkUrl.ToLower() && x.DataTypeId == FOOTER_SETTINGS_TYPEID).Select(x => x.UrlTableId).FirstOrDefaultAsync();
+
+                if (urlid != 0)
+                {
+                    footerSettings.LinkedInLink = urlid;
+                    _context.Entry(footerSettings).State = EntityState.Modified;
+                    await _context.SaveChangesAsync();
+                }
+                else
+                {
+                    var url = new UrlTable
+                    {
+                        DataTypeId = FOOTER_SETTINGS_TYPEID,
+                        URL = footerSettingsIDTO.LinkedInLinkUrl,
+                        TableId = footerSettings.FooterSettingsId,
+                    };
+                    _context.UrlTables.Add(url);
+                    await _context.SaveChangesAsync();
+
+                    footerSettings.LinkedInLink = url.UrlTableId;
+                    await _context.SaveChangesAsync();
+                }
+            }
+            if (footerSettingsIDTO.YoutubeLinkUrl != null)
+            {
+                var urlid = await _context.UrlTables.Where(x => x.URL.ToLower() == footerSettingsIDTO.YoutubeLinkUrl.ToLower() && x.DataTypeId == FOOTER_SETTINGS_TYPEID).Select(x => x.UrlTableId).FirstOrDefaultAsync();
+
+                if (urlid != 0)
+                {
+                    footerSettings.YoutubeLink = urlid;
+                    _context.Entry(footerSettings).State = EntityState.Modified;
+                    await _context.SaveChangesAsync();
+                }
+                else
+                {
+                    var url = new UrlTable
+                    {
+                        DataTypeId = FOOTER_SETTINGS_TYPEID,
+                        URL = footerSettingsIDTO.YoutubeLinkUrl,
+                        TableId = footerSettings.FooterSettingsId,
+                    };
+                    _context.UrlTables.Add(url);
+                    await _context.SaveChangesAsync();
+
+                    footerSettings.YoutubeLink = url.UrlTableId;
+                    await _context.SaveChangesAsync();
+                }
+            }
+
+            if (footerSettingsIDTO.PodcastLinkUrl != null)
+            {
+                var urlid = await _context.UrlTables.Where(x => x.URL.ToLower() == footerSettingsIDTO.PodcastLinkUrl.ToLower() && x.DataTypeId == FOOTER_SETTINGS_TYPEID).Select(x => x.UrlTableId).FirstOrDefaultAsync();
+
+                if (urlid != 0)
+                {
+                    footerSettings.PodcastLink = urlid;
+                    _context.Entry(footerSettings).State = EntityState.Modified;
+                    await _context.SaveChangesAsync();
+                }
+                else
+                {
+                    var url = new UrlTable
+                    {
+                        DataTypeId = FOOTER_SETTINGS_TYPEID,
+                        URL = footerSettingsIDTO.PodcastLinkUrl,
+                        TableId = footerSettings.FooterSettingsId,
+                    };
+                    _context.UrlTables.Add(url);
+                    await _context.SaveChangesAsync();
+
+                    footerSettings.PodcastLink = url.UrlTableId;
+                    await _context.SaveChangesAsync();
+                }
+            }
+
+            var settAttr = new SettingsAttribute();
+            if (footerSettingsIDTO.SettingsAttributes != null)
+            {
+                foreach (var item in footerSettingsIDTO.SettingsAttributes)
+                {
+                    settAttr = new SettingsAttribute
+                    {
+                        DataTypeId = FOOTER_SETTINGS_TYPEID,
+                        SettingsDataTypeId = item.SettingsDataTypeId,
+                        LanguageId = item.LanguageId,
+                        Value = item.Value,
+                        Index = item.Index,
+                        UrlTableId = null,
+                    };
+                    var urlId = await _context.UrlTables.Where(x => x.URL.ToLower() == settAttr.Value && x.DataTypeId == settAttr.DataTypeId).Select(x => x.UrlTableId).FirstOrDefaultAsync();
+                    settAttr.UrlTableId = settAttr.Value != null && urlId != 0 ? urlId : null;
+                    _context.SettingsAttributes.Add(settAttr);
+                    await SaveContextChangesAsync();
+                    if (settAttr.UrlTableId != null)
+                    {
+                        settAttr.Value = null;
+                        await SaveContextChangesAsync();
+                    }
+                    else if ((settAttr.SettingsDataTypeId == REVIEW_ROUTE_TYPEID || settAttr.SettingsDataTypeId == A_ITEM_LINK_TYPEID || settAttr.SettingsDataTypeId == P_ITEM_LINK_TYPEID) && (settAttr.Value != null))
+                    {
+                        var url = new UrlTable
+                        {
+                            DataTypeId = settAttr.DataTypeId,
+                            URL = settAttr.Value,
+                            TableId = settAttr.SettingsAttributeId,
+                        };
+                        _context.UrlTables.Add(url);
+                        await SaveContextChangesAsync();
+                        settAttr.UrlTableId = url.UrlTableId;
+                        settAttr.Value = null;
+                        await SaveContextChangesAsync();
+                    }
+                }
+            }
 
             return await GetFooterSettingsById(footerSettings.FooterSettingsId);
         }
@@ -458,47 +629,180 @@ namespace P2P.Services
         public async Task<FooterSettingsODTO> AddFooterSettings(FooterSettingsIDTO footerSettingsIDTO)
         {
             var footerSettings = _mapper.Map<FooterSettings>(footerSettingsIDTO);
-
+            footerSettings.FacebookLink = footerSettings.FacebookLink != 0 ? footerSettings.FacebookLink : null;
+            footerSettings.TwitterLink = footerSettings.TwitterLink != 0 ? footerSettings.TwitterLink : null;
+            footerSettings.LinkedInLink = footerSettings.LinkedInLink != 0 ? footerSettings.LinkedInLink : null;
+            footerSettings.YoutubeLink = footerSettings.YoutubeLink != 0 ? footerSettings.YoutubeLink : null;
+            footerSettings.PodcastLink = footerSettings.PodcastLink != 0 ? footerSettings.PodcastLink : null;
             footerSettings.FooterSettingsId = 0;
 
             _context.FooterSettings.Add(footerSettings);
 
             await SaveContextChangesAsync();
-
-            var settAttr = new SettingsAttribute();
-            foreach (var item in footerSettingsIDTO.SettingsAttributes)
+            if (footerSettingsIDTO.FacebookLinkUrl != null)
             {
-                settAttr = new SettingsAttribute
+                var urlid = await _context.UrlTables.Where(x => x.URL.ToLower() == footerSettingsIDTO.FacebookLinkUrl.ToLower() && x.DataTypeId == FOOTER_SETTINGS_TYPEID).Select(x => x.UrlTableId).FirstOrDefaultAsync();
+
+                if (urlid != 0)
                 {
-                    DataTypeId = FOOTER_SETTINGS_TYPEID,
-                    SettingsDataTypeId = item.SettingsDataTypeId,
-                    LanguageId = item.LanguageId,
-                    Value = item.Value,
-                    Index = item.Index,
-                    UrlTableId = null,
-                };
-                var urlId = await _context.UrlTables.Where(x => x.URL.ToLower() == settAttr.Value && x.DataTypeId == settAttr.DataTypeId).Select(x => x.UrlTableId).FirstOrDefaultAsync();
-                settAttr.UrlTableId = settAttr.Value != null && urlId != 0 ? urlId : null;
-                _context.SettingsAttributes.Add(settAttr);
-                await SaveContextChangesAsync();
-                if (settAttr.UrlTableId != null)
-                {
-                    settAttr.Value = null;
-                    await SaveContextChangesAsync();
+                    footerSettings.FacebookLink = urlid;
+                    _context.Entry(footerSettings).State = EntityState.Modified;
+                    await _context.SaveChangesAsync();
                 }
-                else if ((settAttr.SettingsDataTypeId == REVIEW_ROUTE_TYPEID || settAttr.SettingsDataTypeId == A_ITEM_LINK_TYPEID || settAttr.SettingsDataTypeId == P_ITEM_LINK_TYPEID) && (settAttr.Value != null))
+                else
                 {
                     var url = new UrlTable
                     {
-                        DataTypeId = settAttr.DataTypeId,
-                        URL = settAttr.Value,
-                        TableId = settAttr.SettingsAttributeId,
+                        DataTypeId = FOOTER_SETTINGS_TYPEID,
+                        URL = footerSettingsIDTO.FacebookLinkUrl,
+                        TableId = footerSettings.FooterSettingsId,
                     };
                     _context.UrlTables.Add(url);
+                    await _context.SaveChangesAsync();
+
+                    footerSettings.FacebookLink = url.UrlTableId;
+                    await _context.SaveChangesAsync();
+                }
+            }
+            if (footerSettingsIDTO.TwitterLinkUrl != null)
+            {
+                var urlid = await _context.UrlTables.Where(x => x.URL.ToLower() == footerSettingsIDTO.TwitterLinkUrl.ToLower() && x.DataTypeId == FOOTER_SETTINGS_TYPEID).Select(x => x.UrlTableId).FirstOrDefaultAsync();
+
+                if (urlid != 0)
+                {
+                    footerSettings.TwitterLink = urlid;
+                    _context.Entry(footerSettings).State = EntityState.Modified;
+                    await _context.SaveChangesAsync();
+                }
+                else
+                {
+                    var url = new UrlTable
+                    {
+                        DataTypeId = FOOTER_SETTINGS_TYPEID,
+                        URL = footerSettingsIDTO.TwitterLinkUrl,
+                        TableId = footerSettings.FooterSettingsId,
+                    };
+                    _context.UrlTables.Add(url);
+                    await _context.SaveChangesAsync();
+
+                    footerSettings.TwitterLink = url.UrlTableId;
+                    await _context.SaveChangesAsync();
+                }
+            }
+            if (footerSettingsIDTO.LinkedInLinkUrl != null)
+            {
+                var urlid = await _context.UrlTables.Where(x => x.URL.ToLower() == footerSettingsIDTO.LinkedInLinkUrl.ToLower() && x.DataTypeId == FOOTER_SETTINGS_TYPEID).Select(x => x.UrlTableId).FirstOrDefaultAsync();
+
+                if (urlid != 0)
+                {
+                    footerSettings.LinkedInLink = urlid;
+                    _context.Entry(footerSettings).State = EntityState.Modified;
+                    await _context.SaveChangesAsync();
+                }
+                else
+                {
+                    var url = new UrlTable
+                    {
+                        DataTypeId = FOOTER_SETTINGS_TYPEID,
+                        URL = footerSettingsIDTO.LinkedInLinkUrl,
+                        TableId = footerSettings.FooterSettingsId,
+                    };
+                    _context.UrlTables.Add(url);
+                    await _context.SaveChangesAsync();
+
+                    footerSettings.LinkedInLink = url.UrlTableId;
+                    await _context.SaveChangesAsync();
+                }
+            }
+            if (footerSettingsIDTO.YoutubeLinkUrl != null)
+            {
+                var urlid = await _context.UrlTables.Where(x => x.URL.ToLower() == footerSettingsIDTO.YoutubeLinkUrl.ToLower() && x.DataTypeId == FOOTER_SETTINGS_TYPEID).Select(x => x.UrlTableId).FirstOrDefaultAsync();
+
+                if (urlid != 0)
+                {
+                    footerSettings.YoutubeLink = urlid;
+                    _context.Entry(footerSettings).State = EntityState.Modified;
+                    await _context.SaveChangesAsync();
+                }
+                else
+                {
+                    var url = new UrlTable
+                    {
+                        DataTypeId = FOOTER_SETTINGS_TYPEID,
+                        URL = footerSettingsIDTO.YoutubeLinkUrl,
+                        TableId = footerSettings.FooterSettingsId,
+                    };
+                    _context.UrlTables.Add(url);
+                    await _context.SaveChangesAsync();
+
+                    footerSettings.YoutubeLink = url.UrlTableId;
+                    await _context.SaveChangesAsync();
+                }
+            }
+
+            if (footerSettingsIDTO.PodcastLinkUrl != null)
+            {
+                var urlid = await _context.UrlTables.Where(x => x.URL.ToLower() == footerSettingsIDTO.PodcastLinkUrl.ToLower() && x.DataTypeId == FOOTER_SETTINGS_TYPEID).Select(x => x.UrlTableId).FirstOrDefaultAsync();
+
+                if (urlid != 0)
+                {
+                    footerSettings.PodcastLink = urlid;
+                    _context.Entry(footerSettings).State = EntityState.Modified;
+                    await _context.SaveChangesAsync();
+                }
+                else
+                {
+                    var url = new UrlTable
+                    {
+                        DataTypeId = FOOTER_SETTINGS_TYPEID,
+                        URL = footerSettingsIDTO.PodcastLinkUrl,
+                        TableId = footerSettings.FooterSettingsId,
+                    };
+                    _context.UrlTables.Add(url);
+                    await _context.SaveChangesAsync();
+
+                    footerSettings.PodcastLink = url.UrlTableId;
+                    await _context.SaveChangesAsync();
+                }
+            }
+
+            var settAttr = new SettingsAttribute();
+            if (settAttr != null)
+            {
+                foreach (var item in footerSettingsIDTO.SettingsAttributes)
+                {
+                    settAttr = new SettingsAttribute
+                    {
+                        DataTypeId = FOOTER_SETTINGS_TYPEID,
+                        SettingsDataTypeId = item.SettingsDataTypeId,
+                        LanguageId = item.LanguageId,
+                        Value = item.Value,
+                        Index = item.Index,
+                        UrlTableId = null,
+                    };
+                    var urlId = await _context.UrlTables.Where(x => x.URL.ToLower() == settAttr.Value && x.DataTypeId == settAttr.DataTypeId).Select(x => x.UrlTableId).FirstOrDefaultAsync();
+                    settAttr.UrlTableId = settAttr.Value != null && urlId != 0 ? urlId : null;
+                    _context.SettingsAttributes.Add(settAttr);
                     await SaveContextChangesAsync();
-                    settAttr.UrlTableId = url.UrlTableId;
-                    settAttr.Value = null;
-                    await SaveContextChangesAsync();
+                    if (settAttr.UrlTableId != null)
+                    {
+                        settAttr.Value = null;
+                        await SaveContextChangesAsync();
+                    }
+                    else if ((settAttr.SettingsDataTypeId == REVIEW_ROUTE_TYPEID || settAttr.SettingsDataTypeId == A_ITEM_LINK_TYPEID || settAttr.SettingsDataTypeId == P_ITEM_LINK_TYPEID) && (settAttr.Value != null))
+                    {
+                        var url = new UrlTable
+                        {
+                            DataTypeId = settAttr.DataTypeId,
+                            URL = settAttr.Value,
+                            TableId = settAttr.SettingsAttributeId,
+                        };
+                        _context.UrlTables.Add(url);
+                        await SaveContextChangesAsync();
+                        settAttr.UrlTableId = url.UrlTableId;
+                        settAttr.Value = null;
+                        await SaveContextChangesAsync();
+                    }
                 }
             }
             return await GetFooterSettingsById(footerSettings.FooterSettingsId);

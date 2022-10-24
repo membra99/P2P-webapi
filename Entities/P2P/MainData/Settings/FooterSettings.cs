@@ -12,11 +12,11 @@ namespace Entities.P2P.MainData.Settings
     {
         public int FooterSettingsId { get; set; }
         public int LanguageId { get; set; }
-        public int FacebookLink { get; set; } //Url Table
-        public int LinkedInLink { get; set; } //Url Table
-        public int PodcastLink { get; set; } //Url Table
-        public int TwitterLink { get; set; } //Url Table
-        public int YoutubeLink { get; set; } //Url Table
+        public int? FacebookLink { get; set; } //Url Table
+        public int? LinkedInLink { get; set; } //Url Table
+        public int? PodcastLink { get; set; } //Url Table
+        public int? TwitterLink { get; set; } //Url Table
+        public int? YoutubeLink { get; set; } //Url Table
         public string CopyrightNotice { get; set; }
         public string FooterNote { get; set; }
 
