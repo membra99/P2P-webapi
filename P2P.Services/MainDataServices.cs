@@ -315,6 +315,54 @@ namespace P2P.Services
             _context.Entry(navigationSettings).State = EntityState.Modified;
 
             await SaveContextChangesAsync();
+            var settAttr = new SettingsAttribute();
+            if (navigationSettingsIDTO.SettingsAttributes != null)
+            {
+                foreach (var item in navigationSettingsIDTO.SettingsAttributes)
+                {
+                    settAttr = new SettingsAttribute
+                    {
+                        SettingsAttributeId = item.SettingsAttributeId,
+                        DataTypeId = FOOTER_SETTINGS_TYPEID,
+                        SettingsDataTypeId = item.SettingsDataTypeId,
+                        LanguageId = item.LanguageId,
+                        Value = item.Value,
+                        Index = item.Index,
+                        UrlTableId = null,
+                    };
+                    var urlId = await _context.UrlTables.Where(x => x.URL.ToLower() == settAttr.Value && x.DataTypeId == settAttr.DataTypeId).Select(x => x.UrlTableId).FirstOrDefaultAsync();
+                    settAttr.UrlTableId = settAttr.Value != null && urlId != 0 ? urlId : null;
+                    _context.Entry(settAttr).State = EntityState.Modified;
+                    await SaveContextChangesAsync();
+                    if (settAttr.UrlTableId != null)
+                    {
+                        if ((settAttr.SettingsDataTypeId == REVIEW_ROUTE_TYPEID || settAttr.SettingsDataTypeId == A_ITEM_LINK_TYPEID || settAttr.SettingsDataTypeId == P_ITEM_LINK_TYPEID))
+                        {
+                            settAttr.Value = null;
+                            await SaveContextChangesAsync();
+                        }
+                        else
+                        {
+                            settAttr.UrlTableId = null;
+                            await SaveContextChangesAsync();
+                        }
+                    }
+                    else if ((settAttr.SettingsDataTypeId == REVIEW_ROUTE_TYPEID || settAttr.SettingsDataTypeId == A_ITEM_LINK_TYPEID || settAttr.SettingsDataTypeId == P_ITEM_LINK_TYPEID) && (settAttr.Value != null))
+                    {
+                        var url = new UrlTable
+                        {
+                            DataTypeId = settAttr.DataTypeId,
+                            URL = settAttr.Value,
+                            TableId = settAttr.SettingsAttributeId,
+                        };
+                        _context.UrlTables.Add(url);
+                        await SaveContextChangesAsync();
+                        settAttr.UrlTableId = url.UrlTableId;
+                        settAttr.Value = null;
+                        await SaveContextChangesAsync();
+                    }
+                }
+            }
 
             return await GetNavigationSettingsById(navigationSettings.NavigationSettingsId);
         }
@@ -384,6 +432,7 @@ namespace P2P.Services
         private IQueryable<FooterSettings> GetFooterSettings(int id, int langId)
         {
             return from x in _context.FooterSettings
+                   .Include(x => x.Language)
                    where (id == 0 || x.FooterSettingsId == id)
                    && (langId == 0 || x.LanguageId == langId)
                    select x;
@@ -419,28 +468,38 @@ namespace P2P.Services
                                                                               .Include(x => x.Language)
                                                                               .Include(x => x.DataType)
                                                                               .Include(x => x.SettingsDataType)
+                                                                              .Include(x => x.Url)
                                                                               where (a.DataTypeId == FOOTER_SETTINGS_TYPEID)
                                                                               && (a.SettingsDataTypeId == A_ITEM_ANCHOR_TYPEID)
                                                                               && (a.LanguageId == langId)
                                                                               select _mapper.Map<SettingsAttributeODTO>(a)).ToList(),
-                                                               pItemAnchor = (from b in _context.SettingsAttributes
-                                                                              .Include(x => x.SettingsDataType)
-                                                                              where (b.DataTypeId == FOOTER_SETTINGS_TYPEID)
-                                                                              && (b.SettingsDataTypeId == P_ITEM_ANCHOR_TYPEID)
-                                                                              && (b.LanguageId == langId)
-                                                                              select _mapper.Map<SettingsAttributeODTO>(b)).ToList(),
                                                                aItemLink = (from c in _context.SettingsAttributes
+                                                                              .Include(x => x.Language)
+                                                                              .Include(x => x.DataType)
                                                                               .Include(x => x.SettingsDataType)
+                                                                              .Include(x => x.Url)
                                                                             where (c.DataTypeId == FOOTER_SETTINGS_TYPEID)
                                                                             && (c.SettingsDataTypeId == A_ITEM_LINK_TYPEID)
                                                                             && (c.LanguageId == langId)
                                                                             select _mapper.Map<SettingsAttributeODTO>(c)).ToList(),
                                                                pItemLink = (from d in _context.SettingsAttributes
+                                                                              .Include(x => x.Language)
+                                                                              .Include(x => x.DataType)
                                                                               .Include(x => x.SettingsDataType)
+                                                                              .Include(x => x.Url)
                                                                             where (d.DataTypeId == FOOTER_SETTINGS_TYPEID)
                                                                             && (d.SettingsDataTypeId == P_ITEM_LINK_TYPEID)
                                                                             && (d.LanguageId == langId)
-                                                                            select _mapper.Map<SettingsAttributeODTO>(d)).ToList()
+                                                                            select _mapper.Map<SettingsAttributeODTO>(d)).ToList(),
+                                                               pItemAnchor = (from b in _context.SettingsAttributes
+                                                                              .Include(x => x.Language)
+                                                                              .Include(x => x.DataType)
+                                                                              .Include(x => x.SettingsDataType)
+                                                                              .Include(x => x.Url)
+                                                                              where (b.DataTypeId == FOOTER_SETTINGS_TYPEID)
+                                                                              && (b.SettingsDataTypeId == P_ITEM_ANCHOR_TYPEID)
+                                                                              && (b.LanguageId == langId)
+                                                                              select _mapper.Map<SettingsAttributeODTO>(b)).ToList(),
                                                            }).ToListAsync();
             return FootSettings;
         }
@@ -590,6 +649,7 @@ namespace P2P.Services
                 {
                     settAttr = new SettingsAttribute
                     {
+                        SettingsAttributeId = item.SettingsAttributeId,
                         DataTypeId = FOOTER_SETTINGS_TYPEID,
                         SettingsDataTypeId = item.SettingsDataTypeId,
                         LanguageId = item.LanguageId,
@@ -599,12 +659,21 @@ namespace P2P.Services
                     };
                     var urlId = await _context.UrlTables.Where(x => x.URL.ToLower() == settAttr.Value && x.DataTypeId == settAttr.DataTypeId).Select(x => x.UrlTableId).FirstOrDefaultAsync();
                     settAttr.UrlTableId = settAttr.Value != null && urlId != 0 ? urlId : null;
-                    _context.SettingsAttributes.Add(settAttr);
+                    _context.Entry(settAttr).State = EntityState.Modified;
+                    //_context.SettingsAttributes.Add(settAttr);
                     await SaveContextChangesAsync();
                     if (settAttr.UrlTableId != null)
                     {
-                        settAttr.Value = null;
-                        await SaveContextChangesAsync();
+                        if ((settAttr.SettingsDataTypeId == REVIEW_ROUTE_TYPEID || settAttr.SettingsDataTypeId == A_ITEM_LINK_TYPEID || settAttr.SettingsDataTypeId == P_ITEM_LINK_TYPEID))
+                        {
+                            settAttr.Value = null;
+                            await SaveContextChangesAsync();
+                        }
+                        else
+                        {
+                            settAttr.UrlTableId = null;
+                            await SaveContextChangesAsync();
+                        }
                     }
                     else if ((settAttr.SettingsDataTypeId == REVIEW_ROUTE_TYPEID || settAttr.SettingsDataTypeId == A_ITEM_LINK_TYPEID || settAttr.SettingsDataTypeId == P_ITEM_LINK_TYPEID) && (settAttr.Value != null))
                     {
@@ -3370,10 +3439,74 @@ namespace P2P.Services
         public async Task<HomeSettingsODTO> EditHomeSettings(HomeSettingsIDTO homeSettingsIDTO)
         {
             var homeSettings = _mapper.Map<HomeSettings>(homeSettingsIDTO);
-
+            homeSettings.SerpId = homeSettings.SerpId != 0 ? homeSettings.SerpId : null;
             _context.Entry(homeSettings).State = EntityState.Modified;
 
             await SaveContextChangesAsync();
+
+            var serp = new Serp
+            {
+                SerpTitle = homeSettingsIDTO.SerpTitle,
+                SerpDescription = homeSettingsIDTO.SerpDescription,
+                Subtitle = homeSettingsIDTO.Subtitle,
+                DataTypeId = HOME_SETTINGS_TYPEID,
+                TableId = homeSettings.HomeSettingsId
+            };
+
+            _context.Serps.Add(serp);
+            await SaveContextChangesAsync();
+
+            homeSettings.SerpId = serp.SerpId;
+            await SaveContextChangesAsync();
+
+            var settAttr = new SettingsAttribute();
+            if (homeSettingsIDTO.SettingsAttributes != null)
+            {
+                foreach (var item in homeSettingsIDTO.SettingsAttributes)
+                {
+                    settAttr = new SettingsAttribute
+                    {
+                        SettingsAttributeId = item.SettingsAttributeId,
+                        DataTypeId = FOOTER_SETTINGS_TYPEID,
+                        SettingsDataTypeId = item.SettingsDataTypeId,
+                        LanguageId = item.LanguageId,
+                        Value = item.Value,
+                        Index = item.Index,
+                        UrlTableId = null,
+                    };
+                    var urlId = await _context.UrlTables.Where(x => x.URL.ToLower() == settAttr.Value && x.DataTypeId == settAttr.DataTypeId).Select(x => x.UrlTableId).FirstOrDefaultAsync();
+                    settAttr.UrlTableId = settAttr.Value != null && urlId != 0 ? urlId : null;
+                    _context.Entry(settAttr).State = EntityState.Modified;
+                    await SaveContextChangesAsync();
+                    if (settAttr.UrlTableId != null)
+                    {
+                        if ((settAttr.SettingsDataTypeId == REVIEW_ROUTE_TYPEID || settAttr.SettingsDataTypeId == A_ITEM_LINK_TYPEID || settAttr.SettingsDataTypeId == P_ITEM_LINK_TYPEID))
+                        {
+                            settAttr.Value = null;
+                            await SaveContextChangesAsync();
+                        }
+                        else
+                        {
+                            settAttr.UrlTableId = null;
+                            await SaveContextChangesAsync();
+                        }
+                    }
+                    else if ((settAttr.SettingsDataTypeId == REVIEW_ROUTE_TYPEID || settAttr.SettingsDataTypeId == A_ITEM_LINK_TYPEID || settAttr.SettingsDataTypeId == P_ITEM_LINK_TYPEID) && (settAttr.Value != null))
+                    {
+                        var url = new UrlTable
+                        {
+                            DataTypeId = settAttr.DataTypeId,
+                            URL = settAttr.Value,
+                            TableId = settAttr.SettingsAttributeId,
+                        };
+                        _context.UrlTables.Add(url);
+                        await SaveContextChangesAsync();
+                        settAttr.UrlTableId = url.UrlTableId;
+                        settAttr.Value = null;
+                        await SaveContextChangesAsync();
+                    }
+                }
+            }
 
             return await GetHomeSettingsById(homeSettings.HomeSettingsId);
         }
@@ -3402,7 +3535,7 @@ namespace P2P.Services
 
                 homeSettings.SerpId = serp.SerpId;
                 await SaveContextChangesAsync();
-                if (homeSettingsIDTO.SettingsAttributes != null || homeSettingsIDTO.SettingsAttributes.Count == 0)
+                if (homeSettingsIDTO.SettingsAttributes != null)
                 {
                     var settAtr = new SettingsAttribute();
                     foreach (var item in homeSettingsIDTO.SettingsAttributes)
@@ -3416,7 +3549,7 @@ namespace P2P.Services
                             Index = item.Index,
                             UrlTableId = null,
                         };
-                        _context.SettingsAttributes.Add(settAtr);
+                        _context.Entry(settAtr).State = EntityState.Modified;
                         await SaveContextChangesAsync();
                     }
                 }
