@@ -26,11 +26,11 @@ namespace Entities.P2P.MainData.Settings
         [StringLength(50)]
         public string Reviews { get; set; }
 
-        public int AcademyRoute { get; set; }
-        public int BonusRoute { get; set; }
-        public int HomeRoute { get; set; }
-        public int NewsRoute { get; set; }
-        public int ReviewsRoute { get; set; }
+        public int? AcademyRoute { get; set; }
+        public int? BonusRoute { get; set; }
+        public int? HomeRoute { get; set; }
+        public int? NewsRoute { get; set; }
+        public int? ReviewsRoute { get; set; }
         public Language Language { get; set; }
         public UrlTable AcademyRouteLink { get; set; }
         public UrlTable BonusRouteLink { get; set; }

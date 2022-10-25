@@ -12,15 +12,19 @@ namespace P2P.DTO.Input
     public class HomeSettingsIDTO
     {
         public int HomeSettingsId { get; set; }
-        public int? NewsUrl { get; set; }
         public int? Platforms { get; set; }
+        public int? NewsUrl { get; set; }
+        public string NewsUrlLink { get; set; }
         public int? ReviewUrl { get; set; }
+        public string ReviewUrlLink { get; set; }
+        public int? AcademyUrl { get; set; }
+        public string AcademyUrlLink { get; set; }
+        public int? BonusUrl { get; set; }
+        public string BonusUrlLink { get; set; }
         public int? SerpId { get; set; }
         public string SerpTitle { get; set; }
         public string SerpDescription { get; set; }
         public string Subtitle { get; set; }
-        public int? AcademyUrl { get; set; }
-        public int? BonusUrl { get; set; }
         public int? LanguageId { get; set; }
         public string Title { get; set; }
         public decimal? Returned { get; set; }

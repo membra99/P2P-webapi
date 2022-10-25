@@ -261,6 +261,11 @@ namespace P2P.Services
         {
             return from x in _context.NavigationSettings
                    .Include(x => x.Language)
+                   .Include(x=>x.AcademyRouteLink)
+                   .Include(x=>x.NewsRouteLink)
+                   .Include(x => x.AcademyRouteLink)
+                   .Include(x => x.ReviewsRouteLink)
+                   .Include(x => x.BonusRouteLink)
                    where (id == 0 || x.NavigationSettingsId == id)
                    && (langId == 0 || x.LanguageId == langId)
                    select _mapper.Map<NavigationSettingsODTO>(x);
@@ -280,15 +285,15 @@ namespace P2P.Services
                                                                             NavigationSettingsId = x.NavigationSettingsId,
                                                                             LanguageId = x.LanguageId,
                                                                             LanguageName = x.Language.LanguageName,
-                                                                            AcademyRoute = x.AcademyRoute,
+                                                                            AcademyRoute = (int)x.AcademyRoute,
                                                                             AcademyRouteLink = x.AcademyRouteLink.URL,
-                                                                            BonusRoute = x.BonusRoute,
+                                                                            BonusRoute = (int)x.BonusRoute,
                                                                             BonusRouteLink = x.BonusRouteLink.URL,
-                                                                            HomeRoute = x.HomeRoute,
+                                                                            HomeRoute = (int)x.HomeRoute,
                                                                             HomeRouteLink = x.HomeRouteLink.URL,
-                                                                            NewsRoute = x.NewsRoute,
+                                                                            NewsRoute = (int)x.NewsRoute,
                                                                             NewsRouteLink = x.NewsRouteLink.URL,
-                                                                            ReviewsRoute = x.ReviewsRoute,
+                                                                            ReviewsRoute = (int)x.ReviewsRoute,
                                                                             ReviewsRouteLink = x.ReviewsRouteLink.URL,
                                                                             ReviewsRoutes = (from a in _context.SettingsAttributes
                                                                                                .Include(x => x.Language)
@@ -311,11 +316,141 @@ namespace P2P.Services
         public async Task<NavigationSettingsODTO> EditNavigationSettings(NavigationSettingsIDTO navigationSettingsIDTO)
         {
             var navigationSettings = _mapper.Map<NavigationSettings>(navigationSettingsIDTO);
-
+            navigationSettings.BonusRoute = navigationSettings.BonusRoute != 0 ? navigationSettings.BonusRoute : null;
+            navigationSettings.ReviewsRoute = navigationSettings.ReviewsRoute != 0 ? navigationSettings.ReviewsRoute : null;
+            navigationSettings.NewsRoute = navigationSettings.NewsRoute != 0 ? navigationSettings.NewsRoute : null;
+            navigationSettings.HomeRoute = navigationSettings.HomeRoute != 0 ? navigationSettings.HomeRoute : null;
+            navigationSettings.AcademyRoute = navigationSettings.AcademyRoute != 0 ? navigationSettings.AcademyRoute : null;
             _context.Entry(navigationSettings).State = EntityState.Modified;
 
             await SaveContextChangesAsync();
             var settAttr = new SettingsAttribute();
+
+            if (navigationSettingsIDTO.AcademyRouteUrl != null)
+            {
+                var urlid = await _context.UrlTables.Where(x => x.URL.ToLower() == navigationSettingsIDTO.AcademyRouteUrl.ToLower() && x.DataTypeId == NAVIGATION_SETTINGS_TYPEID).Select(x => x.UrlTableId).FirstOrDefaultAsync();
+
+                if (urlid != 0)
+                {
+                    navigationSettings.AcademyRoute = urlid;
+                    _context.Entry(navigationSettings).State = EntityState.Modified;
+                    await _context.SaveChangesAsync();
+                }
+                else
+                {
+                    var url = new UrlTable
+                    {
+                        DataTypeId = NAVIGATION_SETTINGS_TYPEID,
+                        URL = navigationSettingsIDTO.AcademyRouteUrl,
+                        TableId = navigationSettings.NavigationSettingsId,
+                    };
+                    _context.UrlTables.Add(url);
+                    await _context.SaveChangesAsync();
+
+                    navigationSettings.AcademyRoute = url.UrlTableId;
+                    await _context.SaveChangesAsync();
+                }
+            }
+            if (navigationSettingsIDTO.NewsRouteUrl != null)
+            {
+                var urlid = await _context.UrlTables.Where(x => x.URL.ToLower() == navigationSettingsIDTO.NewsRouteUrl.ToLower() && x.DataTypeId == NAVIGATION_SETTINGS_TYPEID).Select(x => x.UrlTableId).FirstOrDefaultAsync();
+
+                if (urlid != 0)
+                {
+                    navigationSettings.NewsRoute = urlid;
+                    _context.Entry(navigationSettings).State = EntityState.Modified;
+                    await _context.SaveChangesAsync();
+                }
+                else
+                {
+                    var url = new UrlTable
+                    {
+                        DataTypeId = NAVIGATION_SETTINGS_TYPEID,
+                        URL = navigationSettingsIDTO.NewsRouteUrl,
+                        TableId = navigationSettings.NavigationSettingsId,
+                    };
+                    _context.UrlTables.Add(url);
+                    await _context.SaveChangesAsync();
+
+                    navigationSettings.NewsRoute = url.UrlTableId;
+                    await _context.SaveChangesAsync();
+                }
+            }
+            if (navigationSettingsIDTO.ReviewsRouteUrl != null)
+            {
+                var urlid = await _context.UrlTables.Where(x => x.URL.ToLower() == navigationSettingsIDTO.ReviewsRouteUrl.ToLower() && x.DataTypeId == NAVIGATION_SETTINGS_TYPEID).Select(x => x.UrlTableId).FirstOrDefaultAsync();
+
+                if (urlid != 0)
+                {
+                    navigationSettings.ReviewsRoute = urlid;
+                    _context.Entry(navigationSettings).State = EntityState.Modified;
+                    await _context.SaveChangesAsync();
+                }
+                else
+                {
+                    var url = new UrlTable
+                    {
+                        DataTypeId = NAVIGATION_SETTINGS_TYPEID,
+                        URL = navigationSettingsIDTO.ReviewsRouteUrl,
+                        TableId = navigationSettings.NavigationSettingsId,
+                    };
+                    _context.UrlTables.Add(url);
+                    await _context.SaveChangesAsync();
+
+                    navigationSettings.ReviewsRoute = url.UrlTableId;
+                    await _context.SaveChangesAsync();
+                }
+            }
+            if (navigationSettingsIDTO.BonusRouteUrl != null)
+            {
+                var urlid = await _context.UrlTables.Where(x => x.URL.ToLower() == navigationSettingsIDTO.BonusRouteUrl.ToLower() && x.DataTypeId == NAVIGATION_SETTINGS_TYPEID).Select(x => x.UrlTableId).FirstOrDefaultAsync();
+
+                if (urlid != 0)
+                {
+                    navigationSettings.BonusRoute = urlid;
+                    _context.Entry(navigationSettings).State = EntityState.Modified;
+                    await _context.SaveChangesAsync();
+                }
+                else
+                {
+                    var url = new UrlTable
+                    {
+                        DataTypeId = NAVIGATION_SETTINGS_TYPEID,
+                        URL = navigationSettingsIDTO.BonusRouteUrl,
+                        TableId = navigationSettings.NavigationSettingsId,
+                    };
+                    _context.UrlTables.Add(url);
+                    await _context.SaveChangesAsync();
+
+                    navigationSettings.BonusRoute = url.UrlTableId;
+                    await _context.SaveChangesAsync();
+                }
+            }
+            if (navigationSettingsIDTO.HomeRouteUrl != null)
+            {
+                var urlid = await _context.UrlTables.Where(x => x.URL.ToLower() == navigationSettingsIDTO.HomeRouteUrl.ToLower() && x.DataTypeId == NAVIGATION_SETTINGS_TYPEID).Select(x => x.UrlTableId).FirstOrDefaultAsync();
+
+                if (urlid != 0)
+                {
+                    navigationSettings.HomeRoute = urlid;
+                    _context.Entry(navigationSettings).State = EntityState.Modified;
+                    await _context.SaveChangesAsync();
+                }
+                else
+                {
+                    var url = new UrlTable
+                    {
+                        DataTypeId = NAVIGATION_SETTINGS_TYPEID,
+                        URL = navigationSettingsIDTO.HomeRouteUrl,
+                        TableId = navigationSettings.NavigationSettingsId,
+                    };
+                    _context.UrlTables.Add(url);
+                    await _context.SaveChangesAsync();
+
+                    navigationSettings.HomeRoute = url.UrlTableId;
+                    await _context.SaveChangesAsync();
+                }
+            }
             if (navigationSettingsIDTO.SettingsAttributes != null)
             {
                 foreach (var item in navigationSettingsIDTO.SettingsAttributes)
@@ -3440,6 +3575,10 @@ namespace P2P.Services
         {
             var homeSettings = _mapper.Map<HomeSettings>(homeSettingsIDTO);
             homeSettings.SerpId = homeSettings.SerpId != 0 ? homeSettings.SerpId : null;
+            homeSettings.AcademyUrl = homeSettings.AcademyUrl != 0 ? homeSettings.AcademyUrl : null;
+            homeSettings.BonusUrl = homeSettings.BonusUrl != 0 ? homeSettings.BonusUrl : null;
+            homeSettings.NewsUrl = homeSettings.NewsUrl != 0 ? homeSettings.NewsUrl : null;
+            homeSettings.ReviewUrl = homeSettings.ReviewUrl != 0 ? homeSettings.ReviewUrl : null;
             _context.Entry(homeSettings).State = EntityState.Modified;
 
             await SaveContextChangesAsync();
@@ -3458,6 +3597,107 @@ namespace P2P.Services
 
             homeSettings.SerpId = serp.SerpId;
             await SaveContextChangesAsync();
+
+            if (homeSettingsIDTO.AcademyUrlLink != null)
+            {
+                var urlid = await _context.UrlTables.Where(x => x.URL.ToLower() == homeSettingsIDTO.AcademyUrlLink.ToLower() && x.DataTypeId == HOME_SETTINGS_TYPEID).Select(x => x.UrlTableId).FirstOrDefaultAsync();
+
+                if (urlid != 0)
+                {
+                    homeSettings.AcademyUrl = urlid;
+                    _context.Entry(homeSettings).State = EntityState.Modified;
+                    await _context.SaveChangesAsync();
+                }
+                else
+                {
+                    var url = new UrlTable
+                    {
+                        DataTypeId = HOME_SETTINGS_TYPEID,
+                        URL = homeSettingsIDTO.AcademyUrlLink,
+                        TableId = homeSettings.HomeSettingsId,
+                    };
+                    _context.UrlTables.Add(url);
+                    await _context.SaveChangesAsync();
+
+                    homeSettings.AcademyUrl = url.UrlTableId;
+                    await _context.SaveChangesAsync();
+                }
+            }
+            if (homeSettingsIDTO.NewsUrlLink != null)
+            {
+                var urlid = await _context.UrlTables.Where(x => x.URL.ToLower() == homeSettingsIDTO.NewsUrlLink.ToLower() && x.DataTypeId == HOME_SETTINGS_TYPEID).Select(x => x.UrlTableId).FirstOrDefaultAsync();
+
+                if (urlid != 0)
+                {
+                    homeSettings.NewsUrl = urlid;
+                    _context.Entry(homeSettings).State = EntityState.Modified;
+                    await _context.SaveChangesAsync();
+                }
+                else
+                {
+                    var url = new UrlTable
+                    {
+                        DataTypeId = HOME_SETTINGS_TYPEID,
+                        URL = homeSettingsIDTO.NewsUrlLink,
+                        TableId = homeSettings.HomeSettingsId,
+                    };
+                    _context.UrlTables.Add(url);
+                    await _context.SaveChangesAsync();
+
+                    homeSettings.NewsUrl = url.UrlTableId;
+                    await _context.SaveChangesAsync();
+                }
+            }
+            if (homeSettingsIDTO.BonusUrlLink != null)
+            {
+                var urlid = await _context.UrlTables.Where(x => x.URL.ToLower() == homeSettingsIDTO.BonusUrlLink.ToLower() && x.DataTypeId == HOME_SETTINGS_TYPEID).Select(x => x.UrlTableId).FirstOrDefaultAsync();
+
+                if (urlid != 0)
+                {
+                    homeSettings.BonusUrl = urlid;
+                    _context.Entry(homeSettings).State = EntityState.Modified;
+                    await _context.SaveChangesAsync();
+                }
+                else
+                {
+                    var url = new UrlTable
+                    {
+                        DataTypeId = HOME_SETTINGS_TYPEID,
+                        URL = homeSettingsIDTO.BonusUrlLink,
+                        TableId = homeSettings.HomeSettingsId,
+                    };
+                    _context.UrlTables.Add(url);
+                    await _context.SaveChangesAsync();
+
+                    homeSettings.BonusUrl = url.UrlTableId;
+                    await _context.SaveChangesAsync();
+                }
+            }
+            if (homeSettingsIDTO.ReviewUrlLink != null)
+            {
+                var urlid = await _context.UrlTables.Where(x => x.URL.ToLower() == homeSettingsIDTO.ReviewUrlLink.ToLower() && x.DataTypeId == HOME_SETTINGS_TYPEID).Select(x => x.UrlTableId).FirstOrDefaultAsync();
+
+                if (urlid != 0)
+                {
+                    homeSettings.ReviewUrl = urlid;
+                    _context.Entry(homeSettings).State = EntityState.Modified;
+                    await _context.SaveChangesAsync();
+                }
+                else
+                {
+                    var url = new UrlTable
+                    {
+                        DataTypeId = HOME_SETTINGS_TYPEID,
+                        URL = homeSettingsIDTO.ReviewUrlLink,
+                        TableId = homeSettings.HomeSettingsId,
+                    };
+                    _context.UrlTables.Add(url);
+                    await _context.SaveChangesAsync();
+
+                    homeSettings.ReviewUrl = url.UrlTableId;
+                    await _context.SaveChangesAsync();
+                }
+            }
 
             var settAttr = new SettingsAttribute();
             if (homeSettingsIDTO.SettingsAttributes != null)
