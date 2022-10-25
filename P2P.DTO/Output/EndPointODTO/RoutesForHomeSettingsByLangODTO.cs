@@ -17,5 +17,8 @@ namespace P2P.DTO.Output.EndPointODTO
         public string LanguageName { get; set; }
         public int TableId { get; set; }
         public string ExternalLinkKey { get; set; }
+        public List<SettingsAttributeODTO> TrackH2 { get; set; }
+        public List<SettingsAttributeODTO> TrackH3 { get; set; }
+        public List<SettingsAttributeODTO> TrackParagraph { get; set; }
     }
 }
