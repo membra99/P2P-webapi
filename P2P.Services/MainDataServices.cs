@@ -261,11 +261,7 @@ namespace P2P.Services
         {
             return from x in _context.NavigationSettings
                    .Include(x => x.Language)
-                   .Include(x=>x.AcademyRouteLink)
-                   .Include(x=>x.NewsRouteLink)
                    .Include(x => x.AcademyRouteLink)
-                   .Include(x => x.ReviewsRouteLink)
-                   .Include(x => x.BonusRouteLink)
                    where (id == 0 || x.NavigationSettingsId == id)
                    && (langId == 0 || x.LanguageId == langId)
                    select _mapper.Map<NavigationSettingsODTO>(x);
@@ -299,6 +295,7 @@ namespace P2P.Services
                                                                                                .Include(x => x.Language)
                                                                                                .Include(x => x.DataType)
                                                                                                .Include(x => x.SettingsDataType)
+                                                                                               .Include(x => x.Url)
                                                                                              where (a.DataTypeId == NAVIGATION_SETTINGS_TYPEID)
                                                                                              && (a.SettingsDataTypeId == REVIEW_ROUTE_TYPEID)
                                                                                              && (a.LanguageId == langId)
