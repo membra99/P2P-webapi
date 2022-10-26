@@ -3493,34 +3493,7 @@ namespace P2P.Services
                                                               URL = a.UrlTable.URL,
                                                               LanguageId = a.LanguageId,
                                                               LanguageName = a.Language.LanguageName,
-                                                              TableId = a.TableId,
-                                                              TrackH2 = (from x in _context.SettingsAttributes
-                                                                              .Include(x => x.Language)
-                                                                              .Include(x => x.DataType)
-                                                                              .Include(x => x.SettingsDataType)
-                                                                              .Include(x => x.Url)
-                                                                         where (x.DataTypeId == HOME_SETTINGS_TYPEID)
-                                                                         && (x.SettingsDataTypeId == TRACKH2_TYPEID)
-                                                                         && (a.LanguageId == langId)
-                                                                         select _mapper.Map<SettingsAttributeODTO>(a)).ToList(),
-                                                              TrackH3 = (from x in _context.SettingsAttributes
-                                                                           .Include(x => x.Language)
-                                                                           .Include(x => x.DataType)
-                                                                           .Include(x => x.SettingsDataType)
-                                                                           .Include(x => x.Url)
-                                                                         where (x.DataTypeId == HOME_SETTINGS_TYPEID)
-                                                                         && (x.SettingsDataTypeId == TRACKH3_TYPEID)
-                                                                         && (a.LanguageId == langId)
-                                                                         select _mapper.Map<SettingsAttributeODTO>(a)).ToList(),
-                                                              TrackParagraph = (from x in _context.SettingsAttributes
-                                                                   .Include(x => x.Language)
-                                                                   .Include(x => x.DataType)
-                                                                   .Include(x => x.SettingsDataType)
-                                                                   .Include(x => x.Url)
-                                                                                where (x.DataTypeId == HOME_SETTINGS_TYPEID)
-                                                                                && (x.SettingsDataTypeId == TRACKHPARAGRAPH_TYPEID)
-                                                                                && (a.LanguageId == langId)
-                                                                                select _mapper.Map<SettingsAttributeODTO>(a)).ToList(),
+                                                              TableId = a.TableId
                                                           }).ToList();
 
             List<RoutesForHomeSettingsByLangODTO> SortedList = data.OrderBy(o => o.TableId).ToList();
