@@ -24,7 +24,6 @@ namespace Entities.P2P.MainData
         public string Password { get; set; }
         public string Image { get; set; }
 
-        public ICollection<Blog> Blogs { get; set; }
         public ICollection<Permission> Permissions { get; set; }
     }
 }

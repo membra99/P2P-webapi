@@ -4385,7 +4385,6 @@ namespace P2P.Services
             foreach (var per in permission)
             {
                 _context.Entry(per).State = EntityState.Modified;
-
             }
             await SaveContextChangesAsync();
 

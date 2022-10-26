@@ -473,11 +473,6 @@ namespace Entities.Context
                     .WithMany(x => x.Blogs)
                     .OnDelete(DeleteBehavior.Restrict);
 
-                entity.HasOne(x => x.User)
-                    .WithMany(x => x.Blogs)
-                    .HasForeignKey(x => x.AuthorId)
-                    .OnDelete(DeleteBehavior.Restrict);
-
                 entity.HasOne(x => x.Serp)
                     .WithMany(x => x.Blogs)
                     .OnDelete(DeleteBehavior.Restrict);
