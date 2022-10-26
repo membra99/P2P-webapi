@@ -40,9 +40,9 @@ namespace P2P.WebApi.Controllers.MainData
 
         //GET: api/Permissions
         [HttpGet("ByUserId/{userId}")]
-        public async Task<ActionResult<IEnumerable<PermissionODTO>>> GetByUserId(int userId)
+        public async Task<ActionResult<IEnumerable<PermissionODTO>>> GetByUserId(int userId, int langId)
         {
-            return await _mainDataServices.GetPermissionsByUserId(userId);
+            return await _mainDataServices.GetPermissionsByUserId(userId, langId);
         }
 
         //GET: api/Permissions
@@ -59,10 +59,9 @@ namespace P2P.WebApi.Controllers.MainData
             return await _mainDataServices.GetPermissionsByDataTypeId(dataTypeId);
         }
 
-
         //PUT: api/Permissions
         [HttpPut]
-        public async Task<ActionResult<PermissionODTO>> PutPermissions(PermissionIDTO permissionsIDTO)
+        public async Task<ActionResult<IEnumerable<PermissionODTO>>> PutPermissions(List<PermissionIDTO> permissionsIDTO)
         {
             try
             {
@@ -76,7 +75,7 @@ namespace P2P.WebApi.Controllers.MainData
 
         //POST: api/Permissions
         [HttpPost]
-        public async Task<ActionResult<PermissionODTO>> PostPermissions(PermissionIDTO permissionsIDTO)
+        public async Task<ActionResult<IEnumerable<PermissionODTO>>> PostPermissions(List<PermissionIDTO> permissionsIDTO)
         {
             try
             {

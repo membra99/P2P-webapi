@@ -4055,7 +4055,7 @@ namespace P2P.Services
                         where (languageId == 0 || x.LanguageId == languageId)
                         select _mapper.Map<BlogODTO>(x);
             var blogsIdList = blogs.Select(x => x.AuthorId).ToList();
-            return _context.Authors.Include(x=>x.Language).Where(x => blogsIdList.Contains(x.AuthorID)).Select(x => _mapper.Map<AuthorODTO>(x));
+            return _context.Authors.Include(x => x.Language).Where(x => blogsIdList.Contains(x.AuthorID)).Select(x => _mapper.Map<AuthorODTO>(x));
         }
 
         public async Task<BlogODTO> GetBlogById(int id)
@@ -4368,9 +4368,9 @@ namespace P2P.Services
             return await _mapper.ProjectTo<PermissionODTO>(GetPermissions(0, 0, roleId, 0, 0)).ToListAsync();
         }
 
-        public async Task<List<PermissionODTO>> GetPermissionsByUserId(int userId)
+        public async Task<List<PermissionODTO>> GetPermissionsByUserId(int userId, int langId)
         {
-            return await _mapper.ProjectTo<PermissionODTO>(GetPermissions(0, 0, 0, userId, 0)).ToListAsync();
+            return await _mapper.ProjectTo<PermissionODTO>(GetPermissions(0, langId, 0, userId, 0)).ToListAsync();
         }
 
         public async Task<List<PermissionODTO>> GetPermissionsByDataTypeId(int dataTypeId)
@@ -4378,27 +4378,31 @@ namespace P2P.Services
             return await _mapper.ProjectTo<PermissionODTO>(GetPermissions(0, 0, 0, 0, dataTypeId)).ToListAsync();
         }
 
-        public async Task<PermissionODTO> EditPermissions(PermissionIDTO permissionIDTO)
+        public async Task<List<PermissionODTO>> EditPermissions(List<PermissionIDTO> permissionIDTO)
         {
-            var permission = _mapper.Map<Permission>(permissionIDTO);
-            _context.Entry(permission).State = EntityState.Modified;
+            var permission = permissionIDTO.Select(x => _mapper.Map<Permission>(x)).ToList();
 
+            foreach (var per in permission)
+            {
+                _context.Entry(per).State = EntityState.Modified;
+
+            }
             await SaveContextChangesAsync();
 
-            return await GetPermissionsById(permission.PermissionId);
+            return permission.Select(x => _mapper.Map<PermissionODTO>(x)).ToList();
         }
 
-        public async Task<PermissionODTO> AddPermissions(PermissionIDTO permissionIDTO)
+        public async Task<List<PermissionODTO>> AddPermissions(List<PermissionIDTO> permissionIDTO)
         {
-            var permission = _mapper.Map<Permission>(permissionIDTO);
+            var permission = permissionIDTO.Select(x => _mapper.Map<Permission>(x)).ToList();
 
-            permission.PermissionId = 0;
-
-            _context.Permissions.Add(permission);
-
+            foreach (var per in permission)
+            {
+                _context.Permissions.Add(per);
+            }
             await SaveContextChangesAsync();
 
-            return await GetPermissionsById(permission.PermissionId);
+            return permission.Select(x => _mapper.Map<PermissionODTO>(x)).ToList();
         }
 
         public async Task<PermissionODTO> DeletePermissions(int id)
@@ -4419,7 +4423,7 @@ namespace P2P.Services
         private IQueryable<AuthorODTO> GetAuthor(int id, int langId)
         {
             return from x in _context.Authors
-                   .Include(x=>x.Language)
+                   .Include(x => x.Language)
                    where (id == 0 || x.AuthorID == id)
                    && (langId == 0 || x.LanguageId == langId)
                    select _mapper.Map<AuthorODTO>(x);
