@@ -32,6 +32,7 @@ namespace Entities.P2P.MainData
         public Serp Serp { get; set; }
         public Category Category { get; set; }
         public User User { get; set; }
+        public Author Author { get; set; }
         public ICollection<FaqTitle> FaqTitles { get; set; }
     }
 }

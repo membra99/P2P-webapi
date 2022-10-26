@@ -261,7 +261,7 @@ namespace P2P.Services
         {
             return from x in _context.NavigationSettings
                    .Include(x => x.Language)
-                   .Include(x => x.AcademyRouteLink)
+                   .Include(x => x.HomeRouteLink)
                    where (id == 0 || x.NavigationSettingsId == id)
                    && (langId == 0 || x.LanguageId == langId)
                    select _mapper.Map<NavigationSettingsODTO>(x);
@@ -4048,14 +4048,14 @@ namespace P2P.Services
                    select _mapper.Map<BlogODTO>(x);
         }
 
-        private IQueryable<UserODTO> GetAuthors(int languageId)
+        private IQueryable<AuthorODTO> GetAuthors(int languageId)
         {
             var blogs = from x in _context.Blogs
                    .Include(x => x.Language)
                         where (languageId == 0 || x.LanguageId == languageId)
                         select _mapper.Map<BlogODTO>(x);
             var blogsIdList = blogs.Select(x => x.AuthorId).ToList();
-            return _context.Users.Where(x => blogsIdList.Contains(x.UserId)).Select(x => _mapper.Map<UserODTO>(x));
+            return _context.Authors.Include(x=>x.Language).Where(x => blogsIdList.Contains(x.AuthorID)).Select(x => _mapper.Map<AuthorODTO>(x));
         }
 
         public async Task<BlogODTO> GetBlogById(int id)
@@ -4091,7 +4091,7 @@ namespace P2P.Services
             return await GetBlog(0, 0, categoryId, null).AsNoTracking().ToListAsync();
         }
 
-        public async Task<List<UserODTO>> GetAuthorsByLanguageId(int languageId)
+        public async Task<List<AuthorODTO>> GetAuthorsByLanguageId(int languageId)
         {
             return await GetAuthors(languageId).AsNoTracking().ToListAsync();
         }
@@ -4413,5 +4413,66 @@ namespace P2P.Services
         }
 
         #endregion Permissions
+
+        #region Authors
+
+        private IQueryable<AuthorODTO> GetAuthor(int id, int langId)
+        {
+            return from x in _context.Authors
+                   .Include(x=>x.Language)
+                   where (id == 0 || x.AuthorID == id)
+                   && (langId == 0 || x.LanguageId == langId)
+                   select _mapper.Map<AuthorODTO>(x);
+        }
+
+        public async Task<AuthorODTO> GetAuthorById(int id)
+        {
+            return await GetAuthor(id, 0).AsNoTracking().FirstOrDefaultAsync();
+        }
+
+        public async Task<List<AuthorODTO>> GetAllAuthors()
+        {
+            return await GetAuthor(0, 0).AsNoTracking().ToListAsync();
+        }
+
+        public async Task<List<AuthorODTO>> GetAllAuthorsByLangID(int langId)
+        {
+            return await GetAuthor(0, langId).AsNoTracking().ToListAsync();
+        }
+
+        public async Task<AuthorODTO> EditAuthor(AuthorIDTO authorIDTO)
+        {
+            var author = _mapper.Map<Author>(authorIDTO);
+
+            _context.Entry(author).State = EntityState.Modified;
+
+            await SaveContextChangesAsync();
+
+            return await GetAuthorById(author.AuthorID);
+        }
+
+        public async Task<AuthorODTO> AddAuthor(AuthorIDTO authorIDTO)
+        {
+            var author = _mapper.Map<Author>(authorIDTO);
+            author.AuthorID = 0;
+            _context.Authors.Add(author);
+
+            await SaveContextChangesAsync();
+
+            return await GetAuthorById(author.AuthorID);
+        }
+
+        public async Task<AuthorODTO> DeleteAuthor(int id)
+        {
+            var author = await _context.Authors.FindAsync(id);
+            if (author == null) return null;
+
+            var authorODTO = await GetAuthorById(id);
+            _context.Authors.Remove(author);
+            await SaveContextChangesAsync();
+            return authorODTO;
+        }
+
+        #endregion Authors
     }
 }

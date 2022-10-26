@@ -40,6 +40,7 @@ namespace Entities.Context
         public DbSet<AboutSettings> AboutSettings { get; set; }
         public DbSet<SettingsAttribute> SettingsAttributes { get; set; }
         public DbSet<Blog> Blogs { get; set; }
+        public DbSet<Author> Authors { get; set; }
 
         #endregion MainData
 
@@ -483,6 +484,19 @@ namespace Entities.Context
 
                 entity.HasOne(x => x.Category)
                     .WithMany(x => x.Blogs)
+                    .OnDelete(DeleteBehavior.Restrict);
+
+                entity.HasOne(x => x.Author)
+                    .WithMany(x => x.Blogs)
+                    .OnDelete(DeleteBehavior.Restrict);
+            });
+
+            modelBuilder.Entity<Author>(entity =>
+            {
+                entity.HasKey(x => x.AuthorID);
+
+                entity.HasOne(x => x.Language)
+                    .WithMany(x => x.Author)
                     .OnDelete(DeleteBehavior.Restrict);
             });
 

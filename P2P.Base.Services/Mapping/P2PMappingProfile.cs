@@ -25,6 +25,10 @@ namespace P2P.Base.Services.Mapping
             CreateMap<Language, LanguageODTO>();
             CreateMap<LanguageIDTO, Language>();
 
+            CreateMap<Author, AuthorODTO>()
+                .ForMember(dest => dest.LanguageName, source => source.MapFrom(m => m.Language.LanguageName));
+            CreateMap<AuthorIDTO, Author>();
+
             CreateMap<DataType, DataTypeODTO>();
             CreateMap<DataTypeIDTO, DataType>();
 
