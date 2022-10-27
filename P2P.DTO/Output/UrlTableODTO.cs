@@ -13,6 +13,6 @@ namespace P2P.DTO.Output
         public int DataTypeId { get; set; }
         public string DataTypeName { get; set; }
         public string URL { get; set; }
-        public int TableId { get; set; }
+        public int? TableId { get; set; }
     }
 }

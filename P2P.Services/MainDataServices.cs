@@ -18,6 +18,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Data;
 using System.Linq;
+using System.Reflection.Metadata;
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
 using System.Security.Policy;
@@ -2367,44 +2368,45 @@ namespace P2P.Services
 
         public async Task<PageODTO> DeletePage(int id)
         {
-            //TODO Videti sa frontom da li im treba brisanje u nazad
-
-            //var pageArtical = await _context.PageArticles.Where(x => x.PageId == id).Select(x => x.PageId).ToListAsync();
-            //var faqTitles = await _context.FaqTitles.Where(x => x.PageId == id).Select(x => x.PageId).ToListAsync();
-            //var faqTitlesId = await _context.FaqTitles.Where(x => x.PageId == id).Select(x => x.FaqTitleId).ToListAsync();
-
-            //if (pageArtical.Count != 0)
-            //{
-            //    foreach (var item in pageArtical)
-            //    {
-            //        var pageart = await _context.PageArticles.Where(x => x.PageId == item).FirstOrDefaultAsync();
-            //        _context.PageArticles.Remove(pageart);
-            //        await SaveContextChangesAsync();
-            //    }
-            //}
-
-            //if (faqTitlesId.Count != 0)
-            //{
-            //    foreach (var item in faqTitlesId)
-            //    {
-            //        var faqList = await _context.FaqLists.Where(x => x.FaqTitleId == item).FirstOrDefaultAsync();
-            //        _context.FaqLists.Remove(faqList);
-            //        await SaveContextChangesAsync();
-            //    }
-            //}
-
-            //if (faqTitles.Count != 0)
-            //{
-            //    foreach (var item in faqTitles)
-            //    {
-            //        var faq = await _context.FaqTitles.Where(x => x.PageId == item).FirstOrDefaultAsync();
-            //        _context.FaqTitles.Remove(faq);
-            //        await SaveContextChangesAsync();
-            //    }
-            //}
-
             var page = await _context.Pages.FindAsync(id);
             if (page == null) return null;
+
+            var faqTitles = await _context.FaqTitles.Where(x => x.PageId == page.PageId).ToListAsync();
+            var pageArticles = await _context.PageArticles.Where(x => x.PageId == page.PageId).ToListAsync();
+            var routes = await _context.Routes.Where(x => x.TableId == page.PageId && (x.DataTypeId == CASHBACK_BONUS_TYPEID || x.DataTypeId == ACADEMY_TYPEID || x.DataTypeId == GENERAL_TYPEID || x.DataTypeId == ABOUT_TYPEID)).ToListAsync();
+
+            foreach (var item in routes)
+            {
+                _context.Routes.Remove(item);
+                await SaveContextChangesAsync();
+            }
+            foreach (var item in routes)
+            {
+                var url = await _context.UrlTables.Where(x => x.UrlTableId == item.UrlTableId).FirstOrDefaultAsync();
+                url.TableId = null;
+                _context.Entry(url).State = EntityState.Modified;
+                await SaveContextChangesAsync();
+            }
+
+            foreach (var item in pageArticles)
+            {
+                _context.PageArticles.Remove(item);
+                await SaveContextChangesAsync();
+            }
+            foreach (var item in faqTitles)
+            {
+                var x = await _context.FaqLists.Where(x => x.FaqTitleId == item.FaqTitleId).ToListAsync();
+                foreach (var item2 in x)
+                {
+                    _context.FaqLists.Remove(item2);
+                    await SaveContextChangesAsync();
+                }
+            }
+            foreach (var item in faqTitles)
+            {
+                _context.FaqTitles.Remove(item);
+                await SaveContextChangesAsync();
+            }
 
             var pageODTO = await GetPageById(id);
             _context.Pages.Remove(page);

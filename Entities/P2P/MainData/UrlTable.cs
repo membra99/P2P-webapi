@@ -19,7 +19,7 @@ namespace Entities.P2P.MainData
         [StringLength(500)]
         public string URL { get; set; }
 
-        public int TableId { get; set; }
+        public int? TableId { get; set; }
         public DataType DataType { get; set; }
         public ICollection<Links> Links { get; set; }
         public ICollection<FooterSettings> FacebookUrls { get; set; }
