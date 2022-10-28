@@ -69,6 +69,15 @@ namespace P2P.WebApi.Controllers.MainData
             return blog;
         }
 
+        //GET: api/Blogs/GetListOfAuthorsByLanguageId
+        [HttpGet("GetBlogsByRoute")]
+        public async Task<ActionResult<GetBlogsByRouteODTO>> GetBlogsByRoute(string route)
+        {
+            var blog = await _mainDataServices.GetBlogsByRoute(route);
+            if (blog == null) return NotFound();
+            return blog;
+        }
+
         //GET: api/Blogs/GetItemContent
         [HttpGet("GetItemContent")]
         public async Task<ActionResult<GetItemContentODTO>> GetItemContent(int id)

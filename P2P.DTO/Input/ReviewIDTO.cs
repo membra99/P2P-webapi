@@ -78,5 +78,6 @@ namespace P2P.DTO.Input
         public bool? NewPlatform { get; set; }
         public bool? Recommended { get; set; }
         public DateTime? UpdatedDate { get; set; }
+        public bool? IsActive { get; set; }
     }
 }

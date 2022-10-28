@@ -87,5 +87,6 @@ namespace P2P.DTO.Output
         public decimal? RiskAndReturn { get; set; }
         public int? Availability { get; set; }
         public int? Count { get; set; }
+        public bool? IsActive { get; set; }
     }
 }

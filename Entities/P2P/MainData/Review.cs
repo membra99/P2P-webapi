@@ -160,6 +160,7 @@ namespace Entities.P2P.MainData
         public int? Availability { get; set; }
 
         public int? Count { get; set; }
+        public bool? IsActive { get; set; }
 
         public Language Language { get; set; }
 
