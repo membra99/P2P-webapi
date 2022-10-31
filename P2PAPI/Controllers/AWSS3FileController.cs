@@ -6,6 +6,7 @@ using System.Linq;
 using P2P.Services;
 using System.Threading.Tasks;
 using Entities;
+using System.Web;
 
 namespace P2P.WebApi.Controllers
 {
@@ -22,16 +23,16 @@ namespace P2P.WebApi.Controllers
         [Route("uploadFile")]
         [HttpPost]
         [Consumes("multipart/form-data")]
-        public async Task<IActionResult> UploadFileAsync([FromForm] AWSFileUpload files)
+        public async Task<IActionResult> UploadFileAsync(string language,[FromForm] AWSFileUpload files)
         {
-            var result = await _AWSS3FileService.UploadFile(files);
+            var result = await _AWSS3FileService.UploadFile(language,files);
             return Ok(new { isSucess = result });
         }
         [Route("filesList")]
         [HttpGet]
-        public async Task<IActionResult> FilesListAsync()
+        public async Task<IActionResult> FilesListAsync(string language)
         {
-            var result = await _AWSS3FileService.FilesList();
+            var result = await _AWSS3FileService.FilesList(language);
             return Ok(result);
         }
 
@@ -39,7 +40,7 @@ namespace P2P.WebApi.Controllers
         [HttpGet]
         public async Task<IActionResult> FilesListSearchAsync(string fileName)
         {
-            var result = await _AWSS3FileService.FilesListSearch(fileName);
+            var result = await _AWSS3FileService.FilesListSearch(HttpUtility.UrlDecode(fileName));
             return Ok(result);
         }
         [Route("getFile/{fileName}")]
@@ -48,7 +49,7 @@ namespace P2P.WebApi.Controllers
         {
             try
             {
-                var result = await _AWSS3FileService.GetFile(fileName);
+                var result = await _AWSS3FileService.GetFile(HttpUtility.UrlDecode(fileName));
                 return File(result, "image/png");
             }
             catch
@@ -68,7 +69,16 @@ namespace P2P.WebApi.Controllers
         [HttpDelete]
         public async Task<IActionResult> DeleteFile(string fileName)
         {
-            var result = await _AWSS3FileService.DeleteFile(fileName);
+            var result = await _AWSS3FileService.DeleteFile(HttpUtility.UrlDecode(fileName));
+            return Ok(new { isSucess = result });
+        }
+
+        [Route("deleteMultipleFiles")]
+        [HttpPost]
+        public async Task<IActionResult> DeleteMultipleFiles(string[] fileNames)
+        {
+            fileNames = fileNames.Select(x => HttpUtility.UrlDecode(x)).ToArray();
+            var result = await _AWSS3FileService.DeleteMultipleFiles(fileNames);
             return Ok(new { isSucess = result });
         }
     }
