@@ -1,5 +1,6 @@
 ﻿using Amazon.S3.Model;
 using Entities;
+using Entities.Migrations;
 using P2P.Services;
 using System;
 using System.Collections.Generic;
@@ -11,8 +12,8 @@ namespace P2P.Services
 {
     public interface IAWSS3FileService
     {
-        Task<bool> UploadFile(AWSFileUpload files);
-        Task<List<string>> FilesList();
+        Task<bool> UploadFile(string language,AWSFileUpload files);
+        Task<List<string>> FilesList(string language);
         Task<List<string>> FilesListSearch(string fileName);
         Task<Stream> GetFile(string key);
         // Task<bool> UpdateFile(UploadFileName uploadFileName, string key);
@@ -27,7 +28,7 @@ namespace P2P.Services
         {
             this._AWSS3BucketHelper = AWSS3BucketHelper;
         }
-        public async Task<bool> UploadFile(AWSFileUpload files)
+        public async Task<bool> UploadFile(string language,AWSFileUpload files)
         {
             byte[] fileBytes;
             if (files.Attachments.Count == 0) return false;
@@ -36,7 +37,7 @@ namespace P2P.Services
 
                 if (file.Length > 0)
                 {
-                    string imageName = file.FileName;
+                    string imageName = language.ToUpper() + "/" + file.FileName;
                     using (var ms = new MemoryStream())
                     {
                         file.CopyTo(ms);
@@ -60,12 +61,12 @@ namespace P2P.Services
             }
             return true;
         }
-        public async Task<List<string>> FilesList()
+        public async Task<List<string>> FilesList(string language)
         {
             try
             {
                 ListVersionsResponse listVersions = await _AWSS3BucketHelper.FilesList();
-                return listVersions.Versions.Select(c => new { c.LastModified, c.Key }).OrderByDescending(e => e.LastModified)
+                return listVersions.Versions.Where(x => language == null ? true : x.Key.Contains(language.ToUpper()) ).Select(c => new { c.LastModified, c.Key }).OrderByDescending(e => e.LastModified)
                     .Select(e => e.Key).Take(60).ToList();
             }
             catch (Exception ex)

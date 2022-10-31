@@ -66,8 +66,11 @@ namespace P2P.Services
 
         public async Task<Stream> GetFile(string key)
         {
-
-            GetObjectResponse response = await _amazonS3.GetObjectAsync(_settings.AWSS3.BucketName, key);
+            GetObjectRequest request = new GetObjectRequest {
+                BucketName = _settings.AWSS3.BucketName,
+                Key = key
+                };
+            GetObjectResponse response = await _amazonS3.GetObjectAsync(request);
             if (response.HttpStatusCode == System.Net.HttpStatusCode.OK)
                 return response.ResponseStream;
             else
