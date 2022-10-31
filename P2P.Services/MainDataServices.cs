@@ -1160,7 +1160,7 @@ namespace P2P.Services
             switch (dataTypeId)
             {
                 case REVIEW_TYPEID:
-                    return await _context.Review.Where(x => x.LanguageId == langId).Select(x =>
+                    return await _context.Review.Where(x => x.LanguageId == langId && x.IsActive == true).Select(x =>
                     new GetUrlTableByDataTypeIdAndLangODTO
                     {
                         UrlTableId = new List<int?> { x.FacebookUrl, x.TwitterUrl, x.InstagramUrl, x.LinkedInUrl, x.YoutubeUrl, x.ReportLink },
@@ -1418,8 +1418,8 @@ namespace P2P.Services
             else
             {
                 cashbacks = await (from x in _context.CashBacks
-                                   where x.LanguageId == langId && x.IsCampaign == isCampaign
                                    join r in _context.Review on x.ReviewId equals r.ReviewId
+                                   where x.LanguageId == langId && x.IsCampaign == isCampaign && r.IsActive == true
                                    select new CashbackListODTO
                                    {
                                        ReviewId = x.ReviewId,
@@ -1436,7 +1436,7 @@ namespace P2P.Services
             var offer = await (from x in _context.CashBacks
                                join r in _context.Review on x.ReviewId equals r.ReviewId into a
                                from d in a.DefaultIfEmpty()
-                               where d.LanguageId == langId && x.IsCampaign == false
+                               where d.LanguageId == langId && x.IsCampaign == false && d.IsActive == true
                                select new GetCampaignBonusODTO
                                {
                                    CashBackId = x.CashBackId,
@@ -1479,7 +1479,7 @@ namespace P2P.Services
             var campaign = await (from x in _context.CashBacks
                                   join r in _context.Review on x.ReviewId equals r.ReviewId into a
                                   from d in a.DefaultIfEmpty()
-                                  where d.LanguageId == langId && x.IsCampaign == true
+                                  where d.LanguageId == langId && x.IsCampaign == true && d.IsActive == true
                                   select new GetCampaignBonusODTO
                                   {
                                       CashBackId = x.CashBackId,
@@ -1638,7 +1638,7 @@ namespace P2P.Services
             {
                 case REVIEW_TYPEID:
                     return await (from x in _context.Review
-                                  where x.LanguageId == lang
+                                  where x.LanguageId == lang && x.IsActive == true
                                   select new GetDropdownValuesODTO
                                   {
                                       Value = "review_" + x.ReviewId.ToString(),
@@ -1737,7 +1737,7 @@ namespace P2P.Services
             switch (serpIDTO.DataTypeId)
             {
                 case REVIEW_TYPEID:
-                    var rev = await _context.Review.Where(x => x.ReviewId == serp.TableId).FirstOrDefaultAsync();
+                    var rev = await _context.Review.Where(x => x.ReviewId == serp.TableId && x.IsActive == true).FirstOrDefaultAsync();
                     if (rev != null)
                     {
                         rev.SerpId = serp.SerpId;
@@ -2161,7 +2161,7 @@ namespace P2P.Services
             switch (dataTypeId)
             {
                 case REVIEW_TYPEID:
-                    var review = await _context.Review.Include(x => x.Serp).Where(x => x.ReviewId == tableId && dataTypeId == REVIEW_TYPEID).FirstOrDefaultAsync();
+                    var review = await _context.Review.Include(x => x.Serp).Where(x => x.ReviewId == tableId && dataTypeId == REVIEW_TYPEID && x.IsActive == true).FirstOrDefaultAsync();
                     if (review == null) return null;
                     if (review.ReviewId != null)
                     {
@@ -2601,7 +2601,7 @@ namespace P2P.Services
 
         public async Task AddCount(string name)
         {
-            var reviewCount = await _context.Review.Where(x => x.Name.ToLower() == name.ToLower()).ToListAsync();
+            var reviewCount = await _context.Review.Where(x => x.Name.ToLower() == name.ToLower() && x.IsActive == true).ToListAsync();
 
             foreach (var item in reviewCount)
             {
@@ -3368,7 +3368,7 @@ namespace P2P.Services
         {
             var newsFeed = _context.NewsFeeds.Where(x => x.LanguageId == languageId).Select(x => new GetNewsFeedListODTO
             {
-                Name = _context.Review.Where(e => e.ReviewId == x.ReviewId).Select(x => x.Name).FirstOrDefault(),
+                Name = _context.Review.Where(e => e.ReviewId == x.ReviewId && e.IsActive == true).Select(x => x.Name).FirstOrDefault(),
                 NewsText = x.NewsText,
                 CreatedDate = x.CreatedDate,
                 NewsFeedId = x.NewsFeedId,
@@ -3378,7 +3378,7 @@ namespace P2P.Services
                 URL = x.UrlTable.URL,
                 RedFlag = x.RedFlag,
                 Route = _context.Routes.Where(e => e.DataTypeId == REVIEW_TYPEID && e.TableId == x.ReviewId).Select(e => e.UrlTableId).FirstOrDefault(),
-                Logo = _context.Review.Where(e => e.ReviewId == x.ReviewId).Select(e => e.Logo).FirstOrDefault()
+                Logo = _context.Review.Where(e => e.ReviewId == x.ReviewId && e.IsActive == true).Select(e => e.Logo).FirstOrDefault()
             }).OrderBy(x => x.CreatedDate).ToListAsync();
 
             return await newsFeed;
@@ -3395,7 +3395,7 @@ namespace P2P.Services
                                   NewsText = x.NewsText,
                                   CreatedDate = x.CreatedDate,
                                   NewsFeedId = x.NewsFeedId,
-                                  Name = _context.Review.Where(e => e.ReviewId == x.ReviewId).Select(x => x.Name).FirstOrDefault(),
+                                  Name = _context.Review.Where(e => e.ReviewId == x.ReviewId && e.IsActive == true).Select(x => x.Name).FirstOrDefault(),
                                   Market = x.Market,
                                   TagLine = x.TagLine,
                                   RedFlag = x.RedFlag,
@@ -3566,7 +3566,7 @@ namespace P2P.Services
 
             foreach (var item in SortedList)
             {
-                var review = await _context.Review.Where(x => x.ReviewId == item.TableId && item.DataTypeId == 1).Select(x => x.Name).FirstOrDefaultAsync();
+                var review = await _context.Review.Where(x => x.ReviewId == item.TableId && item.DataTypeId == REVIEW_TYPEID && x.IsActive == true).Select(x => x.Name).FirstOrDefaultAsync();
                 if (review != null)
                     item.ExternalLinkKey = await _context.Links.Include(x => x.UrlTable).Where(x => x.Key.ToLower() == review.ToLower()).Select(x => x.UrlTable.URL).FirstOrDefaultAsync();
             }
@@ -3607,7 +3607,7 @@ namespace P2P.Services
                                                                            .Include(x => x.Rev_TwitterUrl)
                                                                            .Include(x => x.Rev_YoutubeUrl)
                                                                            .Include(x => x.Rev_ReportLink)
-                                                                           where reviewPlatforms.Contains(a.ReviewId.ToString())
+                                                                           where (reviewPlatforms.Contains(a.ReviewId.ToString()) && a.IsActive == true)
                                                                            select _mapper.Map<ReviewODTO>(a)).ToList(),
                                                              TrackH2 = (from a in _context.SettingsAttributes
                                                                               .Include(x => x.Language)
