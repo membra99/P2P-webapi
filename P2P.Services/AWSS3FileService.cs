@@ -17,6 +17,7 @@ namespace P2P.Services
         Task<Stream> GetFile(string key);
         // Task<bool> UpdateFile(UploadFileName uploadFileName, string key);
         Task<bool> DeleteFile(string key);
+        Task<bool> DeleteMultipleFiles(string[] keys);
     }
     public class AWSS3FileService : IAWSS3FileService
     {
@@ -125,6 +126,18 @@ namespace P2P.Services
             try
             {
                 return await _AWSS3BucketHelper.DeleteFile(key);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        public async Task<bool> DeleteMultipleFiles(string[] keys)
+        {
+            try
+            {
+                return await _AWSS3BucketHelper.DeleteMultipleFiles(keys);
             }
             catch (Exception ex)
             {

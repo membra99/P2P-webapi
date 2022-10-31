@@ -71,5 +71,13 @@ namespace P2P.WebApi.Controllers
             var result = await _AWSS3FileService.DeleteFile(fileName);
             return Ok(new { isSucess = result });
         }
+
+        [Route("deleteMultipleFiles")]
+        [HttpPost]
+        public async Task<IActionResult> DeleteMultipleFiles(string[] fileNames)
+        {
+            var result = await _AWSS3FileService.DeleteMultipleFiles(fileNames);
+            return Ok(new { isSucess = result });
+        }
     }
 }

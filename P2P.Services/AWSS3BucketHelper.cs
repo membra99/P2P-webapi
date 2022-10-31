@@ -16,6 +16,7 @@ namespace P2P.Services
         Task<List<string>> FilesListSearch(string fileName);
         Task<Stream> GetFile(string key);
         Task<bool> DeleteFile(string key);
+        Task<bool> DeleteMultipleFiles(string[] keys);
     }
     public class AWSS3BucketHelper : IAWSS3BucketHelper
     {
@@ -78,6 +79,40 @@ namespace P2P.Services
             try
             {
                 DeleteObjectResponse response = await _amazonS3.DeleteObjectAsync(_settings.AWSS3.BucketName, key);
+                if (response.HttpStatusCode == System.Net.HttpStatusCode.NoContent)
+                    return true;
+                else
+                    return false;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+
+
+        }
+
+        public async Task<bool> DeleteMultipleFiles(string[] keys)
+        {
+            try
+            {
+                List<KeyVersion> keysProper = new List<KeyVersion>();
+                foreach (var item in keys)
+                {
+                    KeyVersion keyVersion = new KeyVersion
+                    {
+                        Key = item,
+                        // For non-versioned bucket operations, we only need object key.
+                    };
+                    keysProper.Add(keyVersion);
+                }
+
+                DeleteObjectsRequest multiObjectDeleteRequest = new DeleteObjectsRequest
+                {
+                    BucketName = _settings.AWSS3.BucketName,
+                    Objects = keysProper // This includes the object keys and null version IDs.
+                };
+                DeleteObjectsResponse response = await _amazonS3.DeleteObjectsAsync(multiObjectDeleteRequest);
                 if (response.HttpStatusCode == System.Net.HttpStatusCode.NoContent)
                     return true;
                 else
