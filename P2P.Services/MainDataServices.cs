@@ -3549,7 +3549,7 @@ namespace P2P.Services
                                      .Include(x => x.UrlTable)
                                      .Include(x => x.Language)
                                      .Include(x => x.DataType)
-                                                          where reviewPlatforms.Contains(a.TableId.ToString()) && a.DataTypeId == 1
+                                                          where reviewPlatforms.Contains(a.TableId.ToString()) && a.DataTypeId == REVIEW_TYPEID
                                                           select new RoutesForHomeSettingsByLangODTO
                                                           {
                                                               RoutesId = a.RoutesId,
@@ -3597,7 +3597,7 @@ namespace P2P.Services
                                                              TestimonialH2 = x.TestimonialH2,
                                                              FeaturedH2 = x.FeaturedH2,
                                                              LinkToUrl = SortedList,
-                                                             Platform = $"[{x.Platform}]",
+                                                             Platform = x.Platform,
                                                              ReviewList = (from a in _context.Review
                                                                            .Include(x => x.Serp)
                                                                            .Include(x => x.Language)
@@ -3607,7 +3607,7 @@ namespace P2P.Services
                                                                            .Include(x => x.Rev_TwitterUrl)
                                                                            .Include(x => x.Rev_YoutubeUrl)
                                                                            .Include(x => x.Rev_ReportLink)
-                                                                           where (reviewPlatforms.Contains(a.ReviewId.ToString()) && a.IsActive == true)
+                                                                           where (reviewPlatforms.Contains(a.ReviewId.ToString()))
                                                                            select _mapper.Map<ReviewODTO>(a)).ToList(),
                                                              TrackH2 = (from a in _context.SettingsAttributes
                                                                               .Include(x => x.Language)
