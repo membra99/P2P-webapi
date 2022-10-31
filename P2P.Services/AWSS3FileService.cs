@@ -67,7 +67,7 @@ namespace P2P.Services
             {
                 ListVersionsResponse listVersions = await _AWSS3BucketHelper.FilesList();
                 return listVersions.Versions.Where(x => language == null ? true : x.Key.Contains(language.ToUpper()) ).Select(c => new { c.LastModified, c.Key }).OrderByDescending(e => e.LastModified)
-                    .Select(e => e.Key).Take(60).ToList();
+                    .Select(e => e.Key).ToList();
             }
             catch (Exception ex)
             {
