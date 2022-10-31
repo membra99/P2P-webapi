@@ -22,7 +22,6 @@ namespace Entities.P2P.MainData
         [StringLength(200)]
         public string PageTitle { get; set; }
 
-        [StringLength(200)]
         public string Excerpt { get; set; }
 
         public string Content { get; set; }

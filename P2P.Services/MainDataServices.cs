@@ -4149,7 +4149,35 @@ namespace P2P.Services
 
         public async Task<List<BlogODTO>> GetBlogsByLang(int languageId)
         {
-            return await GetBlog(0, languageId, 0, null).AsNoTracking().ToListAsync();
+            //return await GetBlog(0, languageId, 0, null).AsNoTracking().ToListAsync();
+            var blog = await _context.Blogs.Include(x => x.Serp).Include(x => x.Category).Where(x => x.LanguageId == languageId).ToListAsync();
+            var blogs = new List<BlogODTO>();
+            foreach (var item in blog)
+            {
+                var route = await _context.Routes.Where(x => x.LanguageId == languageId && x.DataTypeId == BLOG_TYPEID && x.TableId == item.BlogId).Select(x => x.UrlTableId).FirstOrDefaultAsync();
+                var url = await _context.UrlTables.Where(x => x.UrlTableId == route).Select(x => x.URL).FirstOrDefaultAsync();
+
+                var data = new BlogODTO()
+                {
+                    BlogId = item.BlogId,
+                    Name = item.Name,
+                    LanguageId = item.LanguageId,
+                    SerpId = item.SerpId != null ? item.SerpId : null,
+                    SerpTitle = item.SerpId != null ? item.Serp.SerpTitle : null,
+                    SerpDescription = item.SerpId != null ? item.Serp.SerpDescription : null,
+                    Subtitle = item.SerpId != null ? item.Serp.Subtitle : null,
+                    Content = item.Content,
+                    RouteName = url,
+                    CategoryId = item.CategoryId != null ? item.CategoryId : null,
+                    CategoryName = item.CategoryId != null ? item.Category.CategoryName : null,
+                    AuthorId = item.AuthorId != null ? item.AuthorId : null,
+                    PageTitle = item.PageTitle,
+                    Excerpt = item.Excerpt,
+                    UpdatedDate = item.UpdatedDate
+                };
+                blogs.Add(data);
+            }
+            return blogs;
         }
 
         public async Task<GetBlogsByRouteODTO> GetBlogsByRoute(string route)
@@ -4164,7 +4192,7 @@ namespace P2P.Services
                 foreach (var item in popularArticle)
                 {
                     var x = await _context.Blogs.Include(x => x.Serp).Include(x => x.Category).Where(x => x.BlogId == item).FirstOrDefaultAsync();
-                    if(x!=null)
+                    if (x != null)
                         blogs.Add(_mapper.Map<BlogODTO>(x));
                 }
             }

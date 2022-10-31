@@ -24,5 +24,6 @@ namespace P2P.DTO.Output
         public string PageTitle { get; set; }
         public string Excerpt { get; set; }
         public DateTime? UpdatedDate { get; set; }
+        public string RouteName { get; set; }
     }
 }
