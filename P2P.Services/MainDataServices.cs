@@ -4252,12 +4252,13 @@ namespace P2P.Services
             try
             {
                 var blog = _mapper.Map<Blog>(blogIDTO);
+                var content = await _context.Blogs.Where(x => x.BlogId == blogIDTO.BlogId).Select(x => x.Content).FirstOrDefaultAsync();
                 blog.UpdatedDate = DateTime.Now;
                 blog.LanguageId = blog.LanguageId == 0 ? null : blog.LanguageId;
                 blog.CategoryId = blog.CategoryId == 0 ? null : blog.CategoryId;
                 blog.AuthorId = blog.AuthorId == 0 ? null : blog.AuthorId;
                 blog.SerpId = blog.SerpId == 0 ? null : blog.SerpId;
-                blog.Content = blog.Content == null ? null : blog.Content;
+                blog.Content = content;
                 blog.SelectedPopularArticle = blog.SelectedPopularArticle == null || blog.SelectedPopularArticle == "" ? null : blog.SelectedPopularArticle;
                 _context.Entry(blog).State = EntityState.Modified;
 
