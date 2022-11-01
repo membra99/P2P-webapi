@@ -4257,6 +4257,7 @@ namespace P2P.Services
                 blog.CategoryId = blog.CategoryId == 0 ? null : blog.CategoryId;
                 blog.AuthorId = blog.AuthorId == 0 ? null : blog.AuthorId;
                 blog.SerpId = blog.SerpId == 0 ? null : blog.SerpId;
+                blog.Content = blog.Content == null ? null : blog.Content;
                 blog.SelectedPopularArticle = blog.SelectedPopularArticle == null || blog.SelectedPopularArticle == "" ? null : blog.SelectedPopularArticle;
                 _context.Entry(blog).State = EntityState.Modified;
 
