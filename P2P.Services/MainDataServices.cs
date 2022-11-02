@@ -2429,7 +2429,7 @@ namespace P2P.Services
                    .Include(x => x.Rev_TwitterUrl)
                    .Include(x => x.Rev_YoutubeUrl)
                    .Include(x => x.Rev_ReportLink)
-                   where ((id == 0 || x.ReviewId == id) && x.IsActive == true)
+                   where ((id == 0 || x.ReviewId == id))
                    select _mapper.Map<ReviewODTO>(x);
         }
 
