@@ -21,7 +21,9 @@ namespace P2P.DTO.Output.EndPointODTO
         public string NewsLink { get; set; }
         public string ReviewsItem { get; set; }
         public string ReviewsLink { get; set; }
+        public string More { get; set; }
         public List<SettingsAttributeODTO> ReviewsRoutes { get; set; }
         public List<SettingsAttributeODTO> Reviews { get; set; }
+        public List<SettingsAttributeODTO> MoreRoutes { get; set; }
     }
 }

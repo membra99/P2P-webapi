@@ -292,6 +292,7 @@ namespace P2P.Services
                                                                             NewsLink = x.NewsRouteLink.URL,
                                                                             ReviewsItem = x.Reviews,
                                                                             ReviewsLink = x.ReviewsRouteLink.URL,
+                                                                            More=x.More,
                                                                             ReviewsRoutes = (from a in _context.SettingsAttributes
                                                                                                .Include(x => x.Language)
                                                                                                .Include(x => x.DataType)
@@ -306,7 +307,16 @@ namespace P2P.Services
                                                                                        where (b.DataTypeId == NAVIGATION_SETTINGS_TYPEID)
                                                                                        && (b.SettingsDataTypeId == NAV_SETTINGS_REVIEWS_TYPEID)
                                                                                        && (b.LanguageId == langId)
-                                                                                       select _mapper.Map<SettingsAttributeODTO>(b)).ToList()
+                                                                                       select _mapper.Map<SettingsAttributeODTO>(b)).ToList(),
+                                                                            MoreRoutes = (from b in _context.SettingsAttributes
+                                                                                               .Include(x => x.Language)
+                                                                                               .Include(x => x.DataType)
+                                                                                               .Include(x => x.SettingsDataType)
+                                                                                               .Include(x => x.Url)
+                                                                                          where (b.DataTypeId == NAVIGATION_SETTINGS_TYPEID)
+                                                                                          && (b.SettingsDataTypeId == A_ITEM_ANCHOR_TYPEID || b.SettingsDataTypeId == A_ITEM_LINK_TYPEID)
+                                                                                          && (b.LanguageId == langId)
+                                                                                          select _mapper.Map<SettingsAttributeODTO>(b)).ToList(),
                                                                         }).ToListAsync();
             return NavSettings;
         }
