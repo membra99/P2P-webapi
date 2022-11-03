@@ -1684,11 +1684,11 @@ namespace P2P.Services
                                   }).OrderByDescending(x => x.Value).ToListAsync();
 
                 case BLOG_TYPEID:
-                    return await (from x in _context.Pages
-                                  where (x.LanguageId == lang && x.DataTypeId == BLOG_TYPEID)
+                    return await (from x in _context.Blogs
+                                  where (x.LanguageId == lang)
                                   select new GetDropdownValuesODTO
                                   {
-                                      Value = "pages__" + x.PageId.ToString(),
+                                      Value = "blogs_" + x.BlogId.ToString(),
                                       Name = x.PageTitle,
                                   }).OrderByDescending(x => x.Value).ToListAsync();
 
