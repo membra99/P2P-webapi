@@ -32,4 +32,9 @@
     <ProjectReference Include="..\P2P.Services\P2P.Services.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Include=".platform\00_myconf.config" />
+    <None Include=".platform\nginx\conf.d\proxy.conf" />
+  </ItemGroup>
+
 </Project>
