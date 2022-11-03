@@ -19,6 +19,7 @@ namespace P2P.DTO.Output.EndPointODTO
         public string ExternalLinkKey { get; set; }
         public int? ReviewUrlId { get; set; }
         public string Terms { get; set; }
+        public DateTime? ValidUntil { get; set; }
         public ReviewBoxThreeODTO ReviewBoxThree { get; set; }
         public ReviewBoxFourODTO ReviewBoxFour { get; set; }
         public ReviewBoxFiveODTO ReviewBoxFive { get; set; }

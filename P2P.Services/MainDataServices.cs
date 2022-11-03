@@ -1442,6 +1442,7 @@ namespace P2P.Services
                                    CashBackId = x.CashBackId,
                                    ReviewId = d.ReviewId,
                                    Exclusive = x.Exclusive,
+                                   ValidUntil = x.Valid_Until,
                                    Name = d.Name,
                                    Logo = d.Logo,
                                    Count = d.Count,
@@ -1485,6 +1486,7 @@ namespace P2P.Services
                                       CashBackId = x.CashBackId,
                                       ReviewId = d.ReviewId,
                                       Exclusive = x.Exclusive,
+                                      ValidUntil = x.Valid_Until,
                                       Name = d.Name,
                                       Logo = d.Logo,
                                       Count = d.Count,
@@ -2429,7 +2431,7 @@ namespace P2P.Services
                    .Include(x => x.Rev_TwitterUrl)
                    .Include(x => x.Rev_YoutubeUrl)
                    .Include(x => x.Rev_ReportLink)
-                   where ((id == 0 || x.ReviewId == id) && x.IsActive == true)
+                   where ((id == 0 || x.ReviewId == id))
                    select _mapper.Map<ReviewODTO>(x);
         }
 
@@ -4252,11 +4254,13 @@ namespace P2P.Services
             try
             {
                 var blog = _mapper.Map<Blog>(blogIDTO);
+                var content = await _context.Blogs.Where(x => x.BlogId == blogIDTO.BlogId).Select(x => x.Content).FirstOrDefaultAsync();
                 blog.UpdatedDate = DateTime.Now;
                 blog.LanguageId = blog.LanguageId == 0 ? null : blog.LanguageId;
                 blog.CategoryId = blog.CategoryId == 0 ? null : blog.CategoryId;
                 blog.AuthorId = blog.AuthorId == 0 ? null : blog.AuthorId;
                 blog.SerpId = blog.SerpId == 0 ? null : blog.SerpId;
+                blog.Content = content;
                 blog.SelectedPopularArticle = blog.SelectedPopularArticle == null || blog.SelectedPopularArticle == "" ? null : blog.SelectedPopularArticle;
                 _context.Entry(blog).State = EntityState.Modified;
 
