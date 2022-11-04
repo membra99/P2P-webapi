@@ -1,13 +1,8 @@
-﻿using Amazon.S3.Model;
-using AutoMapper;
+﻿using AutoMapper;
 using Entities.Context;
-using Entities.Migrations;
-using Entities.P2P;
 using Entities.P2P.MainData;
 using Entities.P2P.MainData.Settings;
 using Microsoft.EntityFrameworkCore;
-using NetTopologySuite.Index.HPRtree;
-using NetTopologySuite.Noding;
 using P2P.Base.Services;
 using P2P.DTO.Input;
 using P2P.DTO.Input.EndpointIDTO;
@@ -15,15 +10,10 @@ using P2P.DTO.Output;
 using P2P.DTO.Output.EndPointODTO;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using System.Data;
 using System.Linq;
-using System.Reflection.Metadata;
-using System.Security.Cryptography;
-using System.Security.Cryptography.X509Certificates;
 using System.Security.Policy;
 using System.Threading.Tasks;
-using System.Xml.Linq;
 using DataType = Entities.P2P.MainData.DataType;
 using Language = Entities.P2P.MainData.Language;
 
@@ -81,6 +71,7 @@ namespace P2P.Services
         public const int NAV_SETTINGS_REVIEWS_TYPEID = 42;
         public const int BLOG_TYPEID = 43;
         public const int BLOG_SETTINGS_TYPEID = 44;
+        public const int IMAGE_INFO_TYPEID = 49;
         public const int ENG_LANG = 1;
 
         private async Task<List<ReviewContentDropdownODTO>> ListOfReviews()
@@ -4363,7 +4354,7 @@ namespace P2P.Services
                 {
                     _context.FaqLists.Remove(item2);
                     await SaveContextChangesAsync();
-                } 
+                }
             }
             foreach (var item in faqTitles)
             {
@@ -4634,5 +4625,94 @@ namespace P2P.Services
         }
 
         #endregion Authors
+
+        #region ImageInfo
+
+        private IQueryable<ImagesInfoODTO> GetImageInfo(int id)
+        {
+            return from x in _context.ImagesInfos
+                   .Include(x => x.UrlTable)
+                   where (id == 0 || x.ImageId == id)
+                   select _mapper.Map<ImagesInfoODTO>(x);
+        }
+
+        public async Task<ImagesInfoODTO> GetImageInfoByAWS(string aws)
+        {
+            var url = await _context.UrlTables.Where(x => x.URL.ToLower() == aws.ToLower()).Select(x => x.UrlTableId).FirstOrDefaultAsync();
+            return await _context.ImagesInfos.Include(x => x.UrlTable).Where(x => x.AwsUrl == url).Select(x => _mapper.Map<ImagesInfoODTO>(x)).FirstOrDefaultAsync();
+        }
+
+        public async Task<ImagesInfoODTO> EditImageInfo(ImagesInfoIDTO imagesInfoIDTO)
+        {
+            var imageInfo = _mapper.Map<ImagesInfo>(imagesInfoIDTO);
+
+            var u = await _context.UrlTables.Where(x => x.URL == imagesInfoIDTO.Aws).Select(x => x.UrlTableId).FirstOrDefaultAsync();
+            if (u == null)
+            {
+                var url = new UrlTable
+                {
+                    DataTypeId = IMAGE_INFO_TYPEID,
+                    URL = imagesInfoIDTO.Aws
+                };
+
+                _context.UrlTables.Add(url);
+                await SaveContextChangesAsync();
+
+                imageInfo.AwsUrl = url.UrlTableId;
+                _context.Entry(imageInfo).State = EntityState.Modified;
+
+                await SaveContextChangesAsync();
+                url.TableId = imageInfo.ImageId;
+                await SaveContextChangesAsync();
+            }
+            imageInfo.AwsUrl = u;
+            _context.Entry(imageInfo).State = EntityState.Modified;
+
+            await SaveContextChangesAsync();
+            return await GetImageInfo(imageInfo.ImageId).FirstOrDefaultAsync();
+        }
+
+        public async Task<ImagesInfoODTO> AddImageInfo(ImagesInfoIDTO imagesInfoIDTO)
+        {
+            var imageInfo = _mapper.Map<ImagesInfo>(imagesInfoIDTO);
+            var url = new UrlTable
+            {
+                DataTypeId = IMAGE_INFO_TYPEID,
+                URL = imagesInfoIDTO.Aws
+            };
+            _context.UrlTables.Add(url);
+            await SaveContextChangesAsync();
+
+            imageInfo.ImageId = 0;
+            imageInfo.AwsUrl = url.UrlTableId;
+            _context.ImagesInfos.Add(imageInfo);
+            await SaveContextChangesAsync();
+
+            url.TableId = imageInfo.ImageId;
+            await SaveContextChangesAsync();
+            return await GetImageInfo(imageInfo.ImageId).FirstOrDefaultAsync();
+        }
+
+        public async Task<ImagesInfoODTO> DeleteImageInfo(int id)
+        {
+            var imageInfo = await _context.ImagesInfos.FindAsync(id);
+            if (imageInfo == null) return null;
+
+            imageInfo.AwsUrl = null;
+            await SaveContextChangesAsync();
+            var url = await _context.UrlTables.Where(x => x.UrlTableId == imageInfo.AwsUrl).ToListAsync();
+            foreach (var item in url)
+            {
+                _context.UrlTables.Remove(item);
+                await SaveContextChangesAsync();
+            }
+
+            ImagesInfoODTO imageInfoODTO = GetImageInfo(id).FirstOrDefault();
+            _context.ImagesInfos.Remove(imageInfo);
+            await SaveContextChangesAsync();
+            return imageInfoODTO;
+        }
+
+        #endregion ImageInfo
     }
 }
