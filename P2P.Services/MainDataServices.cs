@@ -4363,7 +4363,7 @@ namespace P2P.Services
                 {
                     _context.FaqLists.Remove(item2);
                     await SaveContextChangesAsync();
-                }
+                } 
             }
             foreach (var item in faqTitles)
             {
