@@ -17,7 +17,7 @@ namespace P2P.DTO.Output.EndPointODTO
         public bool RedFlag { get; set; }
         public int? UrlTableId { get; set; }
         public string URL { get; set; }
-        public int Route { get; set; }
+        public UrlTableODTO Route { get; set; }
         public string Logo { get; set; }
     }
 }
