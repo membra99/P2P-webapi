@@ -292,7 +292,7 @@ namespace P2P.Services
                                                                             NewsLink = x.NewsRouteLink.URL,
                                                                             ReviewsItem = x.Reviews,
                                                                             ReviewsLink = x.ReviewsRouteLink.URL,
-                                                                            More=x.More,
+                                                                            More = x.More,
                                                                             ReviewsRoutes = (from a in _context.SettingsAttributes
                                                                                                .Include(x => x.Language)
                                                                                                .Include(x => x.DataType)
@@ -4206,6 +4206,12 @@ namespace P2P.Services
                     var x = await _context.Blogs.Include(x => x.Serp).Include(x => x.Category).Where(x => x.BlogId == item).FirstOrDefaultAsync();
                     if (x != null)
                         blogs.Add(_mapper.Map<BlogODTO>(x));
+                }
+                foreach (var item in blogs)
+                {
+                    var r = await _context.Routes.Where(x => x.LanguageId == item.LanguageId && x.DataTypeId == BLOG_TYPEID && x.TableId == item.BlogId).Select(x => x.UrlTableId).FirstOrDefaultAsync();
+                    var u = await _context.UrlTables.Where(x => x.UrlTableId == r).Select(x => x.URL).FirstOrDefaultAsync();
+                    item.RouteName = u;
                 }
             }
             var retval = new GetBlogsByRouteODTO
