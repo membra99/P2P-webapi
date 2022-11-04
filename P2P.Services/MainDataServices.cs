@@ -4621,6 +4621,12 @@ namespace P2P.Services
             var author = await _context.Authors.FindAsync(id);
             if (author == null) return null;
 
+            var blog = await _context.Blogs.Where(x => x.AuthorId == id).SingleOrDefaultAsync();
+            if (blog == null) return null;
+            blog.AuthorId = 12;
+            _context.Entry(blog).State = EntityState.Modified;
+            await SaveContextChangesAsync();
+
             var authorODTO = await GetAuthorById(id);
             _context.Authors.Remove(author);
             await SaveContextChangesAsync();
