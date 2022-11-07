@@ -33,7 +33,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Include=".platform\nginx\conf.d\proxy.conf" />
+    <Content Include=".platform\nginx\conf.d\myconf.conf">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
 
 </Project>
