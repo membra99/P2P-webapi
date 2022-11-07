@@ -26,6 +26,9 @@ namespace Entities.P2P.MainData.Settings
         [StringLength(50)]
         public string Reviews { get; set; }
 
+        [StringLength(50)]
+        public string More { get; set; }
+
         public int? AcademyRoute { get; set; }
         public int? BonusRoute { get; set; }
         public int? HomeRoute { get; set; }

@@ -1,13 +1,8 @@
-﻿using Amazon.S3.Model;
-using AutoMapper;
+﻿using AutoMapper;
 using Entities.Context;
-using Entities.Migrations;
-using Entities.P2P;
 using Entities.P2P.MainData;
 using Entities.P2P.MainData.Settings;
 using Microsoft.EntityFrameworkCore;
-using NetTopologySuite.Index.HPRtree;
-using NetTopologySuite.Noding;
 using P2P.Base.Services;
 using P2P.DTO.Input;
 using P2P.DTO.Input.EndpointIDTO;
@@ -15,15 +10,9 @@ using P2P.DTO.Output;
 using P2P.DTO.Output.EndPointODTO;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using System.Data;
 using System.Linq;
-using System.Reflection.Metadata;
-using System.Security.Cryptography;
-using System.Security.Cryptography.X509Certificates;
-using System.Security.Policy;
 using System.Threading.Tasks;
-using System.Xml.Linq;
 using DataType = Entities.P2P.MainData.DataType;
 using Language = Entities.P2P.MainData.Language;
 
@@ -81,6 +70,7 @@ namespace P2P.Services
         public const int NAV_SETTINGS_REVIEWS_TYPEID = 42;
         public const int BLOG_TYPEID = 43;
         public const int BLOG_SETTINGS_TYPEID = 44;
+        public const int IMAGE_INFO_TYPEID = 49;
         public const int ENG_LANG = 1;
 
         private async Task<List<ReviewContentDropdownODTO>> ListOfReviews()
@@ -292,6 +282,7 @@ namespace P2P.Services
                                                                             NewsLink = x.NewsRouteLink.URL,
                                                                             ReviewsItem = x.Reviews,
                                                                             ReviewsLink = x.ReviewsRouteLink.URL,
+                                                                            More = x.More,
                                                                             ReviewsRoutes = (from a in _context.SettingsAttributes
                                                                                                .Include(x => x.Language)
                                                                                                .Include(x => x.DataType)
@@ -306,7 +297,16 @@ namespace P2P.Services
                                                                                        where (b.DataTypeId == NAVIGATION_SETTINGS_TYPEID)
                                                                                        && (b.SettingsDataTypeId == NAV_SETTINGS_REVIEWS_TYPEID)
                                                                                        && (b.LanguageId == langId)
-                                                                                       select _mapper.Map<SettingsAttributeODTO>(b)).ToList()
+                                                                                       select _mapper.Map<SettingsAttributeODTO>(b)).ToList(),
+                                                                            MoreRoutes = (from b in _context.SettingsAttributes
+                                                                                               .Include(x => x.Language)
+                                                                                               .Include(x => x.DataType)
+                                                                                               .Include(x => x.SettingsDataType)
+                                                                                               .Include(x => x.Url)
+                                                                                          where (b.DataTypeId == NAVIGATION_SETTINGS_TYPEID)
+                                                                                          && (b.SettingsDataTypeId == A_ITEM_ANCHOR_TYPEID || b.SettingsDataTypeId == A_ITEM_LINK_TYPEID)
+                                                                                          && (b.LanguageId == langId)
+                                                                                          select _mapper.Map<SettingsAttributeODTO>(b)).ToList(),
                                                                         }).ToListAsync();
             return NavSettings;
         }
@@ -1684,11 +1684,11 @@ namespace P2P.Services
                                   }).OrderByDescending(x => x.Value).ToListAsync();
 
                 case BLOG_TYPEID:
-                    return await (from x in _context.Pages
-                                  where (x.LanguageId == lang && x.DataTypeId == BLOG_TYPEID)
+                    return await (from x in _context.Blogs
+                                  where (x.LanguageId == lang)
                                   select new GetDropdownValuesODTO
                                   {
-                                      Value = "pages__" + x.PageId.ToString(),
+                                      Value = "blogs_" + x.BlogId.ToString(),
                                       Name = x.PageTitle,
                                   }).OrderByDescending(x => x.Value).ToListAsync();
 
@@ -3368,6 +3368,7 @@ namespace P2P.Services
 
         public async Task<List<GetNewsFeedListODTO>> GetListNewsFeedByLangId(int languageId)
         {
+            
             var newsFeed = _context.NewsFeeds.Where(x => x.LanguageId == languageId).Select(x => new GetNewsFeedListODTO
             {
                 Name = _context.Review.Where(e => e.ReviewId == x.ReviewId && e.IsActive == true).Select(x => x.Name).FirstOrDefault(),
@@ -3379,7 +3380,7 @@ namespace P2P.Services
                 UrlTableId = x.UrlTableId,
                 URL = x.UrlTable.URL,
                 RedFlag = x.RedFlag,
-                Route = _context.Routes.Where(e => e.DataTypeId == REVIEW_TYPEID && e.TableId == x.ReviewId).Select(e => e.UrlTableId).FirstOrDefault(),
+                Route = _context.Routes.Where(e => e.DataTypeId == REVIEW_TYPEID && e.TableId == x.ReviewId).Select(x => _mapper.Map<UrlTableODTO>(x.UrlTable)).FirstOrDefault(),
                 Logo = _context.Review.Where(e => e.ReviewId == x.ReviewId && e.IsActive == true).Select(e => e.Logo).FirstOrDefault()
             }).OrderBy(x => x.CreatedDate).ToListAsync();
 
@@ -3391,9 +3392,10 @@ namespace P2P.Services
             if (Id != null)
             {
                 return await (from x in _context.NewsFeeds
+                              where (x.NewsFeedId == Id)
                               select new GetNewsFeedListODTO
                               {
-                                  Route = _context.Routes.Where(e => e.DataTypeId == REVIEW_TYPEID && e.TableId == x.ReviewId).Select(e => e.UrlTableId).FirstOrDefault(),
+                                  Route = _context.Routes.Where(e => e.DataTypeId == REVIEW_TYPEID && e.TableId == x.ReviewId).Select(x => _mapper.Map<UrlTableODTO>(x.UrlTable)).FirstOrDefault(),
                                   NewsText = x.NewsText,
                                   CreatedDate = x.CreatedDate,
                                   NewsFeedId = x.NewsFeedId,
@@ -3416,7 +3418,7 @@ namespace P2P.Services
                                   CreatedDate = x.CreatedDate,
                                   NewsFeedId = x.NewsFeedId,
                                   Name = x.Review.Name,
-                                  Route = b.UrlTableId,
+                                  Route = _mapper.Map<UrlTableODTO>(b.UrlTable),
                                   Market = x.Market,
                                   TagLine = x.TagLine,
                                   RedFlag = x.RedFlag,
@@ -4197,6 +4199,12 @@ namespace P2P.Services
                     if (x != null)
                         blogs.Add(_mapper.Map<BlogODTO>(x));
                 }
+                foreach (var item in blogs)
+                {
+                    var r = await _context.Routes.Where(x => x.LanguageId == item.LanguageId && x.DataTypeId == BLOG_TYPEID && x.TableId == item.BlogId).Select(x => x.UrlTableId).FirstOrDefaultAsync();
+                    var u = await _context.UrlTables.Where(x => x.UrlTableId == r).Select(x => x.URL).FirstOrDefaultAsync();
+                    item.RouteName = u;
+                }
             }
             var retval = new GetBlogsByRouteODTO
             {
@@ -4605,6 +4613,19 @@ namespace P2P.Services
             var author = await _context.Authors.FindAsync(id);
             if (author == null) return null;
 
+            var blog = await _context.Blogs.Where(x => x.AuthorId == id).ToListAsync();
+            if (blog != null)
+            {
+                foreach (var item in blog)
+                {
+                    item.AuthorId = 12;
+                    _context.Entry(item).State = EntityState.Modified;
+                    await SaveContextChangesAsync();
+                }
+                
+            }
+            
+
             var authorODTO = await GetAuthorById(id);
             _context.Authors.Remove(author);
             await SaveContextChangesAsync();
@@ -4612,5 +4633,94 @@ namespace P2P.Services
         }
 
         #endregion Authors
+
+        #region ImageInfo
+
+        private IQueryable<ImagesInfoODTO> GetImageInfo(int id)
+        {
+            return from x in _context.ImagesInfos
+                   .Include(x => x.UrlTable)
+                   where (id == 0 || x.ImageId == id)
+                   select _mapper.Map<ImagesInfoODTO>(x);
+        }
+
+        public async Task<ImagesInfoODTO> GetImageInfoByAWS(string aws)
+        {
+            var url = await _context.UrlTables.Where(x => x.URL.ToLower() == aws.ToLower()).Select(x => x.UrlTableId).FirstOrDefaultAsync();
+            return await _context.ImagesInfos.Include(x => x.UrlTable).Where(x => x.AwsUrl == url).Select(x => _mapper.Map<ImagesInfoODTO>(x)).FirstOrDefaultAsync();
+        }
+
+        public async Task<ImagesInfoODTO> EditImageInfo(ImagesInfoIDTO imagesInfoIDTO)
+        {
+            var imageInfo = _mapper.Map<ImagesInfo>(imagesInfoIDTO);
+
+            var u = await _context.UrlTables.Where(x => x.URL == imagesInfoIDTO.Aws).Select(x => x.UrlTableId).FirstOrDefaultAsync();
+            if (u == null)
+            {
+                var url = new UrlTable
+                {
+                    DataTypeId = IMAGE_INFO_TYPEID,
+                    URL = imagesInfoIDTO.Aws
+                };
+
+                _context.UrlTables.Add(url);
+                await SaveContextChangesAsync();
+
+                imageInfo.AwsUrl = url.UrlTableId;
+                _context.Entry(imageInfo).State = EntityState.Modified;
+
+                await SaveContextChangesAsync();
+                url.TableId = imageInfo.ImageId;
+                await SaveContextChangesAsync();
+            }
+            imageInfo.AwsUrl = u;
+            _context.Entry(imageInfo).State = EntityState.Modified;
+
+            await SaveContextChangesAsync();
+            return await GetImageInfo(imageInfo.ImageId).FirstOrDefaultAsync();
+        }
+
+        public async Task<ImagesInfoODTO> AddImageInfo(ImagesInfoIDTO imagesInfoIDTO)
+        {
+            var imageInfo = _mapper.Map<ImagesInfo>(imagesInfoIDTO);
+            var url = new UrlTable
+            {
+                DataTypeId = IMAGE_INFO_TYPEID,
+                URL = imagesInfoIDTO.Aws
+            };
+            _context.UrlTables.Add(url);
+            await SaveContextChangesAsync();
+
+            imageInfo.ImageId = 0;
+            imageInfo.AwsUrl = url.UrlTableId;
+            _context.ImagesInfos.Add(imageInfo);
+            await SaveContextChangesAsync();
+
+            url.TableId = imageInfo.ImageId;
+            await SaveContextChangesAsync();
+            return await GetImageInfo(imageInfo.ImageId).FirstOrDefaultAsync();
+        }
+
+        public async Task<ImagesInfoODTO> DeleteImageInfo(int id)
+        {
+            var imageInfo = await _context.ImagesInfos.FindAsync(id);
+            if (imageInfo == null) return null;
+
+            imageInfo.AwsUrl = null;
+            await SaveContextChangesAsync();
+            var url = await _context.UrlTables.Where(x => x.UrlTableId == imageInfo.AwsUrl).ToListAsync();
+            foreach (var item in url)
+            {
+                _context.UrlTables.Remove(item);
+                await SaveContextChangesAsync();
+            }
+
+            ImagesInfoODTO imageInfoODTO = GetImageInfo(id).FirstOrDefault();
+            _context.ImagesInfos.Remove(imageInfo);
+            await SaveContextChangesAsync();
+            return imageInfoODTO;
+        }
+
+        #endregion ImageInfo
     }
 }

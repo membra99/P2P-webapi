@@ -17,6 +17,7 @@ namespace P2P.DTO.Output
         public string Home { get; set; }
         public string News { get; set; }
         public string Reviews { get; set; }
+        public string More { get; set; }
         public int? AcademyRoute { get; set; }
         public string AcademyRouteUrl { get; set; }
         public int? BonusRoute { get; set; }

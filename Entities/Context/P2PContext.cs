@@ -41,6 +41,7 @@ namespace Entities.Context
         public DbSet<SettingsAttribute> SettingsAttributes { get; set; }
         public DbSet<Blog> Blogs { get; set; }
         public DbSet<Author> Authors { get; set; }
+        public DbSet<ImagesInfo> ImagesInfos { get; set; }
 
         #endregion MainData
 
@@ -492,6 +493,16 @@ namespace Entities.Context
 
                 entity.HasOne(x => x.Language)
                     .WithMany(x => x.Author)
+                    .OnDelete(DeleteBehavior.Restrict);
+            });
+
+            modelBuilder.Entity<ImagesInfo>(entity =>
+            {
+                entity.HasKey(x => x.ImageId);
+
+                entity.HasOne(x => x.UrlTable)
+                    .WithMany(x => x.ImagesInfos)
+                    .HasForeignKey(x => x.AwsUrl)
                     .OnDelete(DeleteBehavior.Restrict);
             });
 

@@ -4,14 +4,16 @@ using Entities.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Entities.Migrations
 {
     [DbContext(typeof(MainContext))]
-    partial class MainContextModelSnapshot : ModelSnapshot
+    [Migration("20221104123406_added_ImagesInfo")]
+    partial class added_ImagesInfo
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -301,7 +303,7 @@ namespace Entities.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
-                    b.Property<int?>("AwsUrl")
+                    b.Property<int>("AwsUrl")
                         .HasColumnType("int");
 
                     b.Property<string>("Caption")
@@ -1399,7 +1401,8 @@ namespace Entities.Migrations
                     b.HasOne("Entities.P2P.MainData.UrlTable", "UrlTable")
                         .WithMany("ImagesInfos")
                         .HasForeignKey("AwsUrl")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
                     b.Navigation("UrlTable");
                 });

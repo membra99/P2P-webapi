@@ -4,14 +4,16 @@ using Entities.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Entities.Migrations
 {
     [DbContext(typeof(MainContext))]
-    partial class MainContextModelSnapshot : ModelSnapshot
+    [Migration("20221103130831_More_to_NavSett")]
+    partial class More_to_NavSett
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -288,30 +290,6 @@ namespace Entities.Migrations
                     b.HasIndex("ReviewId");
 
                     b.ToTable("FaqTitles", "P2P");
-                });
-
-            modelBuilder.Entity("Entities.P2P.MainData.ImagesInfo", b =>
-                {
-                    b.Property<int>("ImageId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<string>("AltText")
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.Property<int?>("AwsUrl")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Caption")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("ImageId");
-
-                    b.HasIndex("AwsUrl");
-
-                    b.ToTable("ImagesInfo", "P2P");
                 });
 
             modelBuilder.Entity("Entities.P2P.MainData.Language", b =>
@@ -1394,16 +1372,6 @@ namespace Entities.Migrations
                     b.Navigation("Review");
                 });
 
-            modelBuilder.Entity("Entities.P2P.MainData.ImagesInfo", b =>
-                {
-                    b.HasOne("Entities.P2P.MainData.UrlTable", "UrlTable")
-                        .WithMany("ImagesInfos")
-                        .HasForeignKey("AwsUrl")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.Navigation("UrlTable");
-                });
-
             modelBuilder.Entity("Entities.P2P.MainData.Links", b =>
                 {
                     b.HasOne("Entities.P2P.MainData.Language", "Language")
@@ -2028,8 +1996,6 @@ namespace Entities.Migrations
                     b.Navigation("FacebookUrls");
 
                     b.Navigation("HomeRouteLinks");
-
-                    b.Navigation("ImagesInfos");
 
                     b.Navigation("LinkedInUrls");
 
