@@ -12,7 +12,6 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
-using System.Security.Policy;
 using System.Threading.Tasks;
 using DataType = Entities.P2P.MainData.DataType;
 using Language = Entities.P2P.MainData.Language;
@@ -3369,6 +3368,7 @@ namespace P2P.Services
 
         public async Task<List<GetNewsFeedListODTO>> GetListNewsFeedByLangId(int languageId)
         {
+            
             var newsFeed = _context.NewsFeeds.Where(x => x.LanguageId == languageId).Select(x => new GetNewsFeedListODTO
             {
                 Name = _context.Review.Where(e => e.ReviewId == x.ReviewId && e.IsActive == true).Select(x => x.Name).FirstOrDefault(),
@@ -3380,7 +3380,7 @@ namespace P2P.Services
                 UrlTableId = x.UrlTableId,
                 URL = x.UrlTable.URL,
                 RedFlag = x.RedFlag,
-                Route = _context.Routes.Where(e => e.DataTypeId == REVIEW_TYPEID && e.TableId == x.ReviewId).Select(e => e.UrlTableId).FirstOrDefault(),
+                Route = _context.Routes.Where(e => e.DataTypeId == REVIEW_TYPEID && e.TableId == x.ReviewId).Select(x => _mapper.Map<UrlTableODTO>(x.UrlTable)).FirstOrDefault(),
                 Logo = _context.Review.Where(e => e.ReviewId == x.ReviewId && e.IsActive == true).Select(e => e.Logo).FirstOrDefault()
             }).OrderBy(x => x.CreatedDate).ToListAsync();
 
@@ -3392,9 +3392,10 @@ namespace P2P.Services
             if (Id != null)
             {
                 return await (from x in _context.NewsFeeds
+                              where (x.NewsFeedId == Id)
                               select new GetNewsFeedListODTO
                               {
-                                  Route = _context.Routes.Where(e => e.DataTypeId == REVIEW_TYPEID && e.TableId == x.ReviewId).Select(e => e.UrlTableId).FirstOrDefault(),
+                                  Route = _context.Routes.Where(e => e.DataTypeId == REVIEW_TYPEID && e.TableId == x.ReviewId).Select(x => _mapper.Map<UrlTableODTO>(x.UrlTable)).FirstOrDefault(),
                                   NewsText = x.NewsText,
                                   CreatedDate = x.CreatedDate,
                                   NewsFeedId = x.NewsFeedId,
@@ -3417,7 +3418,7 @@ namespace P2P.Services
                                   CreatedDate = x.CreatedDate,
                                   NewsFeedId = x.NewsFeedId,
                                   Name = x.Review.Name,
-                                  Route = b.UrlTableId,
+                                  Route = _mapper.Map<UrlTableODTO>(b.UrlTable),
                                   Market = x.Market,
                                   TagLine = x.TagLine,
                                   RedFlag = x.RedFlag,
