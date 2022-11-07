@@ -3447,6 +3447,8 @@ namespace P2P.Services
             newsFeeds.UrlTableId = null;
             _context.NewsFeeds.Add(newsFeeds);
             await SaveContextChangesAsync();
+            if (newsFeedIDTO.Url != null) 
+            { 
             var url = new UrlTable
             {
                 DataTypeId = NEWS_FEED_TYPEID,
@@ -3456,7 +3458,8 @@ namespace P2P.Services
             _context.UrlTables.Add(url);
             await SaveContextChangesAsync();
             newsFeeds.UrlTableId = url.UrlTableId;
-            await SaveContextChangesAsync();
+            await SaveContextChangesAsync(); 
+            }
             return await GetNewsFeedById(newsFeeds.NewsFeedId);
         }
 
