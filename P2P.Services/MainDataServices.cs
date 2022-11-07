@@ -3133,17 +3133,43 @@ namespace P2P.Services
         {
             var academy = _mapper.Map<Academy>(academyIDTO);
             academy.AcademyId = 0;
-            if (academy.LanguageId == 0)
-                academy.LanguageId = null;
-            if (academy.UrlTableId == 0)
-                academy.UrlTableId = null;
-            if (academy.SerpId == 0)
-                academy.SerpId = null;
-
+            academy.LanguageId = academy.LanguageId != 0 ? academy.LanguageId : null;
+            academy.SerpId = academy.SerpId != 0 ? academy.SerpId : null;
+            academy.UrlTableId = academy.UrlTableId != 0 ? academy.UrlTableId : null;
             academy.CreatedDate = DateTime.Now;
             academy.UpdatedDate = null;
             _context.Academies.Add(academy);
 
+            await SaveContextChangesAsync();
+
+            if (academyIDTO.Url != null)
+            {
+                var url = new UrlTable
+                {
+                    DataTypeId = ROUTES_TYPEID,
+                    URL = academyIDTO.Url
+                };
+                _context.UrlTables.Add(url);
+                await SaveContextChangesAsync();
+
+                academy.UrlTableId = url.UrlTableId;
+                await SaveContextChangesAsync();
+
+                url.TableId = academy.AcademyId;
+
+                await SaveContextChangesAsync();
+            }
+            var serp = new Serp
+            {
+                DataTypeId = ACADEMY_TYPEID,
+                SerpTitle = academyIDTO.SerpTitle,
+                SerpDescription = academyIDTO.SerpDescription,
+                Subtitle = academyIDTO.Subtitle
+            };
+            _context.Serps.Add(serp);
+            await SaveContextChangesAsync();
+
+            academy.SerpId = serp.SerpId;
             await SaveContextChangesAsync();
 
             return await GetAcademyById(academy.AcademyId);
@@ -3368,7 +3394,6 @@ namespace P2P.Services
 
         public async Task<List<GetNewsFeedListODTO>> GetListNewsFeedByLangId(int languageId)
         {
-            
             var newsFeed = _context.NewsFeeds.Where(x => x.LanguageId == languageId).Select(x => new GetNewsFeedListODTO
             {
                 Name = _context.Review.Where(e => e.ReviewId == x.ReviewId && e.IsActive == true).Select(x => x.Name).FirstOrDefault(),
@@ -3448,18 +3473,18 @@ namespace P2P.Services
             newsFeeds.UrlTableId = null;
             _context.NewsFeeds.Add(newsFeeds);
             await SaveContextChangesAsync();
-            if (newsFeedIDTO.Url != null) 
-            { 
-            var url = new UrlTable
+            if (newsFeedIDTO.Url != null)
             {
-                DataTypeId = NEWS_FEED_TYPEID,
-                TableId = newsFeeds.NewsFeedId,
-                URL = newsFeedIDTO.Url
-            };
-            _context.UrlTables.Add(url);
-            await SaveContextChangesAsync();
-            newsFeeds.UrlTableId = url.UrlTableId;
-            await SaveContextChangesAsync(); 
+                var url = new UrlTable
+                {
+                    DataTypeId = NEWS_FEED_TYPEID,
+                    TableId = newsFeeds.NewsFeedId,
+                    URL = newsFeedIDTO.Url
+                };
+                _context.UrlTables.Add(url);
+                await SaveContextChangesAsync();
+                newsFeeds.UrlTableId = url.UrlTableId;
+                await SaveContextChangesAsync();
             }
             return await GetNewsFeedById(newsFeeds.NewsFeedId);
         }
@@ -4625,9 +4650,7 @@ namespace P2P.Services
                     _context.Entry(item).State = EntityState.Modified;
                     await SaveContextChangesAsync();
                 }
-                
             }
-            
 
             var authorODTO = await GetAuthorById(id);
             _context.Authors.Remove(author);
