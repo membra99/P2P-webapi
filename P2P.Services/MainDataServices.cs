@@ -4679,10 +4679,7 @@ namespace P2P.Services
         public async Task<ImagesInfoODTO> EditImageInfo(ImagesInfoIDTO imagesInfoIDTO)
         {
             var imageInfo = _mapper.Map<ImagesInfo>(imagesInfoIDTO);
-
-            var u = await _context.UrlTables.Where(x => x.URL == imagesInfoIDTO.Aws).Select(x => x.UrlTableId).FirstOrDefaultAsync();
-            if (u == null)
-            {
+            
                 var url = new UrlTable
                 {
                     DataTypeId = IMAGE_INFO_TYPEID,
@@ -4698,11 +4695,7 @@ namespace P2P.Services
                 await SaveContextChangesAsync();
                 url.TableId = imageInfo.ImageId;
                 await SaveContextChangesAsync();
-            }
-            imageInfo.AwsUrl = u;
-            _context.Entry(imageInfo).State = EntityState.Modified;
-
-            await SaveContextChangesAsync();
+            
             return await GetImageInfo(imageInfo.ImageId).FirstOrDefaultAsync();
         }
 
@@ -4731,19 +4724,17 @@ namespace P2P.Services
         {
             var imageInfo = await _context.ImagesInfos.FindAsync(id);
             if (imageInfo == null) return null;
-
-            imageInfo.AwsUrl = null;
-            await SaveContextChangesAsync();
-            var url = await _context.UrlTables.Where(x => x.UrlTableId == imageInfo.AwsUrl).ToListAsync();
-            foreach (var item in url)
-            {
-                _context.UrlTables.Remove(item);
-                await SaveContextChangesAsync();
-            }
-
             ImagesInfoODTO imageInfoODTO = GetImageInfo(id).FirstOrDefault();
             _context.ImagesInfos.Remove(imageInfo);
             await SaveContextChangesAsync();
+
+            var url = await _context.UrlTables.Where(x => x.UrlTableId == imageInfo.AwsUrl).ToListAsync();
+            foreach (var item in url)
+            {
+                imageInfo.AwsUrl = null;
+                _context.UrlTables.Remove(item);
+                await SaveContextChangesAsync();
+            }
             return imageInfoODTO;
         }
 
