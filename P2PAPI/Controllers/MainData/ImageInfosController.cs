@@ -80,7 +80,7 @@ namespace P2P.WebApi.Controllers.MainData
             }
         }
 
-        [HttpDelete("DeleteImages")]
+        [HttpDelete("DeleteImagesByAWSUrl")]
         public async Task<ActionResult<IEnumerable<ImagesInfoODTO>>> DeleteImageInfo(List<ImagesInfoIDTO> imagesInfoIDTO)
         {
             try
