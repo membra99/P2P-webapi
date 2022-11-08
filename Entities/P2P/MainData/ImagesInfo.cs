@@ -18,6 +18,7 @@ namespace Entities.P2P.MainData
 
         public string Caption { get; set; }
         public int? AwsUrl { get; set; }
+        public int? Size { get; set; }
         public UrlTable UrlTable { get; set; }
     }
 }

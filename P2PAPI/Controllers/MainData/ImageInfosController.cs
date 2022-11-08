@@ -7,6 +7,8 @@ using P2P.Services;
 using System.Threading.Tasks;
 using System;
 using RTools_NTS.Util;
+using System.Collections;
+using System.Collections.Generic;
 
 namespace P2P.WebApi.Controllers.MainData
 {
@@ -69,6 +71,21 @@ namespace P2P.WebApi.Controllers.MainData
             try
             {
                 var image = await _mainDataServices.DeleteImageInfo(id);
+                if (image == null) return NotFound();
+                return image;
+            }
+            catch (Exception e)
+            {
+                throw new Exception(e.Message);
+            }
+        }
+
+        [HttpDelete("DeleteImages")]
+        public async Task<ActionResult<IEnumerable<ImagesInfoODTO>>> DeleteImageInfo(List<ImagesInfoIDTO> imagesInfoIDTO)
+        {
+            try
+            {
+                var image = await _mainDataServices.DeleteImagesInfo(imagesInfoIDTO);
                 if (image == null) return NotFound();
                 return image;
             }

@@ -12,6 +12,7 @@ namespace P2P.DTO.Input
         public int ImageId { get; set; }
         public string AltText { get; set; }
         public string Caption { get; set; }
+        public int? Size { get; set; }
         public string Aws { get; set; }
     }
 }
