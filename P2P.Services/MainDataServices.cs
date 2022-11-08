@@ -3887,7 +3887,7 @@ namespace P2P.Services
             await SaveContextChangesAsync();
             if (homeSettingsIDTO.SettingsAttributes != null)
             {
-                var settAtr = new SettingsAttribute();
+                SettingsAttribute settAtr = new SettingsAttribute();
                 foreach (var item in homeSettingsIDTO.SettingsAttributes)
                 {
                     settAtr = new SettingsAttribute
@@ -3899,8 +3899,21 @@ namespace P2P.Services
                         Index = item.Index,
                         UrlTableId = null,
                     };
-                    _context.Entry(settAtr).State = EntityState.Modified;
-                    await SaveContextChangesAsync();
+                    var settAtrReal = await _context.SettingsAttributes.Where(x => x.DataTypeId == item.DataTypeId && x.SettingsDataTypeId == item.SettingsDataTypeId
+                    && x.LanguageId == item.LanguageId && x.Value == item.Value && x.Index == item.Index && x.UrlTableId == item.UrlTableId).SingleOrDefaultAsync();
+
+                    if(settAtrReal == null)
+                    {
+                        _context.SettingsAttributes.Add(settAtr);
+                        await SaveContextChangesAsync();
+                    }
+                    else
+                    {
+                        _context.Entry(settAtr).State = EntityState.Modified;
+                        await SaveContextChangesAsync();
+                    }
+                    
+                    
                 }
             }
 
