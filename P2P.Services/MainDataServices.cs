@@ -75,36 +75,35 @@ namespace P2P.Services
 
         private async Task<List<ReviewContentDropdownODTO>> ListOfReviews()
         {
-            return _context.Review.Where(x => x.IsActive == true).Select(r => new ReviewContentDropdownODTO
+            return await _context.Review.Where(x => x.IsActive == true).Select(r => new ReviewContentDropdownODTO
             {
                 Value = r.ReviewId,
                 Label = r.Name,
                 Rating = r.RatingCalculated
-            }).OrderByDescending(e => e.Rating).ToList();
+            }).OrderByDescending(e => e.Rating).ToListAsync();
         }
 
         #endregion GlobalFunctions & Statics
 
         #region Testimonial
 
-        private IQueryable<TestimonialODTO> GetTestimonial(int id, string fullName, int langId)
+        private IQueryable<TestimonialODTO> GetTestimonial(int id, int langId)
         {
             return from x in _context.Testimonials
                    .Include(x => x.Language)
                    where (id == 0 || x.TestimonialId == id)
                    && (langId == 0 || x.LanguageId == langId)
-                   && (string.IsNullOrEmpty(fullName) || x.FullName.StartsWith(fullName))
                    select _mapper.Map<TestimonialODTO>(x);
         }
 
         public async Task<List<TestimonialODTO>> Get(int id)
         {
-            return await GetTestimonial(id, null, 0).AsNoTracking().ToListAsync();
+            return await GetTestimonial(id, 0).AsNoTracking().ToListAsync();
         }
 
         public async Task<List<TestimonialODTO>> GetTestimonialByLanguage(int langId)
         {
-            return await GetTestimonial(0, null, langId).AsNoTracking().ToListAsync();
+            return await GetTestimonial(0, langId).AsNoTracking().ToListAsync();
         }
 
         public async Task<List<TestimonialODTO>> EditTestimonial(TestimonialIDTO testimonialIDTO)
@@ -141,17 +140,17 @@ namespace P2P.Services
 
         #region Language
 
-        private IQueryable<LanguageODTO> GetLanguage(int id, string languageName)
+        private IQueryable<LanguageODTO> GetLanguage(int id/*rmv, string languageName*/)
         {
             return from x in _context.Languages
                    where (id == 0 || x.LanguageId == id)
-                   && (string.IsNullOrEmpty(languageName) || x.LanguageName.StartsWith(languageName))
+                   /*rmv && (string.IsNullOrEmpty(languageName) || x.LanguageName.StartsWith(languageName))*/
                    select _mapper.Map<LanguageODTO>(x);
         }
 
         public async Task<LanguageODTO> GetLanguageById(int id)
         {
-            return await GetLanguage(id, null).AsNoTracking().SingleOrDefaultAsync();
+            return await GetLanguage(id/*rmv, null*/).AsNoTracking().SingleOrDefaultAsync();
         }
 
         public async Task<LanguageODTO> EditLanguage(LanguageIDTO languageIDTO)
@@ -191,22 +190,21 @@ namespace P2P.Services
 
         #region DataType
 
-        private IQueryable<DataTypeODTO> GetDataType(int id, string dataTypeName)
+        private IQueryable<DataTypeODTO> GetDataType(int id)
         {
             return from x in _context.DataTypes
                    where (id == 0 || x.DataTypeId == id)
-                   && (string.IsNullOrEmpty(dataTypeName) || x.DataTypeName.StartsWith(dataTypeName))
                    select _mapper.Map<DataTypeODTO>(x);
         }
 
         public async Task<DataTypeODTO> GetDataTypeById(int id)
         {
-            return await GetDataType(id, null).AsNoTracking().SingleOrDefaultAsync();
+            return await GetDataType(id).AsNoTracking().SingleOrDefaultAsync();
         }
 
         public async Task<List<DataTypeODTO>> GetAllDataTypes()
         {
-            return await GetDataType(0, null).AsNoTracking().ToListAsync();
+            return await GetDataType(0).AsNoTracking().ToListAsync();
         }
 
         public async Task<DataTypeODTO> EditDataType(DataTypeIDTO dataTypeIDTO)
@@ -248,19 +246,18 @@ namespace P2P.Services
 
         #region NavigationSettings
 
-        private IQueryable<NavigationSettingsODTO> GetNavigationSettings(int id, int langId)
+        private IQueryable<NavigationSettingsODTO> GetNavigationSettings(int id)
         {
             return from x in _context.NavigationSettings
                    .Include(x => x.Language)
                    .Include(x => x.HomeRouteLink)
                    where (id == 0 || x.NavigationSettingsId == id)
-                   && (langId == 0 || x.LanguageId == langId)
                    select _mapper.Map<NavigationSettingsODTO>(x);
         }
 
         public async Task<NavigationSettingsODTO> GetNavigationSettingsById(int id)
         {
-            return await GetNavigationSettings(id, 0).FirstOrDefaultAsync();
+            return await GetNavigationSettings(id).FirstOrDefaultAsync();
         }
 
         public async Task<List<NavigationSettingsByLanguageODTO>> GetNavigationSettingsByLangId(int langId)
@@ -323,8 +320,37 @@ namespace P2P.Services
 
             await SaveContextChangesAsync();
             var settAttr = new SettingsAttribute();
+            var urlNames = new string[] { "AcademyRouteUrl", "NewsRouteUrl", "ReviewsRouteUrl", "BonusRouteUrl", "HomeRouteUrl" };
+            var propNames = new string[] { "AcademyRoute", "NewsRoute", "ReviewsRoute", "BonusRoute", "HomeRoute" };
+            for (int i = 0; i < urlNames.Length; i++)
+            {
+                if (navigationSettingsIDTO.GetType().GetProperty(urlNames[i])?.GetValue(navigationSettingsIDTO, null) != null) {
 
-            if (navigationSettingsIDTO.AcademyRouteUrl != null)
+                    var urlid = await _context.UrlTables.Where(x => x.URL.ToLower() == navigationSettingsIDTO.GetType().GetProperty(urlNames[i]).GetValue(navigationSettingsIDTO, null).ToString().ToLower() && x.DataTypeId == NAVIGATION_SETTINGS_TYPEID).Select(x => x.UrlTableId).FirstOrDefaultAsync();
+
+                    if (urlid != 0)
+                    {
+                        navigationSettingsIDTO.GetType().GetProperty(propNames[i]).SetValue(navigationSettingsIDTO, urlid);
+                        _context.Entry(navigationSettings).State = EntityState.Modified;
+                        await _context.SaveChangesAsync();
+                    }
+                    else
+                    {
+                        var url = new UrlTable
+                        {
+                            DataTypeId = NAVIGATION_SETTINGS_TYPEID,
+                            URL = navigationSettingsIDTO.GetType().GetProperty(urlNames[i]).GetValue(navigationSettingsIDTO, null).ToString(),
+                            TableId = navigationSettings.NavigationSettingsId,
+                        };
+                        _context.UrlTables.Add(url);
+                        await _context.SaveChangesAsync();
+
+                        navigationSettings.GetType().GetProperty(propNames[i]).SetValue(navigationSettings, url.UrlTableId);
+                       await _context.SaveChangesAsync();
+                    }
+                }
+            }
+            /*Old Code if (navigationSettingsIDTO.AcademyRouteUrl != null)
             {
                 var urlid = await _context.UrlTables.Where(x => x.URL.ToLower() == navigationSettingsIDTO.AcademyRouteUrl.ToLower() && x.DataTypeId == NAVIGATION_SETTINGS_TYPEID).Select(x => x.UrlTableId).FirstOrDefaultAsync();
 
@@ -448,7 +474,8 @@ namespace P2P.Services
                     navigationSettings.HomeRoute = url.UrlTableId;
                     await _context.SaveChangesAsync();
                 }
-            }
+            }*/
+
             if (navigationSettingsIDTO.SettingsAttributes != null)
             {
                 foreach (var item in navigationSettingsIDTO.SettingsAttributes)
@@ -562,18 +589,17 @@ namespace P2P.Services
 
         #region FooterSettings
 
-        private IQueryable<FooterSettings> GetFooterSettings(int id, int langId)
+        private IQueryable<FooterSettings> GetFooterSettings(int id)
         {
             return from x in _context.FooterSettings
                    .Include(x => x.Language)
-                   where (id == 0 || x.FooterSettingsId == id)
-                   && (langId == 0 || x.LanguageId == langId)
+                   where (id == 0 || x.FooterSettingsId == id)                
                    select x;
         }
 
         public async Task<FooterSettingsODTO> GetFooterSettingsById(int id)
         {
-            return await _mapper.ProjectTo<FooterSettingsODTO>(GetFooterSettings(id, 0)).AsNoTracking().SingleOrDefaultAsync();
+            return await _mapper.ProjectTo<FooterSettingsODTO>(GetFooterSettings(id)).AsNoTracking().SingleOrDefaultAsync();
         }
 
         public async Task<List<FooterSettingsODTO>> GetFooterSettingsByLangId(int langId)
@@ -648,7 +674,40 @@ namespace P2P.Services
             _context.Entry(footerSettings).State = EntityState.Modified;
             await SaveContextChangesAsync();
 
-            if (footerSettingsIDTO.FacebookLinkUrl != null)
+            var settAttr = new SettingsAttribute();
+            var urlNames = new string[] { "FacebookLinkUrl", "TwitterLinkUrl", "LinkedInLinkUrl", "YoutubeLinkUrl", "PodcastLinkUrl" };
+            var propNames = new string[] { "FacebookLink", "TwitterLink", "LinkedInLink", "YoutubeLink", "PodcastLink" };
+
+            for (int i = 0; i < urlNames.Length; i++)
+            {
+                if (footerSettingsIDTO.GetType().GetProperty(urlNames[i])?.GetValue(footerSettingsIDTO, null) != null)
+                {
+
+                    var urlid = await _context.UrlTables.Where(x => x.URL.ToLower() == footerSettingsIDTO.GetType().GetProperty(urlNames[i]).GetValue(footerSettingsIDTO, null).ToString().ToLower() && x.DataTypeId == FOOTER_SETTINGS_TYPEID).Select(x => x.UrlTableId).FirstOrDefaultAsync();
+
+                    if (urlid != 0)
+                    {
+                        footerSettingsIDTO.GetType().GetProperty(propNames[i]).SetValue(footerSettingsIDTO, urlid);
+                        _context.Entry(footerSettings).State = EntityState.Modified;
+                        //await _context.SaveChangesAsync();
+                    }
+                    else
+                    {
+                        var url = new UrlTable
+                        {
+                            DataTypeId = FOOTER_SETTINGS_TYPEID,
+                            URL = footerSettingsIDTO.GetType().GetProperty(urlNames[i]).GetValue(footerSettingsIDTO, null).ToString(),
+                            TableId = footerSettings.FooterSettingsId,
+                        };
+                        _context.UrlTables.Add(url);
+                        await _context.SaveChangesAsync();
+
+                        footerSettings.GetType().GetProperty(propNames[i]).SetValue(footerSettings, url.UrlTableId);
+                        await _context.SaveChangesAsync();
+                    }
+                }
+            }
+            /*Old Code if (footerSettingsIDTO.FacebookLinkUrl != null)
             {
                 var urlid = await _context.UrlTables.Where(x => x.URL.ToLower() == footerSettingsIDTO.FacebookLinkUrl.ToLower() && x.DataTypeId == FOOTER_SETTINGS_TYPEID).Select(x => x.UrlTableId).FirstOrDefaultAsync();
 
@@ -748,7 +807,6 @@ namespace P2P.Services
                     await _context.SaveChangesAsync();
                 }
             }
-
             if (footerSettingsIDTO.PodcastLinkUrl != null)
             {
                 var urlid = await _context.UrlTables.Where(x => x.URL.ToLower() == footerSettingsIDTO.PodcastLinkUrl.ToLower() && x.DataTypeId == FOOTER_SETTINGS_TYPEID).Select(x => x.UrlTableId).FirstOrDefaultAsync();
@@ -773,9 +831,8 @@ namespace P2P.Services
                     footerSettings.PodcastLink = url.UrlTableId;
                     await _context.SaveChangesAsync();
                 }
-            }
+            }*/
 
-            var settAttr = new SettingsAttribute();
             if (footerSettingsIDTO.SettingsAttributes != null)
             {
                 foreach (var item in footerSettingsIDTO.SettingsAttributes)
@@ -1168,7 +1225,6 @@ namespace P2P.Services
                         LanguageId = x.LanguageId,
                         LanguageName = x.Language.LanguageName
                     }).ToListAsync();
-                    break;
 
                 case ACADEMY_TYPEID:
                     return await _context.Academies.Where(x => x.LanguageId == langId).Select(x =>
@@ -1179,7 +1235,6 @@ namespace P2P.Services
                        LanguageId = (int)x.LanguageId,
                        LanguageName = x.Language.LanguageName
                    }).ToListAsync();
-                    break;
 
                 case LINKS_TYPEID:
                     return await _context.Links.Where(x => x.LanguageId == langId).Select(x =>
@@ -1190,7 +1245,6 @@ namespace P2P.Services
                         LanguageId = x.LanguageId,
                         LanguageName = x.Language.LanguageName
                     }).ToListAsync();
-                    break;
 
                 case NEWS_FEED_TYPEID:
                     return await _context.NewsFeeds.Where(x => x.LanguageId == langId).Select(x =>
@@ -1201,7 +1255,6 @@ namespace P2P.Services
                         LanguageId = x.LanguageId,
                         LanguageName = x.Language.LanguageName
                     }).ToListAsync();
-                    break;
 
                 case ROUTES_TYPEID:
                     return await _context.Routes.Where(x => x.LanguageId == langId).Select(x =>
@@ -1212,7 +1265,6 @@ namespace P2P.Services
                         LanguageId = x.LanguageId,
                         LanguageName = x.Language.LanguageName
                     }).ToListAsync();
-                    break;
 
                 case HOME_SETTINGS_TYPEID:
                     return await _context.HomeSettings.Where(x => x.LanguageId == langId).Select(x =>
@@ -1223,7 +1275,6 @@ namespace P2P.Services
                        LanguageId = (int)x.LanguageId,
                        LanguageName = x.Language.LanguageName
                    }).ToListAsync();
-                    break;
 
                 default: return null;
             }
@@ -1547,7 +1598,6 @@ namespace P2P.Services
                 if (cashBack.Exclusive != null)
                 {
                     cashBack.Valid_Until = null;
-                    cashBack.Valid_Until = null;
                 }
             }
             cashBack.CashBackId = 0;
@@ -1815,7 +1865,6 @@ namespace P2P.Services
                     if (bonusSett != null)
                     {
                         bonusSett.SerpId = serp.SerpId;
-                        await SaveContextChangesAsync();
                     }
                     break;
 
@@ -1840,19 +1889,18 @@ namespace P2P.Services
 
         #region FaqTitle
 
-        private IQueryable<FaqTitleODTO> GetFaqTitle(int id, int pageId)
+        private IQueryable<FaqTitleODTO> GetFaqTitle(int id)
         {
             return from x in _context.FaqTitles
                    .Include(x => x.Page)
                    .Include(x => x.Blog)
                    where (id == 0 || x.FaqTitleId == id)
-                   && (pageId == 0 || x.PageId == pageId)
                    select _mapper.Map<FaqTitleODTO>(x);
         }
 
         public async Task<FaqTitleODTO> GetFaqTitleById(int id)
         {
-            return await GetFaqTitle(id, 0).AsNoTracking().FirstOrDefaultAsync();
+            return await GetFaqTitle(id).AsNoTracking().FirstOrDefaultAsync();
         }
 
         public async Task<List<GetFaqTitleByReviewIdODTO>> GetFaqTitleByReviewId(int reviewId)
@@ -2074,12 +2122,8 @@ namespace P2P.Services
 
         public async Task<List<GetPageListODTO>> GetList(int langId)
         {
-            try
-            {
-                var pages = new List<GetPageListODTO>();
-
-                pages = await (from x in _context.Pages
-                               .Include(x => x.DataType)
+            var pages = await (from x in _context.Pages
+                            .Include(x => x.DataType)
                                where x.LanguageId == langId
                                select new GetPageListODTO
                                {
@@ -2089,51 +2133,40 @@ namespace P2P.Services
                                    DataTypeName = x.DataType.DataTypeName
                                }).OrderByDescending(x => x.PageId).ToListAsync();
 
-                return pages;
-            }
-            catch (Exception ex)
-            {
-                throw new Exception();
-            }
+            return pages;
         }
 
         public async Task<GetItemContentODTO> GetItemContent(int? id, int urlId, int langId)
         {
-            try
+            if (id != null)
             {
-                if (id != null)
+                var page = _context.Pages.FirstOrDefault(e => e.PageId == id);
+
+                var retVal = new GetItemContentODTO
                 {
-                    var page = _context.Pages.FirstOrDefault(e => e.PageId == id);
+                    PageId = page.PageId,
+                    Content = page.Content,
+                };
 
-                    var retVal = new GetItemContentODTO
-                    {
-                        PageId = page.PageId,
-                        Content = page.Content,
-                    };
-
-                    return retVal;
-                }
-                else
-                {
-                    var route = await (from x in _context.Routes
-                                       where x.LanguageId == langId
-                                       && x.UrlTableId == urlId
-                                       select x).FirstOrDefaultAsync();
-
-                    if (route.TableId == null) throw new Exception("No data available.");
-                    var pd = await _context.Pages.Where(e => e.ReviewId == route.TableId && route.DataTypeId == REVIEW_TYPEID).FirstOrDefaultAsync();
-                    var retVal = new GetItemContentODTO
-                    {
-                        PageId = pd.PageId,
-                        Content = pd.Content,
-                    };
-                    return retVal;
-                }
+                return retVal;
             }
-            catch (Exception ex)
+            else
             {
-                throw new Exception(ex.Message);
+                var route = await (from x in _context.Routes
+                                   where x.LanguageId == langId
+                                   && x.UrlTableId == urlId
+                                   select x).FirstOrDefaultAsync();
+
+                if (route.TableId == 0) throw new Exception("No data available.");
+                var pd = await _context.Pages.Where(e => e.ReviewId == route.TableId && route.DataTypeId == REVIEW_TYPEID).FirstOrDefaultAsync();
+                var retVal = new GetItemContentODTO
+                {
+                    PageId = pd.PageId,
+                    Content = pd.Content,
+                };
+                return retVal;
             }
+
         }
 
         //TODO /Pages/GetPageContent
@@ -2143,6 +2176,7 @@ namespace P2P.Services
             var tableId = await _context.Routes.Where(x => x.LanguageId == langId && x.UrlTableId == urlId && x.DataTypeId == dataTypeId).Select(x => x.TableId).FirstOrDefaultAsync();
             var url = await _context.Routes.Include(x => x.UrlTable).Where(x => x.LanguageId == langId && x.UrlTableId == urlId && x.DataTypeId == dataTypeId).Select(x => x.UrlTable.URL).FirstOrDefaultAsync();
 
+            //TODO Prosiriti za ostale jezike
             if (langId == 1)
             {
                 if (url != "en")
@@ -2156,7 +2190,7 @@ namespace P2P.Services
 
             var academy = await _context.Academies.Include(x => x.UrlTable).Where(x => x.UrlTable.URL == url).FirstOrDefaultAsync();
 
-            if (urlId == null) return null;
+            if (urlId == 0) return null;
             var page = new PageContentODTO();
             var rData = new GetCampaignBonusODTO();
 
@@ -2165,13 +2199,13 @@ namespace P2P.Services
                 case REVIEW_TYPEID:
                     var review = await _context.Review.Include(x => x.Serp).Where(x => x.ReviewId == tableId && dataTypeId == REVIEW_TYPEID && x.IsActive == true).FirstOrDefaultAsync();
                     if (review == null) return null;
-                    if (review.ReviewId != null)
+                    if (review.ReviewId != 0)
                     {
                         rData = await GetReviewBoxInfo((int)review.ReviewId);
                     }
                     page = new PageContentODTO
                     {
-                        ReviewData = review.ReviewId != null ? rData : null,
+                        ReviewData = review.ReviewId != 0 ? rData : null,
                         SerpId = (int)review.SerpId,
                         SerpDescription = review.Serp.SerpDescription,
                         SerpTitle = review.Serp.SerpTitle,
@@ -2677,8 +2711,6 @@ namespace P2P.Services
 
         public async Task<ReviewODTO> EditReview(ReviewIDTO reviewIDTO)
         {
-            try
-            {
                 var review = _mapper.Map<Review>(reviewIDTO);
                 if (reviewIDTO.LanguageId != ENG_LANG)
                 {
@@ -2751,17 +2783,10 @@ namespace P2P.Services
                     return await GetReviewById(review.ReviewId);
                 }
                 return null;
-            }
-            catch (Exception ex)
-            {
-                throw new Exception();
-            }
         }
 
         public async Task<List<ReviewODTO>> EditParentReview(ReviewIDTO reviewIDTO)
         {
-            try
-            {
                 var review = _mapper.Map<Review>(reviewIDTO);
                 if (reviewIDTO.LanguageId == ENG_LANG)
                 {
@@ -2919,11 +2944,7 @@ namespace P2P.Services
                     return ParentChild;
                 }
                 return null;
-            }
-            catch (Exception ex)
-            {
-                throw new Exception();
-            }
+
         }
 
         public async Task<ReviewODTO> AddReview(ReviewIDTO reviewIDTO)
@@ -3103,11 +3124,11 @@ namespace P2P.Services
 
         public async Task<List<PopularArticlesODTO>> GetAcademyValueByLangId(int langId)
         {
-            var popularArticles = _context.Academies.Where(x => x.LanguageId == langId).Select(e => new PopularArticlesODTO
+            var popularArticles = await _context.Academies.Where(x => x.LanguageId == langId).Select(e => new PopularArticlesODTO
             {
                 Value = e.AcademyId,
                 Label = e.Title
-            }).ToList();
+            }).ToListAsync();
             return popularArticles;
         }
 
@@ -3389,7 +3410,7 @@ namespace P2P.Services
 
         public async Task<List<GetNewsFeedListODTO>> GetAllNews(int Id)
         {
-            if (Id != null)
+            if (Id != 0)
             {
                 return await (from x in _context.NewsFeeds
                               where (x.NewsFeedId == Id)
@@ -3819,8 +3840,6 @@ namespace P2P.Services
 
         public async Task<HomeSettingsODTO> AddHomeSettings(HomeSettingsIDTO homeSettingsIDTO)
         {
-            try
-            {
                 var homeSettings = _mapper.Map<HomeSettings>(homeSettingsIDTO);
                 homeSettings.HomeSettingsId = 0;
                 homeSettings.SerpId = homeSettings.SerpId != 0 ? homeSettings.SerpId : null;
@@ -3861,11 +3880,7 @@ namespace P2P.Services
                 }
 
                 return await GetHomeSettingsById(homeSettings.HomeSettingsId);
-            }
-            catch (Exception ex)
-            {
-                throw new Exception();
-            }
+
         }
 
         public async Task<HomeSettingsODTO> DeleteHomeSettings(int id)
@@ -3992,14 +4007,7 @@ namespace P2P.Services
 
         public async Task<SettingsAttributeODTO> GetSettingsAttributeById(int id)
         {
-            try
-            {
                 return await _mapper.ProjectTo<SettingsAttributeODTO>(GetSettingsAttribute(id, 0, 0)).AsNoTracking().SingleOrDefaultAsync();
-            }
-            catch (Exception ex)
-            {
-                throw new Exception();
-            }
         }
 
         public async Task<List<SettingsAttributeODTO>> GetSettingsAttributeByLangId(int langId)
@@ -4049,8 +4057,6 @@ namespace P2P.Services
 
         public async Task<List<SettingsAttributeODTO>> AddSettingsAttribute(List<SettingsAttributeIDTO> settingsAttributeIDTO)
         {
-            try
-            {
                 var settingsAttribute = settingsAttributeIDTO.Select(x => _mapper.Map<SettingsAttribute>(x)).ToList();
 
                 foreach (var settAttr in settingsAttribute)
@@ -4083,11 +4089,7 @@ namespace P2P.Services
                 }
 
                 return settingsAttribute.Select(x => _mapper.Map<SettingsAttributeODTO>(x)).ToList();
-            }
-            catch (Exception ex)
-            {
-                throw new Exception();
-            }
+
         }
 
         public async Task<SettingsAttributeODTO> DeleteSettingsAttribute(int id)
@@ -4239,9 +4241,8 @@ namespace P2P.Services
 
         public async Task<GetItemContentODTO> GetBlogItemContent(int? id)
         {
-            try
-            {
-                var page = _context.Blogs.FirstOrDefault(e => e.BlogId == id);
+
+                var page = await _context.Blogs.FirstOrDefaultAsync(e => e.BlogId == id);
 
                 var retVal = new GetItemContentODTO
                 {
@@ -4250,11 +4251,6 @@ namespace P2P.Services
                 };
 
                 return retVal;
-            }
-            catch (Exception ex)
-            {
-                throw new Exception(ex.Message);
-            }
         }
 
         public async Task<BlogODTO> EditBlog(BlogIDTO blogIDTO)
@@ -4655,7 +4651,7 @@ namespace P2P.Services
             var imageInfo = _mapper.Map<ImagesInfo>(imagesInfoIDTO);
 
             var u = await _context.UrlTables.Where(x => x.URL == imagesInfoIDTO.Aws).Select(x => x.UrlTableId).FirstOrDefaultAsync();
-            if (u == null)
+            if (u == 0)
             {
                 var url = new UrlTable
                 {
