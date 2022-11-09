@@ -3727,17 +3727,28 @@ namespace P2P.Services
             {
                 if (homeSettingsIDTO.GetType().GetProperty(urlNames[i])?.GetValue(homeSettingsIDTO, null) != null)
                 {
-                    var url = new UrlTable
-                    {
-                        DataTypeId = HOME_SETTINGS_TYPEID,
-                        URL = homeSettingsIDTO.GetType().GetProperty(urlNames[i]).GetValue(homeSettingsIDTO, null).ToString(),
-                        TableId = homeSettings.HomeSettingsId,
-                    };
-                    _context.UrlTables.Add(url);
-                    await _context.SaveChangesAsync();
+                    var urlid = await _context.UrlTables.Where(x => x.URL.ToLower() == homeSettingsIDTO.GetType().GetProperty(urlNames[i]).GetValue(homeSettingsIDTO, null).ToString().ToLower() && x.DataTypeId == HOME_SETTINGS_TYPEID).Select(x => x.UrlTableId).FirstOrDefaultAsync();
 
-                    homeSettings.GetType().GetProperty(propNames[i]).SetValue(homeSettings, url.UrlTableId);
-                    await _context.SaveChangesAsync();
+                    if (urlid != 0)
+                    {
+                        homeSettingsIDTO.GetType().GetProperty(propNames[i]).SetValue(homeSettingsIDTO, urlid);
+                        _context.Entry(homeSettings).State = EntityState.Modified;
+                        await _context.SaveChangesAsync();
+                    }
+                    else
+                    {
+                        var url = new UrlTable
+                        {
+                            DataTypeId = HOME_SETTINGS_TYPEID,
+                            URL = homeSettingsIDTO.GetType().GetProperty(urlNames[i]).GetValue(homeSettingsIDTO, null).ToString(),
+                            TableId = homeSettings.HomeSettingsId,
+                        };
+                        _context.UrlTables.Add(url);
+                        await _context.SaveChangesAsync();
+
+                        homeSettings.GetType().GetProperty(propNames[i]).SetValue(homeSettings, url.UrlTableId);
+                        await _context.SaveChangesAsync();
+                    }
                 }
             }
 
