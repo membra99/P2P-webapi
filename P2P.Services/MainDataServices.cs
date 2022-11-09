@@ -3720,103 +3720,23 @@ namespace P2P.Services
             homeSettings.SerpId = serp.SerpId;
             await SaveContextChangesAsync();
 
-            if (homeSettingsIDTO.AcademyUrlLink != null)
-            {
-                var urlid = await _context.UrlTables.Where(x => x.URL.ToLower() == homeSettingsIDTO.AcademyUrlLink.ToLower() && x.DataTypeId == HOME_SETTINGS_TYPEID).Select(x => x.UrlTableId).FirstOrDefaultAsync();
+            var propNames = new string[] { "AcademyUrl", "BonusUrl", "NewsUrl", "ReviewUrl" };
+            var urlNames = new string[] { "AcademyUrlLink", "BonusUrlLink", "NewsUrlLink", "ReviewUrlLink" };
 
-                if (urlid != 0)
-                {
-                    homeSettings.AcademyUrl = urlid;
-                    _context.Entry(homeSettings).State = EntityState.Modified;
-                    await _context.SaveChangesAsync();
-                }
-                else
+            for (int i = 0; i < urlNames.Length; i++)
+            {
+                if (homeSettingsIDTO.GetType().GetProperty(urlNames[i])?.GetValue(homeSettingsIDTO, null) != null)
                 {
                     var url = new UrlTable
                     {
                         DataTypeId = HOME_SETTINGS_TYPEID,
-                        URL = homeSettingsIDTO.AcademyUrlLink,
+                        URL = homeSettingsIDTO.GetType().GetProperty(urlNames[i]).GetValue(homeSettingsIDTO, null).ToString(),
                         TableId = homeSettings.HomeSettingsId,
                     };
                     _context.UrlTables.Add(url);
                     await _context.SaveChangesAsync();
 
-                    homeSettings.AcademyUrl = url.UrlTableId;
-                    await _context.SaveChangesAsync();
-                }
-            }
-            if (homeSettingsIDTO.NewsUrlLink != null)
-            {
-                var urlid = await _context.UrlTables.Where(x => x.URL.ToLower() == homeSettingsIDTO.NewsUrlLink.ToLower() && x.DataTypeId == HOME_SETTINGS_TYPEID).Select(x => x.UrlTableId).FirstOrDefaultAsync();
-
-                if (urlid != 0)
-                {
-                    homeSettings.NewsUrl = urlid;
-                    _context.Entry(homeSettings).State = EntityState.Modified;
-                    await _context.SaveChangesAsync();
-                }
-                else
-                {
-                    var url = new UrlTable
-                    {
-                        DataTypeId = HOME_SETTINGS_TYPEID,
-                        URL = homeSettingsIDTO.NewsUrlLink,
-                        TableId = homeSettings.HomeSettingsId,
-                    };
-                    _context.UrlTables.Add(url);
-                    await _context.SaveChangesAsync();
-
-                    homeSettings.NewsUrl = url.UrlTableId;
-                    await _context.SaveChangesAsync();
-                }
-            }
-            if (homeSettingsIDTO.BonusUrlLink != null)
-            {
-                var urlid = await _context.UrlTables.Where(x => x.URL.ToLower() == homeSettingsIDTO.BonusUrlLink.ToLower() && x.DataTypeId == HOME_SETTINGS_TYPEID).Select(x => x.UrlTableId).FirstOrDefaultAsync();
-
-                if (urlid != 0)
-                {
-                    homeSettings.BonusUrl = urlid;
-                    _context.Entry(homeSettings).State = EntityState.Modified;
-                    await _context.SaveChangesAsync();
-                }
-                else
-                {
-                    var url = new UrlTable
-                    {
-                        DataTypeId = HOME_SETTINGS_TYPEID,
-                        URL = homeSettingsIDTO.BonusUrlLink,
-                        TableId = homeSettings.HomeSettingsId,
-                    };
-                    _context.UrlTables.Add(url);
-                    await _context.SaveChangesAsync();
-
-                    homeSettings.BonusUrl = url.UrlTableId;
-                    await _context.SaveChangesAsync();
-                }
-            }
-            if (homeSettingsIDTO.ReviewUrlLink != null)
-            {
-                var urlid = await _context.UrlTables.Where(x => x.URL.ToLower() == homeSettingsIDTO.ReviewUrlLink.ToLower() && x.DataTypeId == HOME_SETTINGS_TYPEID).Select(x => x.UrlTableId).FirstOrDefaultAsync();
-
-                if (urlid != 0)
-                {
-                    homeSettings.ReviewUrl = urlid;
-                    _context.Entry(homeSettings).State = EntityState.Modified;
-                    await _context.SaveChangesAsync();
-                }
-                else
-                {
-                    var url = new UrlTable
-                    {
-                        DataTypeId = HOME_SETTINGS_TYPEID,
-                        URL = homeSettingsIDTO.ReviewUrlLink,
-                        TableId = homeSettings.HomeSettingsId,
-                    };
-                    _context.UrlTables.Add(url);
-                    await _context.SaveChangesAsync();
-
-                    homeSettings.ReviewUrl = url.UrlTableId;
+                    homeSettings.GetType().GetProperty(propNames[i]).SetValue(homeSettings, url.UrlTableId);
                     await _context.SaveChangesAsync();
                 }
             }
@@ -3907,28 +3827,17 @@ namespace P2P.Services
             {
                 if (homeSettingsIDTO.GetType().GetProperty(urlNames[i])?.GetValue(homeSettingsIDTO, null) != null)
                 {
-                    var urlid = await _context.UrlTables.Where(x => x.URL.ToLower() == homeSettingsIDTO.GetType().GetProperty(urlNames[i]).GetValue(homeSettingsIDTO, null).ToString().ToLower() && x.DataTypeId == HOME_SETTINGS_TYPEID).Select(x => x.UrlTableId).FirstOrDefaultAsync();
-
-                    if (urlid != 0)
+                    var url = new UrlTable
                     {
-                        homeSettingsIDTO.GetType().GetProperty(propNames[i]).SetValue(homeSettingsIDTO, urlid);
-                        _context.Entry(homeSettingsIDTO).State = EntityState.Modified;
-                        //await _context.SaveChangesAsync();
-                    }
-                    else
-                    {
-                        var url = new UrlTable
-                        {
-                            DataTypeId = FOOTER_SETTINGS_TYPEID,
-                            URL = homeSettingsIDTO.GetType().GetProperty(urlNames[i]).GetValue(homeSettingsIDTO, null).ToString(),
-                            TableId = homeSettings.HomeSettingsId,
-                        };
-                        _context.UrlTables.Add(url);
-                        await _context.SaveChangesAsync();
+                        DataTypeId = HOME_SETTINGS_TYPEID,
+                        URL = homeSettingsIDTO.GetType().GetProperty(urlNames[i]).GetValue(homeSettingsIDTO, null).ToString(),
+                        TableId = homeSettings.HomeSettingsId,
+                    };
+                    _context.UrlTables.Add(url);
+                    await _context.SaveChangesAsync();
 
-                        homeSettings.GetType().GetProperty(propNames[i]).SetValue(homeSettings, url.UrlTableId);
-                        await _context.SaveChangesAsync();
-                    }
+                    homeSettings.GetType().GetProperty(propNames[i]).SetValue(homeSettings, url.UrlTableId);
+                    await _context.SaveChangesAsync();
                 }
             }
 
@@ -3970,7 +3879,30 @@ namespace P2P.Services
             var homeSettings = await _context.HomeSettings.FindAsync(id);
             if (homeSettings == null) return null;
 
-            var homeAttr = await _context.SettingsAttributes.Where(x => x.LanguageId == homeSettings.LanguageId && x.DataTypeId == NAVIGATION_SETTINGS_TYPEID).ToListAsync();
+            var homeUrl = await _context.UrlTables.Where(x => x.TableId == homeSettings.HomeSettingsId && x.DataTypeId == HOME_SETTINGS_TYPEID).ToListAsync();
+            var homeSerp = await _context.Serps.Where(x => x.TableId == homeSettings.HomeSettingsId && x.DataTypeId == HOME_SETTINGS_TYPEID).ToListAsync();
+            var homeAttr = await _context.SettingsAttributes.Where(x => x.LanguageId == homeSettings.LanguageId && x.DataTypeId == HOME_SETTINGS_TYPEID).ToListAsync();
+
+            var homeSettingsODTO = await GetHomeSettingsById(id);
+            _context.HomeSettings.Remove(homeSettings);
+            await SaveContextChangesAsync();
+
+            if (homeUrl != null)
+            {
+                foreach (var item in homeUrl)
+                {
+                    _context.UrlTables.Remove(item);
+                    await SaveContextChangesAsync();
+                }
+            }
+            if (homeSerp != null)
+            {
+                foreach (var item in homeSerp)
+                {
+                    _context.Serps.Remove(item);
+                    await SaveContextChangesAsync();
+                }
+            }
             if (homeAttr != null)
             {
                 foreach (var item in homeAttr)
@@ -3986,9 +3918,6 @@ namespace P2P.Services
                 }
             }
 
-            var homeSettingsODTO = await GetHomeSettingsById(id);
-            _context.HomeSettings.Remove(homeSettings);
-            await SaveContextChangesAsync();
             return homeSettingsODTO;
         }
 
@@ -4058,9 +3987,73 @@ namespace P2P.Services
         public async Task<AboutSettingsODTO> EditAboutSettings(AboutSettingsIDTO aboutSettingsIDTO)
         {
             var aboutSettings = _mapper.Map<AboutSettings>(aboutSettingsIDTO);
+            aboutSettings.SerpId = aboutSettings.SerpId != 0 ? aboutSettings.SerpId : null;
             _context.Entry(aboutSettings).State = EntityState.Modified;
-
             await SaveContextChangesAsync();
+
+            var serp = new Serp
+            {
+                SerpTitle = aboutSettingsIDTO.SerpTitle,
+                SerpDescription = aboutSettingsIDTO.SerpDescription,
+                Subtitle = aboutSettingsIDTO.Subtitle,
+                DataTypeId = ABOUT_SETTINGS_TYPEID,
+                TableId = aboutSettingsIDTO.AboutSettingsId
+            };
+
+            _context.Serps.Add(serp);
+            await SaveContextChangesAsync();
+
+            aboutSettings.SerpId = serp.SerpId;
+            await SaveContextChangesAsync();
+
+            var settAttr = new SettingsAttribute();
+            if (aboutSettingsIDTO.SettingsAttributes != null)
+            {
+                foreach (var item in aboutSettingsIDTO.SettingsAttributes)
+                {
+                    settAttr = new SettingsAttribute
+                    {
+                        SettingsAttributeId = item.SettingsAttributeId,
+                        DataTypeId = ABOUT_SETTINGS_TYPEID,
+                        SettingsDataTypeId = item.SettingsDataTypeId,
+                        LanguageId = item.LanguageId,
+                        Value = item.Value,
+                        Index = item.Index,
+                        UrlTableId = null,
+                    };
+                    var urlId = await _context.UrlTables.Where(x => x.URL.ToLower() == settAttr.Value && x.DataTypeId == settAttr.DataTypeId).Select(x => x.UrlTableId).FirstOrDefaultAsync();
+                    settAttr.UrlTableId = settAttr.Value != null && urlId != 0 ? urlId : null;
+                    _context.Entry(settAttr).State = EntityState.Modified;
+                    await SaveContextChangesAsync();
+                    if (settAttr.UrlTableId != null)
+                    {
+                        if ((settAttr.SettingsDataTypeId == REVIEW_ROUTE_TYPEID || settAttr.SettingsDataTypeId == A_ITEM_LINK_TYPEID || settAttr.SettingsDataTypeId == P_ITEM_LINK_TYPEID))
+                        {
+                            settAttr.Value = null;
+                            await SaveContextChangesAsync();
+                        }
+                        else
+                        {
+                            settAttr.UrlTableId = null;
+                            await SaveContextChangesAsync();
+                        }
+                    }
+                    else if ((settAttr.SettingsDataTypeId == REVIEW_ROUTE_TYPEID || settAttr.SettingsDataTypeId == A_ITEM_LINK_TYPEID || settAttr.SettingsDataTypeId == P_ITEM_LINK_TYPEID) && (settAttr.Value != null))
+                    {
+                        var url = new UrlTable
+                        {
+                            DataTypeId = settAttr.DataTypeId,
+                            URL = settAttr.Value,
+                            TableId = settAttr.SettingsAttributeId,
+                        };
+                        _context.UrlTables.Add(url);
+                        await SaveContextChangesAsync();
+                        settAttr.UrlTableId = url.UrlTableId;
+                        settAttr.Value = null;
+                        await SaveContextChangesAsync();
+                    }
+                }
+            }
 
             return await GetAboutSettingsById(aboutSettings.AboutSettingsId);
         }
@@ -4070,10 +4063,56 @@ namespace P2P.Services
             var aboutSettings = _mapper.Map<AboutSettings>(aboutSettingsIDTO);
 
             aboutSettings.AboutSettingsId = 0;
+            aboutSettings.SerpId = aboutSettings.SerpId != 0 ? aboutSettings.SerpId : null;
 
             _context.AboutSettings.Add(aboutSettings);
 
             await SaveContextChangesAsync();
+
+            var serp = new Serp
+            {
+                SerpTitle = aboutSettingsIDTO.SerpTitle,
+                SerpDescription = aboutSettingsIDTO.SerpDescription,
+                Subtitle = aboutSettingsIDTO.Subtitle,
+                DataTypeId = ABOUT_SETTINGS_TYPEID,
+                TableId = aboutSettingsIDTO.AboutSettingsId
+            };
+
+            _context.Serps.Add(serp);
+            await SaveContextChangesAsync();
+
+            aboutSettings.SerpId = serp.SerpId;
+            await SaveContextChangesAsync();
+
+            if (aboutSettingsIDTO.SettingsAttributes != null)
+            {
+                SettingsAttribute settAtr = new SettingsAttribute();
+                foreach (var item in aboutSettingsIDTO.SettingsAttributes)
+                {
+                    settAtr = new SettingsAttribute
+                    {
+                        DataTypeId = item.DataTypeId,
+                        SettingsDataTypeId = item.SettingsDataTypeId,
+                        LanguageId = item.LanguageId,
+                        Value = item.Value,
+                        Index = item.Index,
+                        UrlTableId = null,
+                    };
+                    var settAtrReal = await _context.SettingsAttributes.Where(x => x.DataTypeId == item.DataTypeId && x.SettingsDataTypeId == item.SettingsDataTypeId
+                    && x.LanguageId == item.LanguageId && x.Value == item.Value && x.Index == item.Index && x.UrlTableId == item.UrlTableId).SingleOrDefaultAsync();
+
+                    if (settAtrReal == null)
+                    {
+                        _context.SettingsAttributes.Add(settAtr);
+                        await SaveContextChangesAsync();
+                    }
+                    else
+                    {
+                        _context.Entry(settAtr).State = EntityState.Modified;
+                        await SaveContextChangesAsync();
+                    }
+                }
+            }
 
             return await GetAboutSettingsById(aboutSettings.AboutSettingsId);
         }
@@ -4083,7 +4122,7 @@ namespace P2P.Services
             var aboutSettings = await _context.AboutSettings.FindAsync(id);
             if (aboutSettings == null) return null;
 
-            var aboutAttr = await _context.SettingsAttributes.Where(x => x.LanguageId == aboutSettings.LanguageId && x.DataTypeId == NAVIGATION_SETTINGS_TYPEID).ToListAsync();
+            var aboutAttr = await _context.SettingsAttributes.Where(x => x.LanguageId == aboutSettings.LanguageId && x.DataTypeId == ABOUT_SETTINGS_TYPEID).ToListAsync();
             if (aboutAttr != null)
             {
                 foreach (var item in aboutAttr)
