@@ -3731,7 +3731,7 @@ namespace P2P.Services
 
                     if (urlid != 0)
                     {
-                        homeSettingsIDTO.GetType().GetProperty(propNames[i]).SetValue(homeSettingsIDTO, urlid);
+                        homeSettings.GetType().GetProperty(propNames[i]).SetValue(homeSettings, urlid);
                         _context.Entry(homeSettings).State = EntityState.Modified;
                         await _context.SaveChangesAsync();
                     }
