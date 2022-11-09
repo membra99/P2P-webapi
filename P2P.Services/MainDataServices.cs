@@ -3878,6 +3878,10 @@ namespace P2P.Services
             var homeSettings = _mapper.Map<HomeSettings>(homeSettingsIDTO);
             homeSettings.HomeSettingsId = 0;
             homeSettings.SerpId = homeSettings.SerpId != 0 ? homeSettings.SerpId : null;
+            homeSettings.AcademyUrl = homeSettings.AcademyUrl != 0 ? homeSettings.AcademyUrl : null;
+            homeSettings.BonusUrl = homeSettings.BonusUrl != 0 ? homeSettings.BonusUrl : null;
+            homeSettings.NewsUrl = homeSettings.NewsUrl != 0 ? homeSettings.NewsUrl : null;
+            homeSettings.ReviewUrl = homeSettings.ReviewUrl != 0 ? homeSettings.ReviewUrl : null;
             _context.HomeSettings.Add(homeSettings);
             await SaveContextChangesAsync();
 
@@ -3895,6 +3899,39 @@ namespace P2P.Services
 
             homeSettings.SerpId = serp.SerpId;
             await SaveContextChangesAsync();
+
+            var propNames = new string[] { "AcademyUrl", "BonusUrl", "NewsUrl", "ReviewUrl" };
+            var urlNames = new string[] { "AcademyUrlLink", "BonusUrlLink", "NewsUrlLink", "ReviewUrlLink" };
+
+            for (int i = 0; i < urlNames.Length; i++)
+            {
+                if (homeSettingsIDTO.GetType().GetProperty(urlNames[i])?.GetValue(homeSettingsIDTO, null) != null)
+                {
+                    var urlid = await _context.UrlTables.Where(x => x.URL.ToLower() == homeSettingsIDTO.GetType().GetProperty(urlNames[i]).GetValue(homeSettingsIDTO, null).ToString().ToLower() && x.DataTypeId == HOME_SETTINGS_TYPEID).Select(x => x.UrlTableId).FirstOrDefaultAsync();
+
+                    if (urlid != 0)
+                    {
+                        homeSettingsIDTO.GetType().GetProperty(propNames[i]).SetValue(homeSettingsIDTO, urlid);
+                        _context.Entry(homeSettingsIDTO).State = EntityState.Modified;
+                        //await _context.SaveChangesAsync();
+                    }
+                    else
+                    {
+                        var url = new UrlTable
+                        {
+                            DataTypeId = FOOTER_SETTINGS_TYPEID,
+                            URL = homeSettingsIDTO.GetType().GetProperty(urlNames[i]).GetValue(homeSettingsIDTO, null).ToString(),
+                            TableId = homeSettings.HomeSettingsId,
+                        };
+                        _context.UrlTables.Add(url);
+                        await _context.SaveChangesAsync();
+
+                        homeSettings.GetType().GetProperty(propNames[i]).SetValue(homeSettings, url.UrlTableId);
+                        await _context.SaveChangesAsync();
+                    }
+                }
+            }
+
             if (homeSettingsIDTO.SettingsAttributes != null)
             {
                 SettingsAttribute settAtr = new SettingsAttribute();
