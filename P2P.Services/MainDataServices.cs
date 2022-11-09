@@ -4719,28 +4719,32 @@ namespace P2P.Services
             return imageInfoODTO;
         }
 
-        public async Task<List<ImagesInfoODTO>> DeleteImagesInfo(List<ImagesInfoIDTO> imagesInfoIDTO)
+        public async Task<List<ImagesInfoODTO>> DeleteImagesInfo(List<string> imagesInfoIDTO)
         {
-            var imageInfos = imagesInfoIDTO.Select(x => _mapper.Map<ImagesInfo>(x)).ToList();
+            var imageInfos = imagesInfoIDTO.ToList();
+            var data = new List<ImagesInfoODTO>();
 
             var urls = new List<UrlTable>();
             foreach (var item in imagesInfoIDTO)
             {
-                var x = await _context.UrlTables.Where(x => x.URL == item.Aws && x.DataTypeId == IMAGE_INFO_TYPEID).FirstOrDefaultAsync();
+                var x = await _context.UrlTables.Where(x => x.URL == item && x.DataTypeId == IMAGE_INFO_TYPEID).FirstOrDefaultAsync();
+                if(x!=null)
                 urls.Add(x);
             }
             foreach (var item in urls)
             {
                 var image = await _context.ImagesInfos.Where(x => x.ImageId == item.TableId && x.AwsUrl == item.UrlTableId).FirstOrDefaultAsync();
+               
                 if (image != null)
                 {
+                     data.Add(_mapper.Map<ImagesInfoODTO>(image));
                     _context.ImagesInfos.Remove(image);
                     await SaveContextChangesAsync();
                     _context.UrlTables.Remove(item);
                     await SaveContextChangesAsync();
                 }
             }
-            return imageInfos.Select(x => _mapper.Map<ImagesInfoODTO>(x)).ToList();
+            return data;
         }
 
         #endregion ImageInfo
