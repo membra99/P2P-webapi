@@ -10,10 +10,12 @@ namespace P2P.DTO.Input
     public class AcademyIDTO
     {
         public int AcademyId { get; set; }
-        public int? LanguageId { get; set; }
-        public int? UrlId { get; set; }
+        public int? UrlTableId { get; set; }
         public int? SerpId { get; set; }
+        public int? LanguageId { get; set; }
+
         public string Title { get; set; }
+
         public string FeaturedImage { get; set; }
         public string Tag { get; set; }
         public string TitleOverview { get; set; }

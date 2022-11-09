@@ -3036,7 +3036,7 @@ namespace P2P.Services
 
             if (review.LanguageId == ENG_LANG)
             {
-                var reviews = await _context.Review.Where(x => x.Name == review.Name || x.LegalName == review.LegalName).ToListAsync();
+                var reviews = await _context.Review.Where(x => x.Name == review.Name || (x.LegalName != null && x.LegalName == review.LegalName)).ToListAsync();
 
                 foreach (var item in reviews)
                 {
@@ -4728,16 +4728,16 @@ namespace P2P.Services
             foreach (var item in imagesInfoIDTO)
             {
                 var x = await _context.UrlTables.Where(x => x.URL == item && x.DataTypeId == IMAGE_INFO_TYPEID).FirstOrDefaultAsync();
-                if(x!=null)
-                urls.Add(x);
+                if (x != null)
+                    urls.Add(x);
             }
             foreach (var item in urls)
             {
                 var image = await _context.ImagesInfos.Where(x => x.ImageId == item.TableId && x.AwsUrl == item.UrlTableId).FirstOrDefaultAsync();
-               
+
                 if (image != null)
                 {
-                     data.Add(_mapper.Map<ImagesInfoODTO>(image));
+                    data.Add(_mapper.Map<ImagesInfoODTO>(image));
                     _context.ImagesInfos.Remove(image);
                     await SaveContextChangesAsync();
                     _context.UrlTables.Remove(item);

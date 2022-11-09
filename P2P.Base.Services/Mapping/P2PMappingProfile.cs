@@ -124,11 +124,7 @@ namespace P2P.Base.Services.Mapping
                 .ForMember(dest => dest.DataTypeName, source => source.MapFrom(m => m.DataType.DataTypeName));
 
             CreateMap<Academy, AcademyODTO>()
-                .ForMember(dest => dest.LanguageName, source => source.MapFrom(m => m.Language.LanguageName))
-                .ForMember(dest => dest.SerpTitle, source => source.MapFrom(m => m.Serp.SerpTitle))
-                .ForMember(dest => dest.SerpDescription, source => source.MapFrom(m => m.Serp.SerpDescription))
-              .ForMember(dest => dest.Subtitle, source => source.MapFrom(m => m.Serp.Subtitle))
-                .ForMember(dest => dest.Url, source => source.MapFrom(m => m.UrlTable.URL));
+                .ForMember(dest => dest.LanguageName, source => source.MapFrom(m => m.Language.LanguageName));
             CreateMap<AcademyIDTO, Academy>();
 
             CreateMap<PagesSettings, PagesSettingsODTO>()
