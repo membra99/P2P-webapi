@@ -3151,43 +3151,16 @@ namespace P2P.Services
         {
             var academy = _mapper.Map<Academy>(academyIDTO);
             academy.AcademyId = 0;
-            academy.LanguageId = academy.LanguageId != 0 ? academy.LanguageId : null;
-            academy.SerpId = academy.SerpId != 0 ? academy.SerpId : null;
-            academy.UrlTableId = academy.UrlTableId != 0 ? academy.UrlTableId : null;
+            if (academy.LanguageId == 0)
+                academy.LanguageId = null;
+            if (academy.UrlTableId == 0)
+                academy.UrlTableId = null;
+            if (academy.SerpId == 0)
+                academy.SerpId = null;
+
             academy.CreatedDate = DateTime.Now;
             academy.UpdatedDate = null;
             _context.Academies.Add(academy);
-
-            await SaveContextChangesAsync();
-
-            if (academyIDTO.Url != null)
-            {
-                var url = new UrlTable
-                {
-                    DataTypeId = ACADEMY_TYPEID,
-                    URL = academyIDTO.Url
-                };
-                _context.UrlTables.Add(url);
-                await SaveContextChangesAsync();
-
-                academy.UrlTableId = url.UrlTableId;
-                await SaveContextChangesAsync();
-
-                url.TableId = academy.AcademyId;
-
-                await SaveContextChangesAsync();
-            }
-            var serp = new Serp
-            {
-                DataTypeId = ACADEMY_TYPEID,
-                SerpTitle = academyIDTO.SerpTitle,
-                SerpDescription = academyIDTO.SerpDescription,
-                Subtitle = academyIDTO.Subtitle
-            };
-            _context.Serps.Add(serp);
-            await SaveContextChangesAsync();
-
-            academy.SerpId = serp.SerpId;
             await SaveContextChangesAsync();
 
             return await GetAcademyById(academy.AcademyId);
