@@ -2380,6 +2380,7 @@ namespace P2P.Services
         public async Task<PageODTO> EditPage(PageIDTO pageIDTO)
         {
             var page = _mapper.Map<Page>(pageIDTO);
+            page.SelectedPopularArticle = page.SelectedPopularArticle != "" ? page.SelectedPopularArticle : null;
 
             _context.Entry(page).State = EntityState.Modified;
 
