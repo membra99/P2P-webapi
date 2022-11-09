@@ -12,6 +12,7 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
+using System.Reflection.Metadata;
 using System.Threading.Tasks;
 using DataType = Entities.P2P.MainData.DataType;
 using Language = Entities.P2P.MainData.Language;
@@ -579,6 +580,22 @@ namespace P2P.Services
             var navigationSettings = await _context.NavigationSettings.FindAsync(id);
             if (navigationSettings == null) return null;
 
+            var navAttr = await _context.SettingsAttributes.Where(x => x.LanguageId == navigationSettings.LanguageId && x.DataTypeId == NAVIGATION_SETTINGS_TYPEID).ToListAsync();
+            if (navAttr != null)
+            {
+                foreach (var item in navAttr)
+                {
+                    var x = await _context.UrlTables.Where(x => x.UrlTableId == item.UrlTableId).FirstOrDefaultAsync();
+                    _context.SettingsAttributes.Remove(item);
+                    await SaveContextChangesAsync();
+                    if (x != null)
+                    {
+                        _context.UrlTables.Remove(x);
+                        await SaveContextChangesAsync();
+                    }
+                }
+            }
+
             var navigationSettingsODTO = await GetNavigationSettingsById(id);
             _context.NavigationSettings.Remove(navigationSettings);
             await SaveContextChangesAsync();
@@ -1069,6 +1086,22 @@ namespace P2P.Services
         {
             var footerSettings = await _context.FooterSettings.FindAsync(id);
             if (footerSettings == null) return null;
+
+            var footAttr = await _context.SettingsAttributes.Where(x => x.LanguageId == footerSettings.LanguageId && x.DataTypeId == FOOTER_SETTINGS_TYPEID).ToListAsync();
+            if (footAttr != null)
+            {
+                foreach (var item in footAttr)
+                {
+                    var x = await _context.UrlTables.Where(x => x.UrlTableId == item.UrlTableId).FirstOrDefaultAsync();
+                    _context.SettingsAttributes.Remove(item);
+                    await SaveContextChangesAsync();
+                    if (x != null)
+                    {
+                        _context.UrlTables.Remove(x);
+                        await SaveContextChangesAsync();
+                    }
+                }
+            }
 
             var footerSettingsODTO = await GetFooterSettingsById(id);
             _context.FooterSettings.Remove(footerSettings);
@@ -2380,22 +2413,18 @@ namespace P2P.Services
         public async Task<PageODTO> EditPage(PageIDTO pageIDTO)
         {
             var page = _mapper.Map<Page>(pageIDTO);
-            page.SelectedPopularArticle = page.SelectedPopularArticle != "" ? page.SelectedPopularArticle : null;
-
+            page.SelectedPopularArticle = page.SelectedPopularArticle == null || page.SelectedPopularArticle == "" ? null : page.SelectedPopularArticle;
             _context.Entry(page).State = EntityState.Modified;
-
             await SaveContextChangesAsync();
-
             return await GetPageById(page.PageId);
         }
 
         public async Task<PageODTO> AddPage(PageIDTO pageIDTO)
         {
             var page = _mapper.Map<Page>(pageIDTO);
-
             page.PageId = 0;
+            page.SelectedPopularArticle = page.SelectedPopularArticle == null || page.SelectedPopularArticle == "" ? null : page.SelectedPopularArticle;
             _context.Pages.Add(page);
-
             await SaveContextChangesAsync();
 
             return await GetPageById(page.PageId);
@@ -3904,6 +3933,22 @@ namespace P2P.Services
             var homeSettings = await _context.HomeSettings.FindAsync(id);
             if (homeSettings == null) return null;
 
+            var homeAttr = await _context.SettingsAttributes.Where(x => x.LanguageId == homeSettings.LanguageId && x.DataTypeId == NAVIGATION_SETTINGS_TYPEID).ToListAsync();
+            if (homeAttr != null)
+            {
+                foreach (var item in homeAttr)
+                {
+                    var x = await _context.UrlTables.Where(x => x.UrlTableId == item.UrlTableId).FirstOrDefaultAsync();
+                    _context.SettingsAttributes.Remove(item);
+                    await SaveContextChangesAsync();
+                    if (x != null)
+                    {
+                        _context.UrlTables.Remove(x);
+                        await SaveContextChangesAsync();
+                    }
+                }
+            }
+
             var homeSettingsODTO = await GetHomeSettingsById(id);
             _context.HomeSettings.Remove(homeSettings);
             await SaveContextChangesAsync();
@@ -4000,6 +4045,22 @@ namespace P2P.Services
         {
             var aboutSettings = await _context.AboutSettings.FindAsync(id);
             if (aboutSettings == null) return null;
+
+            var aboutAttr = await _context.SettingsAttributes.Where(x => x.LanguageId == aboutSettings.LanguageId && x.DataTypeId == NAVIGATION_SETTINGS_TYPEID).ToListAsync();
+            if (aboutAttr != null)
+            {
+                foreach (var item in aboutAttr)
+                {
+                    var x = await _context.UrlTables.Where(x => x.UrlTableId == item.UrlTableId).FirstOrDefaultAsync();
+                    _context.SettingsAttributes.Remove(item);
+                    await SaveContextChangesAsync();
+                    if (x != null)
+                    {
+                        _context.UrlTables.Remove(x);
+                        await SaveContextChangesAsync();
+                    }
+                }
+            }
 
             var aboutSettingsODTO = await GetAboutSettingsById(id);
             _context.AboutSettings.Remove(aboutSettings);
@@ -4346,6 +4407,7 @@ namespace P2P.Services
         {
             var blog = await _context.Blogs.Where(x => x.BlogId == contentIDTO.Id).FirstOrDefaultAsync();
             blog.Content = contentIDTO.Content;
+            blog.SelectedPopularArticle = blog.SelectedPopularArticle == null || blog.SelectedPopularArticle == "" ? null : blog.SelectedPopularArticle;
             _context.Entry(blog).State = EntityState.Modified;
             await SaveContextChangesAsync();
             return await GetBlogById(blog.BlogId);
