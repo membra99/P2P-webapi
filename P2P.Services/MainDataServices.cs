@@ -3164,7 +3164,7 @@ namespace P2P.Services
             {
                 var url = new UrlTable
                 {
-                    DataTypeId = ROUTES_TYPEID,
+                    DataTypeId = ACADEMY_TYPEID,
                     URL = academyIDTO.Url
                 };
                 _context.UrlTables.Add(url);
@@ -3902,7 +3902,7 @@ namespace P2P.Services
                     var settAtrReal = await _context.SettingsAttributes.Where(x => x.DataTypeId == item.DataTypeId && x.SettingsDataTypeId == item.SettingsDataTypeId
                     && x.LanguageId == item.LanguageId && x.Value == item.Value && x.Index == item.Index && x.UrlTableId == item.UrlTableId).SingleOrDefaultAsync();
 
-                    if(settAtrReal == null)
+                    if (settAtrReal == null)
                     {
                         _context.SettingsAttributes.Add(settAtr);
                         await SaveContextChangesAsync();
@@ -3912,8 +3912,6 @@ namespace P2P.Services
                         _context.Entry(settAtr).State = EntityState.Modified;
                         await SaveContextChangesAsync();
                     }
-                    
-                    
                 }
             }
 
