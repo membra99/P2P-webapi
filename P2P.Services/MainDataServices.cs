@@ -3313,9 +3313,16 @@ namespace P2P.Services
 
         public async Task<PagesSettingsODTO> EditPagesSettings(PagesSettingsIDTO pagesSettingsIDTO)
         {
-            var pagesSettings = _mapper.Map<PagesSettings>(pagesSettingsIDTO); ;
+            var pagesSettings = _mapper.Map<PagesSettings>(pagesSettingsIDTO);
 
             _context.Entry(pagesSettings).State = EntityState.Modified;
+
+            var serp = await _context.Serps.Where(x => x.SerpId == pagesSettings.SerpId).SingleOrDefaultAsync();
+            serp.SerpTitle = pagesSettingsIDTO.SerpTitle;
+            serp.SerpDescription = pagesSettingsIDTO.SerpDescription;
+            serp.Subtitle = pagesSettingsIDTO.Subtitle;
+
+            _context.Entry(serp).State = EntityState.Modified;
 
             await SaveContextChangesAsync();
 
