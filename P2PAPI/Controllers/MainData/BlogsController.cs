@@ -71,9 +71,9 @@ namespace P2P.WebApi.Controllers.MainData
 
         //GET: api/Blogs/GetListOfAuthorsByLanguageId
         [HttpGet("GetBlogsByRoute")]
-        public async Task<ActionResult<GetBlogsByRouteODTO>> GetBlogsByRoute(string route)
+        public async Task<ActionResult<GetBlogsByRouteODTO>> GetBlogsByRoute(string route, int langId)
         {
-            var blog = await _mainDataServices.GetBlogsByRoute(route);
+            var blog = await _mainDataServices.GetBlogsByRoute(route, langId);
             if (blog == null) return NotFound();
             return blog;
         }

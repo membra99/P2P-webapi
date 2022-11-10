@@ -4349,10 +4349,10 @@ namespace P2P.Services
             return blogs;
         }
 
-        public async Task<GetBlogsByRouteODTO> GetBlogsByRoute(string route)
+        public async Task<GetBlogsByRouteODTO> GetBlogsByRoute(string route, int langid)
         {
             var url = await _context.UrlTables.Where(x => x.URL.ToLower() == route.ToLower()).Select(x => x.UrlTableId).FirstOrDefaultAsync();
-            var routes = await _context.Routes.Where(x => x.DataTypeId == BLOG_TYPEID && x.UrlTableId == url).Select(x => x.TableId).FirstOrDefaultAsync();
+            var routes = await _context.Routes.Where(x => x.DataTypeId == BLOG_TYPEID && x.UrlTableId == url && x.LanguageId == langid).Select(x => x.TableId).FirstOrDefaultAsync();
             var blog = await _context.Blogs.Include(x => x.Serp).Include(x => x.Category).Where(x => x.BlogId == routes).FirstOrDefaultAsync();
             var blogs = new List<BlogODTO>();
             if (blog.SelectedPopularArticle != null)
