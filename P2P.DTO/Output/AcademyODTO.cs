@@ -11,6 +11,7 @@ namespace P2P.DTO.Output
     {
         public int AcademyId { get; set; }
         public int? UrlTableId { get; set; }
+        public string URL { get; set; }
         public int? SerpId { get; set; }
         public int? LanguageId { get; set; }
         public string LanguageName { get; set; }
