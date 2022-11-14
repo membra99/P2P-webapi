@@ -2165,17 +2165,6 @@ namespace P2P.Services
             var tableId = await _context.Routes.Where(x => x.LanguageId == langId && x.UrlTableId == urlId && x.DataTypeId == dataTypeId).Select(x => x.TableId).FirstOrDefaultAsync();
             var url = await _context.Routes.Include(x => x.UrlTable).Where(x => x.LanguageId == langId && x.UrlTableId == urlId && x.DataTypeId == dataTypeId).Select(x => x.UrlTable.URL).FirstOrDefaultAsync();
 
-            //TODO Prosiriti za ostale jezike
-            if (langId == 1)
-            {
-                if (url != "en")
-                    url = "/en/" + url;
-            }
-            if (langId == 2)
-            {
-                if (url != "de")
-                    url = "/de/" + url;
-            }
 
             var academy = await _context.Academies.Include(x => x.UrlTable).Where(x => x.UrlTable.URL == url).FirstOrDefaultAsync();
 
