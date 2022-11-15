@@ -4332,6 +4332,12 @@ namespace P2P.Services
                     if (x != null)
                         blogs.Add(_mapper.Map<BlogContetntODTO>(x));
                 }
+                foreach (var item in blogs)
+                {
+                    var r = await _context.Routes.Where(x => x.LanguageId == item.LanguageId && x.DataTypeId == BLOG_TYPEID && x.TableId == item.BlogId).Select(x => x.UrlTableId).FirstOrDefaultAsync();
+                    var u = await _context.UrlTables.Where(x => x.UrlTableId == r).Select(x => x.URL).FirstOrDefaultAsync();
+                    item.RouteName = u;
+                }
             }
 
             var retval = new GetBlogsByRouteODTO
