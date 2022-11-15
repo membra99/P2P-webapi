@@ -2167,7 +2167,6 @@ namespace P2P.Services
             var tableId = await _context.Routes.Where(x => x.LanguageId == langId && x.UrlTableId == urlId && x.DataTypeId == dataTypeId).Select(x => x.TableId).FirstOrDefaultAsync();
             var url = await _context.Routes.Include(x => x.UrlTable).Where(x => x.LanguageId == langId && x.UrlTableId == urlId && x.DataTypeId == dataTypeId).Select(x => x.UrlTable.URL).FirstOrDefaultAsync();
 
-
             var academy = await _context.Academies.Include(x => x.UrlTable).Where(x => x.UrlTable.URL == url).FirstOrDefaultAsync();
 
             if (urlId == 0) return null;
@@ -4323,7 +4322,7 @@ namespace P2P.Services
             var url = await _context.UrlTables.Where(x => x.URL.ToLower() == route.ToLower()).Select(x => x.UrlTableId).FirstOrDefaultAsync();
             var routes = await _context.Routes.Where(x => x.DataTypeId == BLOG_TYPEID && x.UrlTableId == url && x.LanguageId == langid).Select(x => x.TableId).FirstOrDefaultAsync();
             var blog = await _context.Blogs.Include(x => x.Serp).Include(x => x.Category).Where(x => x.BlogId == routes).FirstOrDefaultAsync();
-            var blogs = new List<BlogODTO>();
+            var blogs = new List<BlogContetntODTO>();
             if (blog.SelectedPopularArticle != null)
             {
                 var popularArticle = blog.SelectedPopularArticle.Split(",").Select(x => Convert.ToInt32(x)).ToArray();
@@ -4331,15 +4330,10 @@ namespace P2P.Services
                 {
                     var x = await _context.Blogs.Include(x => x.Serp).Include(x => x.Category).Where(x => x.BlogId == item).FirstOrDefaultAsync();
                     if (x != null)
-                        blogs.Add(_mapper.Map<BlogODTO>(x));
-                }
-                foreach (var item in blogs)
-                {
-                    var r = await _context.Routes.Where(x => x.LanguageId == item.LanguageId && x.DataTypeId == BLOG_TYPEID && x.TableId == item.BlogId).Select(x => x.UrlTableId).FirstOrDefaultAsync();
-                    var u = await _context.UrlTables.Where(x => x.UrlTableId == r).Select(x => x.URL).FirstOrDefaultAsync();
-                    item.RouteName = u;
+                        blogs.Add(_mapper.Map<BlogContetntODTO>(x));
                 }
             }
+
             var retval = new GetBlogsByRouteODTO
             {
                 BlogId = blog.BlogId,
@@ -4350,7 +4344,7 @@ namespace P2P.Services
                 SerpDescription = blog.Serp.SerpDescription,
                 Subtitle = blog.Serp.Subtitle,
                 Content = blog.Content,
-                Blogs = blogs,
+                SelectedPopularArticle = blogs,
                 CategoryId = blog.CategoryId,
                 CategoryName = blog.Category.CategoryName,
                 AuthorId = blog.AuthorId,
@@ -4796,8 +4790,6 @@ namespace P2P.Services
                 imageInfo.Size = Img.Size;
             }
 
-
-
             _context.Entry(imageInfo).State = EntityState.Modified;
             await SaveContextChangesAsync();
             url.TableId = imageInfo.ImageId;
@@ -4817,7 +4809,7 @@ namespace P2P.Services
             }
             foreach (var item1 in Lista)
             {
-                if(item1 == imagesInfoIDTO.Aws)
+                if (item1 == imagesInfoIDTO.Aws)
                 {
                     return null;
                 }
