@@ -10,9 +10,11 @@ using P2P.DTO.Output;
 using P2P.DTO.Output.EndPointODTO;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Data;
 using System.Linq;
 using System.Reflection.Metadata;
+using System.Security.Policy;
 using System.Threading.Tasks;
 using DataType = Entities.P2P.MainData.DataType;
 using Language = Entities.P2P.MainData.Language;
@@ -4777,19 +4779,26 @@ namespace P2P.Services
         public async Task<ImagesInfoODTO> EditImageInfo(ImagesInfoIDTO imagesInfoIDTO)
         {
             var imageInfo = _mapper.Map<ImagesInfo>(imagesInfoIDTO);
-
-            var url = new UrlTable
+            var Img = await _context.ImagesInfos.Where(x => x.ImageId == imageInfo.ImageId).AsNoTracking().SingleOrDefaultAsync();
+            var url = new UrlTable();
+            if (Img == null)
             {
-                DataTypeId = IMAGE_INFO_TYPEID,
-                URL = imagesInfoIDTO.Aws
-            };
+                url.DataTypeId = IMAGE_INFO_TYPEID;
+                url.URL = imagesInfoIDTO.Aws;
+                _context.UrlTables.Add(url);
+                await SaveContextChangesAsync();
 
-            _context.UrlTables.Add(url);
-            await SaveContextChangesAsync();
+                imageInfo.AwsUrl = url.UrlTableId;
+            }
+            else
+            {
+                imageInfo.AwsUrl = Img.AwsUrl;
+                imageInfo.Size = Img.Size;
+            }
 
-            imageInfo.AwsUrl = url.UrlTableId;
+
+
             _context.Entry(imageInfo).State = EntityState.Modified;
-
             await SaveContextChangesAsync();
             url.TableId = imageInfo.ImageId;
             await SaveContextChangesAsync();
@@ -4799,6 +4808,21 @@ namespace P2P.Services
 
         public async Task<ImagesInfoODTO> AddImageInfo(ImagesInfoIDTO imagesInfoIDTO)
         {
+            var Img = await _context.ImagesInfos.Select(x => x.AwsUrl).ToListAsync();
+            List<string> Lista = new List<string>();
+            foreach (var item in Img)
+            {
+                var uros = await _context.UrlTables.Where(x => x.UrlTableId == item).Select(x => x.URL).SingleOrDefaultAsync();
+                Lista.Add(uros);
+            }
+            foreach (var item1 in Lista)
+            {
+                if(item1 == imagesInfoIDTO.Aws)
+                {
+                    return null;
+                }
+            }
+
             var imageInfo = _mapper.Map<ImagesInfo>(imagesInfoIDTO);
             var url = new UrlTable
             {
