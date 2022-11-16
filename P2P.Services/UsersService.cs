@@ -97,7 +97,10 @@ namespace P2P.Services
                 users.Username = userModel.Username;
                 users.FirstName = userModel.FirstName;
                 users.LastName = userModel.LastName;
-                users.Password = BCrypt.Net.BCrypt.HashPassword(userModel.Password);
+                if(userModel.Password != "")
+                {
+                    users.Password = BCrypt.Net.BCrypt.HashPassword(userModel.Password);
+                }
                 _context.Entry(users).State = EntityState.Modified;
                 await SaveContextChangesAsync();
                 return await GetUserById(users.UserId);
