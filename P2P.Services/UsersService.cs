@@ -94,6 +94,9 @@ namespace P2P.Services
             var users = _context.Users.Where(x => x.UserId == userModel.UserId).FirstOrDefault();
             if (users != null)
             {
+                users.Username = userModel.Username;
+                users.FirstName = userModel.FirstName;
+                users.LastName = userModel.LastName;
                 users.Password = BCrypt.Net.BCrypt.HashPassword(userModel.Password);
                 _context.Entry(users).State = EntityState.Modified;
                 await SaveContextChangesAsync();
