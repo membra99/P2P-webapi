@@ -94,10 +94,14 @@ namespace P2P.Services
             var users = _context.Users.Where(x => x.UserId == userModel.UserId).FirstOrDefault();
             if (users != null)
             {
-                    users.Username = userModel.Username;
-                users.LastName = userModel.LastName;
+                users.Username = userModel.Username;
                 users.FirstName = userModel.FirstName;
-                users.Image = userModel.Image;
+                users.LastName = userModel.LastName;
+                if(userModel.Password != "")
+                {
+                    users.Password = BCrypt.Net.BCrypt.HashPassword(userModel.Password);
+                }
+                _context.Entry(users).State = EntityState.Modified;
                 await SaveContextChangesAsync();
                 return await GetUserById(users.UserId);
             }
@@ -113,8 +117,18 @@ namespace P2P.Services
 
         public async Task<UserODTO> DeleteUser(int id)
         {
-            var user =  _context.Users
-                .Where(x => x.UserId == id).FirstOrDefault();
+            var user = await _context.Users.Where(x => x.UserId == id).SingleOrDefaultAsync();
+
+            if (user == null) return null;
+
+            var Premission = await _context.Permissions.Where(x => x.UserId == user.UserId).ToListAsync();
+
+            foreach (var item in Premission)
+            {
+                _context.Permissions.Remove(item);
+                await SaveContextChangesAsync();
+            }
+
 
             _context.Users.Remove(user);
 
