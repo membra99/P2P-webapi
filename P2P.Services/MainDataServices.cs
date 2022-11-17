@@ -2457,9 +2457,11 @@ namespace P2P.Services
                                      where (x.UrlTable.URL == url)
                                      && (x.LanguageId == langId)
                                      select x.TableId).FirstOrDefaultAsync();
-            var review = await _context.Review.Include(x => x.Serp).Include(x => x.Rev_ReportLink).Where(x => x.IsActive == true).FirstOrDefaultAsync(x => x.ReviewId == UrlReviewId);
+            var review = await _context.Review.Include(x => x.Serp).Include(x => x.Rev_ReportLink).Where(x => x.IsActive == true && x.ReviewId == UrlReviewId).FirstOrDefaultAsync();
 
             var newsfeed = await (from x in _context.NewsFeeds
+                                  .Include(x => x.UrlTable)
+                                  .Include(x => x.Language)
                                   where (x.ReviewId == review.ReviewId)
                                   orderby x.CreatedDate descending
                                   select _mapper.Map<NewsFeedODTO>(x)).Take(4).ToListAsync();
@@ -4310,7 +4312,8 @@ namespace P2P.Services
                     AuthorId = item.AuthorId != null ? item.AuthorId : null,
                     PageTitle = item.PageTitle,
                     Excerpt = item.Excerpt,
-                    UpdatedDate = item.UpdatedDate
+                    UpdatedDate = item.UpdatedDate,
+                    FeaturedImage = item.FeaturedImage
                 };
                 blogs.Add(data);
             }
@@ -4356,7 +4359,8 @@ namespace P2P.Services
                 AuthorId = blog.AuthorId,
                 PageTitle = blog.PageTitle,
                 Excerpt = blog.Excerpt,
-                UpdatedDate = blog.UpdatedDate
+                UpdatedDate = blog.UpdatedDate,
+                FeaturedImage = blog.FeaturedImage
             };
             return retval;
         }

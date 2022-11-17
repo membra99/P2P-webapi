@@ -27,6 +27,9 @@ namespace Entities.P2P.MainData
         public string Content { get; set; }
         public DateTime? UpdatedDate { get; set; }
 
+        [StringLength(500)]
+        public string FeaturedImage { get; set; }
+
         public Language Language { get; set; }
         public Serp Serp { get; set; }
         public Category Category { get; set; }
