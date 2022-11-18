@@ -3343,7 +3343,6 @@ namespace P2P.Services
         {
             var pagesSetings = await _context.PagesSettings.FindAsync(id);
             if (pagesSetings == null) return null;
-
             var pagesSettingsODTO = await GetPagesSettingsById(id);
             _context.PagesSettings.Remove(pagesSetings);
             await SaveContextChangesAsync();
