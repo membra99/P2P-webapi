@@ -10,8 +10,8 @@ namespace P2P.DTO.Input
     {
         public int RoutesId { get; set; }
         public int DataTypeId { get; set; }
-        public int UrlTableId { get; set; }
         public int LanguageId { get; set; }
         public int TableId { get; set; }
+        public string UrlTableName { get; set; }
     }
 }

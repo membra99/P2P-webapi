@@ -1644,10 +1644,34 @@ namespace P2P.Services
         public async Task<RoutesODTO> EditRoute(RoutesIDTO routesIDTO)
         {
             var routes = _mapper.Map<Routes>(routesIDTO);
+            var urlRoute = await _context.UrlTables.Where(x => x.URL == routesIDTO.UrlTableName && x.DataTypeId == ROUTES_TYPEID).FirstOrDefaultAsync();
 
-            _context.Entry(routes).State = EntityState.Modified;
+            if (urlRoute == null)
+            {
+                var url = new UrlTable
+                {
+                    DataTypeId = ROUTES_TYPEID,
+                    URL = routesIDTO.UrlTableName
+                };
+                _context.UrlTables.Add(url);
+                await SaveContextChangesAsync();
 
-            await SaveContextChangesAsync();
+                routes.UrlTableId = url.UrlTableId;
+                _context.Entry(routes).State = EntityState.Modified;
+
+                await SaveContextChangesAsync();
+                url.TableId = routes.RoutesId;
+                await SaveContextChangesAsync();
+            }
+            else
+            {
+                routes.UrlTableId = urlRoute.UrlTableId;
+                _context.Entry(routes).State = EntityState.Modified;
+                await SaveContextChangesAsync();
+
+                urlRoute.TableId = routes.RoutesId;
+                await SaveContextChangesAsync();
+            }
 
             return await GetRoutesById(routes.RoutesId);
         }
@@ -1655,10 +1679,36 @@ namespace P2P.Services
         public async Task<RoutesODTO> AddRoute(RoutesIDTO routesIDTO)
         {
             var routes = _mapper.Map<Routes>(routesIDTO);
-            routes.RoutesId = 0;
-            _context.Routes.Add(routes);
+            var urlRoute = await _context.UrlTables.Where(x => x.URL == routesIDTO.UrlTableName && x.DataTypeId == ROUTES_TYPEID).FirstOrDefaultAsync();
 
-            await SaveContextChangesAsync();
+            if (urlRoute == null)
+            {
+                var url = new UrlTable
+                {
+                    DataTypeId = ROUTES_TYPEID,
+                    URL = routesIDTO.UrlTableName
+                };
+                _context.UrlTables.Add(url);
+                await SaveContextChangesAsync();
+
+                routes.RoutesId = 0;
+                routes.UrlTableId = url.UrlTableId;
+                _context.Routes.Add(routes);
+                await SaveContextChangesAsync();
+
+                url.TableId = routes.RoutesId;
+                await SaveContextChangesAsync();
+            }
+            else
+            {
+                routes.RoutesId = 0;
+                routes.UrlTableId = urlRoute.UrlTableId;
+                _context.Routes.Add(routes);
+                await SaveContextChangesAsync();
+
+                urlRoute.TableId = routes.RoutesId;
+                await SaveContextChangesAsync();
+            }
 
             return await GetRoutesById(routes.RoutesId);
         }
@@ -1668,9 +1718,20 @@ namespace P2P.Services
             var routes = await _context.Routes.FindAsync(id);
             if (routes == null) return null;
 
+            var routesUrl = await _context.UrlTables.Where(x => x.TableId == routes.RoutesId && x.DataTypeId == ROUTES_TYPEID).ToListAsync();
+
             var routesODTO = await GetRoutesById(id);
             _context.Routes.Remove(routes);
             await SaveContextChangesAsync();
+
+            if (routesUrl != null)
+            {
+                foreach (var item in routesUrl)
+                {
+                    _context.UrlTables.Remove(item);
+                    await SaveContextChangesAsync();
+                }
+            }
             return routesODTO;
         }
 
