@@ -54,7 +54,7 @@ namespace P2P.DTO.Output
         public int? MaxLoanPerion { get; set; }
         public int? OperatingSince { get; set; }
         public int? Earnings { get; set; }
-        public int? TotalLoanValue { get; set; }
+        public long? TotalLoanValue { get; set; }
         public int? NumberOfInvestors { get; set; }
         public int? InvestorsLoss { get; set; }
         public int? PortfolioSize { get; set; }
