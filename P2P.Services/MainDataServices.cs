@@ -1132,7 +1132,16 @@ namespace P2P.Services
 
             foreach (var revAttr in reviewAttributes)
             {
+
+                if (revAttr.ReviewAttributeId != 0)
+                {
                 _context.Entry(revAttr).State = EntityState.Modified;
+                }
+                else
+                {
+                    revAttr.ReviewAttributeId = 0;
+                    _context.ReviewAttributes.Add(revAttr);
+                }
             }
             await SaveContextChangesAsync();
 

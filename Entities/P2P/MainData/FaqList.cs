@@ -17,8 +17,9 @@ namespace Entities.P2P.MainData
         [StringLength(500)]
         public string Question { get; set; }
 
-        [StringLength(500)]
+        [StringLength(2000)]
         public string Answer { get; set; }
+
         [Required]
         public int Position { get; set; }
 
