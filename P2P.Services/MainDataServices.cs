@@ -329,7 +329,7 @@ namespace P2P.Services
             {
                 if (navigationSettingsIDTO.GetType().GetProperty(urlNames[i])?.GetValue(navigationSettingsIDTO, null) != null)
                 {
-                    var urlid = await _context.UrlTables.Where(x => x.URL.ToLower() == navigationSettingsIDTO.GetType().GetProperty(urlNames[i]).GetValue(navigationSettingsIDTO, null).ToString().ToLower() && x.DataTypeId == NAVIGATION_SETTINGS_TYPEID).Select(x => x.UrlTableId).FirstOrDefaultAsync();
+                    var urlid = await _context.UrlTables.Where(x => x.URL.ToLower() == navigationSettingsIDTO.GetType().GetProperty(urlNames[i]).GetValue(navigationSettingsIDTO, null).ToString().ToLower() && x.DataTypeId == NAVIGATION_SETTINGS_TYPEID && x.TableId == navigationSettingsIDTO.NavigationSettingsId).Select(x => x.UrlTableId).FirstOrDefaultAsync();
 
                     if (urlid != 0)
                     {
@@ -2106,10 +2106,9 @@ namespace P2P.Services
 
             foreach (var faqList in faqLists)
             {
-                var fl = await _context.FaqLists.Where(x => x.Position == faqList.Position && x.FaqTitleId==faqList.FaqTitleId).FirstOrDefaultAsync();
+                var fl = await _context.FaqLists.Where(x => x.Position == faqList.Position && x.FaqTitleId == faqList.FaqTitleId).FirstOrDefaultAsync();
                 if (fl != null)
                 {
-                    //faqList.FaqPageListId = fl.FaqPageListId;
                     _context.Entry(fl).State = EntityState.Modified;
                     await SaveContextChangesAsync();
                 }
@@ -3755,7 +3754,7 @@ namespace P2P.Services
             {
                 if (homeSettingsIDTO.GetType().GetProperty(urlNames[i])?.GetValue(homeSettingsIDTO, null) != null)
                 {
-                    var urlid = await _context.UrlTables.Where(x => x.URL.ToLower() == homeSettingsIDTO.GetType().GetProperty(urlNames[i]).GetValue(homeSettingsIDTO, null).ToString().ToLower() && x.DataTypeId == HOME_SETTINGS_TYPEID).Select(x => x.UrlTableId).FirstOrDefaultAsync();
+                    var urlid = await _context.UrlTables.Where(x => x.URL.ToLower() == homeSettingsIDTO.GetType().GetProperty(urlNames[i]).GetValue(homeSettingsIDTO, null).ToString().ToLower() && x.DataTypeId == HOME_SETTINGS_TYPEID && x.TableId == homeSettingsIDTO.HomeSettingsId).Select(x => x.UrlTableId).FirstOrDefaultAsync();
 
                     if (urlid != 0)
                     {
