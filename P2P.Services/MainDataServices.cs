@@ -746,11 +746,11 @@ namespace P2P.Services
             {
                 if (footerSettingsIDTO.GetType().GetProperty(urlNames[i])?.GetValue(footerSettingsIDTO, null) != null)
                 {
-                    var urlid = await _context.UrlTables.Where(x => x.URL.ToLower() == footerSettingsIDTO.GetType().GetProperty(urlNames[i]).GetValue(footerSettingsIDTO, null).ToString().ToLower() && x.DataTypeId == FOOTER_SETTINGS_TYPEID).Select(x => x.UrlTableId).FirstOrDefaultAsync();
+                    var urlid = await _context.UrlTables.Where(x => x.URL.ToLower() == footerSettingsIDTO.GetType().GetProperty(urlNames[i]).GetValue(footerSettingsIDTO, null).ToString().ToLower() && x.DataTypeId == FOOTER_SETTINGS_TYPEID && x.TableId == footerSettingsIDTO.FooterSettingsId).Select(x => x.UrlTableId).FirstOrDefaultAsync();
 
                     if (urlid != 0)
                     {
-                        footerSettingsIDTO.GetType().GetProperty(propNames[i]).SetValue(footerSettingsIDTO, urlid);
+                        footerSettings.GetType().GetProperty(propNames[i]).SetValue(footerSettings, urlid);
                         _context.Entry(footerSettings).State = EntityState.Modified;
                         await _context.SaveChangesAsync();
                     }
@@ -1132,10 +1132,9 @@ namespace P2P.Services
 
             foreach (var revAttr in reviewAttributes)
             {
-
                 if (revAttr.ReviewAttributeId != 0)
                 {
-                _context.Entry(revAttr).State = EntityState.Modified;
+                    _context.Entry(revAttr).State = EntityState.Modified;
                 }
                 else
                 {
