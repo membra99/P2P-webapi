@@ -2106,8 +2106,18 @@ namespace P2P.Services
 
             foreach (var faqList in faqLists)
             {
-                faqList.FaqPageListId = 0;
-                _context.FaqLists.Add(faqList);
+                var fl = await _context.FaqLists.Where(x => x.Position == faqList.Position && x.FaqTitleId==faqList.FaqTitleId).FirstOrDefaultAsync();
+                if (fl != null)
+                {
+                    //faqList.FaqPageListId = fl.FaqPageListId;
+                    _context.Entry(fl).State = EntityState.Modified;
+                    await SaveContextChangesAsync();
+                }
+                else
+                {
+                    faqList.FaqPageListId = 0;
+                    _context.FaqLists.Add(faqList);
+                }
             }
             await SaveContextChangesAsync();
 
