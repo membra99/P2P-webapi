@@ -2864,12 +2864,12 @@ namespace P2P.Services
                 review.TotalLoanValue = review.TotalLoanValue != 0 ? review.TotalLoanValue : null;
                 review.NumberOfInvestors = review.NumberOfInvestors != 0 ? review.NumberOfInvestors : null;
                 review.InvestorsLoss = review.InvestorsLoss != 0 ? review.InvestorsLoss : null;
-                review.RiskReturn = review.RiskReturn != 0 ? review.RiskReturn : null;
+                review.RiskReturn = review.RiskReturn != 0 ? review.RiskReturn : 0;
                 review.Usability = review.Usability != 0 ? review.Usability : 0;
                 review.Liquidity = review.Liquidity != 0 ? review.Liquidity : 0;
                 review.Support = review.Support != 0 ? review.Support : 0;
                 review.Interest = review.Interest != 0 ? review.Interest : null;
-                review.RiskReturn = review.RiskReturn != 0 ? review.RiskReturn : 0;
+                review.RiskAndReturn = review.RiskAndReturn != 0 ? review.RiskAndReturn : null;
                 review.RatingCalculated = review.RatingCalculated != 0 ? review.RatingCalculated : null;
                 review.StatisticsCurrency = review.StatisticsCurrency != "string" ? review.StatisticsCurrency : null;
                 review.ReportLink = review.ReportLink != 0 ? review.ReportLink : null;
