@@ -1498,7 +1498,7 @@ namespace P2P.Services
                                    Logo = d.Logo,
                                    Count = d.Count,
                                    CashbackCta = x.CashBack_ca,
-                                   Stars = (decimal)(((d.RiskAndReturn != null ? d.RiskAndReturn : 0) + (d.Usability != null ? d.Usability : 0) +
+                                   Stars = (decimal)(((d.RiskReturn != null ? d.RiskReturn : 0) + (d.Usability != null ? d.Usability : 0) +
                                                (d.Liquidity != null ? d.Liquidity : 0) + (d.Support != null ? d.Support : 0)) / 4),
                                    ExternalLinkKey = d.Name.ToLower(),
                                    ReviewUrlId = _context.Routes.FirstOrDefault(e => e.DataTypeId == REVIEW_TYPEID && e.TableId == d.ReviewId).UrlTableId,
@@ -1542,7 +1542,7 @@ namespace P2P.Services
                                       Logo = d.Logo,
                                       Count = d.Count,
                                       CashbackCta = x.CashBack_ca,
-                                      Stars = (decimal)(((d.RiskAndReturn != null ? d.RiskAndReturn : 0) + (d.Usability != null ? d.Usability : 0) +
+                                      Stars = (decimal)(((d.RiskReturn != null ? d.RiskReturn : 0) + (d.Usability != null ? d.Usability : 0) +
                                          (d.Liquidity != null ? d.Liquidity : 0) + (d.Support != null ? d.Support : 0)) / 4),
                                       ExternalLinkKey = d.Name.ToLower(),
                                       ReviewUrlId = _context.Routes.FirstOrDefault(e => e.DataTypeId == REVIEW_TYPEID && e.TableId == d.ReviewId).UrlTableId,
