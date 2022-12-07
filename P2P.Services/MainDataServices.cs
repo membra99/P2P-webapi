@@ -1498,7 +1498,7 @@ namespace P2P.Services
                                    Logo = d.Logo,
                                    Count = d.Count,
                                    CashbackCta = x.CashBack_ca,
-                                   Stars = (decimal)(((d.RiskAndReturn != null ? d.RiskAndReturn : 0) + (d.Usability != null ? d.Usability : 0) +
+                                   Stars = (decimal)(((d.RiskReturn != null ? d.RiskReturn : 0) + (d.Usability != null ? d.Usability : 0) +
                                                (d.Liquidity != null ? d.Liquidity : 0) + (d.Support != null ? d.Support : 0)) / 4),
                                    ExternalLinkKey = d.Name.ToLower(),
                                    ReviewUrlId = _context.Routes.FirstOrDefault(e => e.DataTypeId == REVIEW_TYPEID && e.TableId == d.ReviewId).UrlTableId,
@@ -1542,7 +1542,7 @@ namespace P2P.Services
                                       Logo = d.Logo,
                                       Count = d.Count,
                                       CashbackCta = x.CashBack_ca,
-                                      Stars = (decimal)(((d.RiskAndReturn != null ? d.RiskAndReturn : 0) + (d.Usability != null ? d.Usability : 0) +
+                                      Stars = (decimal)(((d.RiskReturn != null ? d.RiskReturn : 0) + (d.Usability != null ? d.Usability : 0) +
                                          (d.Liquidity != null ? d.Liquidity : 0) + (d.Support != null ? d.Support : 0)) / 4),
                                       ExternalLinkKey = d.Name.ToLower(),
                                       ReviewUrlId = _context.Routes.FirstOrDefault(e => e.DataTypeId == REVIEW_TYPEID && e.TableId == d.ReviewId).UrlTableId,
@@ -2863,7 +2863,7 @@ namespace P2P.Services
                 review.DiversificationMinInvest = review.DiversificationMinInvest != 0 ? review.DiversificationMinInvest : null;
                 review.TotalLoanValue = review.TotalLoanValue != 0 ? review.TotalLoanValue : null;
                 review.NumberOfInvestors = review.NumberOfInvestors != 0 ? review.NumberOfInvestors : null;
-                review.InvestorsLoss = review.InvestorsLoss != 0 ? review.InvestorsLoss : null;
+                review.InvestorsLoss = review.InvestorsLoss != null ? review.InvestorsLoss : null;
                 review.RiskReturn = review.RiskReturn != 0 ? review.RiskReturn : 0;
                 review.Usability = review.Usability != 0 ? review.Usability : 0;
                 review.Liquidity = review.Liquidity != 0 ? review.Liquidity : 0;
