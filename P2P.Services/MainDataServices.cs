@@ -2863,7 +2863,7 @@ namespace P2P.Services
                 review.DiversificationMinInvest = review.DiversificationMinInvest != 0 ? review.DiversificationMinInvest : null;
                 review.TotalLoanValue = review.TotalLoanValue != 0 ? review.TotalLoanValue : null;
                 review.NumberOfInvestors = review.NumberOfInvestors != 0 ? review.NumberOfInvestors : null;
-                review.InvestorsLoss = review.InvestorsLoss != 0 ? review.InvestorsLoss : null;
+                review.InvestorsLoss = review.InvestorsLoss != null ? review.InvestorsLoss : null;
                 review.RiskReturn = review.RiskReturn != 0 ? review.RiskReturn : 0;
                 review.Usability = review.Usability != 0 ? review.Usability : 0;
                 review.Liquidity = review.Liquidity != 0 ? review.Liquidity : 0;
