@@ -2654,6 +2654,19 @@ namespace P2P.Services
             {
                 review.SerpDescription = review.SerpDescription.Replace(MonthForChangeDesc, "[month]");
             }
+            //CONTENT
+            var YearForChangeContent = Regex.Match(review.ReviewContent, @"\[" + DateTime.Now.Year + "]").ToString();
+            if (YearForChangeContent != "")
+            {
+
+                review.ReviewContent = review.ReviewContent.Replace(YearForChangeContent, "[year]");
+            }
+            var MonthForChangeContent = Regex.Match(review.ReviewContent, @"\[" + DateTime.Now.ToString("MMMM") + "]").ToString();
+            if (MonthForChangeContent != "")
+            {
+
+                review.ReviewContent = review.ReviewContent.Replace(MonthForChangeContent, "[month]");
+            }
 
             return review;
         }
@@ -2696,6 +2709,22 @@ namespace P2P.Services
                 MonthForChangeDesc = MonthForChangeDesc.Replace("[", string.Empty).Replace("]", string.Empty);
                 review.Serp.SerpDescription = review.Serp.SerpDescription.Replace("[" + DateTime.Now.ToString("MMMM") + "]", MonthForChangeDesc);
             }
+            //CONTENT
+            // set review.ReviewContent [year] from [2022] to 2022
+            var YearForChangeContent = Regex.Match(review.ReviewContent, @"\[" + DateTime.Now.Year + "]").ToString();
+            if (YearForChangeContent != "")
+            {
+                YearForChangeContent = YearForChangeContent.Replace("[", string.Empty).Replace("]", string.Empty);
+                review.ReviewContent = review.ReviewContent.Replace("[" + DateTime.Now.Year + "]", YearForChangeContent);
+            }
+            // set review.ReviewContent  [month] from [December] to December
+            var MonthForChangeContent = Regex.Match(review.ReviewContent, @"\[" + DateTime.Now.ToString("MMMM") + "]").ToString();
+            if (MonthForChangeContent != "")
+            {
+                MonthForChangeContent = MonthForChangeContent.Replace("[", string.Empty).Replace("]", string.Empty);
+                review.ReviewContent = review.ReviewContent.Replace("[" + DateTime.Now.ToString("MMMM") + "]", MonthForChangeContent);
+            }
+
             var newsfeed = await (from x in _context.NewsFeeds
                                   .Include(x => x.UrlTable)
                                   .Include(x => x.Language)
