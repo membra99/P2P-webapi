@@ -15,6 +15,7 @@ using System.Data;
 using System.Linq;
 using System.Reflection.Metadata;
 using System.Security.Policy;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using DataType = Entities.P2P.MainData.DataType;
 using Language = Entities.P2P.MainData.Language;
@@ -1822,23 +1823,106 @@ namespace P2P.Services
 
         public async Task<SerpODTO> GetSerpById(int id)
         {
-            return await GetSerp(id, 0).AsNoTracking().SingleOrDefaultAsync();
+
+            var serp = await GetSerp(id, 0).AsNoTracking().FirstOrDefaultAsync();
+            //TITLE
+            var YearForChangeTitle = Regex.Match(serp.SerpTitle, @"\[" + DateTime.Now.Year + "]").ToString();
+            if (YearForChangeTitle != "")
+            {
+                YearForChangeTitle = YearForChangeTitle.Replace("[", string.Empty).Replace("]", string.Empty);
+                serp.SerpTitle = serp.SerpTitle.Replace("[" + DateTime.Now.Year + "]", YearForChangeTitle);
+            }
+
+            var MonthForChangeTitle = Regex.Match(serp.SerpTitle, @"\[" + DateTime.Now.ToString("MMMM") + "]").ToString();
+            if (MonthForChangeTitle != "")
+            {
+                MonthForChangeTitle = MonthForChangeTitle.Replace("[", string.Empty).Replace("]", string.Empty);
+                serp.SerpTitle = serp.SerpTitle.Replace("[" + DateTime.Now.ToString("MMMM") + "]", MonthForChangeTitle);
+            }
+            //DESCRIPTION
+            var YearForChangeDesc = Regex.Match(serp.SerpDescription, @"\[" + DateTime.Now.Year + "]").ToString();
+            if (YearForChangeDesc != "")
+            {
+                YearForChangeDesc = YearForChangeDesc.Replace("[", string.Empty).Replace("]", string.Empty);
+                serp.SerpDescription = serp.SerpDescription.Replace("[" + DateTime.Now.Year + "]", YearForChangeDesc);
+            }
+
+            var MonthForChangeDesc = Regex.Match(serp.SerpDescription, @"\[" + DateTime.Now.ToString("MMMM") + "]").ToString();
+            if (MonthForChangeDesc != "")
+            {
+                MonthForChangeDesc = MonthForChangeDesc.Replace("[", string.Empty).Replace("]", string.Empty);
+                serp.SerpDescription = serp.SerpDescription.Replace("[" + DateTime.Now.ToString("MMMM") + "]", MonthForChangeDesc);
+            }
+
+            return serp;
         }
 
         public async Task<List<SerpODTO>> GetByDataTypeId(int dataTypeId)
         {
             return await GetSerp(0, dataTypeId).ToListAsync();
         }
+        public async Task UpdateSerpYearAndMonth()
+        {
+
+            var prom = await _context.Serps.Where(x => x.SerpTitle != null && x.SerpDescription != null).ToListAsync();
+
+            foreach (var item in prom)
+            {
+                //TITLE
+                if (item.SerpTitle.Contains("[year]"))
+                {
+                    item.SerpTitle = item.SerpTitle.Replace("[year]", "[" + (DateTime.Now.Year).ToString() + "]");
+                    _context.Entry(item).State = EntityState.Modified;
+                }
+                if (item.SerpTitle.Contains("[month]"))
+                {
+                    item.SerpTitle = item.SerpTitle.Replace("[month]", "[" + DateTime.Now.ToString("MMMM") + "]");
+                    _context.Entry(item).State = EntityState.Modified;
+                }
+
+                //DESCRIPTION
+                if (item.SerpDescription.Contains("[year]"))
+                {
+                    item.SerpDescription = item.SerpDescription.Replace("[year]", "[" + (DateTime.Now.Year).ToString() + "]");
+                    _context.Entry(item).State = EntityState.Modified;
+                }
+                if (item.SerpDescription.Contains("[month]"))
+                {
+                    item.SerpDescription = item.SerpDescription.Replace("[month]", "[" + DateTime.Now.ToString("MMMM") + "]");
+                    _context.Entry(item).State = EntityState.Modified;
+                }
+                await SaveContextChangesAsync();
+            }
+        }
 
         public async Task<SerpODTO> EditSerp(SerpIDTO serpIDTO)
         {
             var serp = _mapper.Map<Serp>(serpIDTO);
+            //TITLE
+            if (serp.SerpTitle.Contains("[year]"))
+            {
+                serp.SerpTitle = serp.SerpTitle.Replace("[year]", "[" + (DateTime.Now.Year).ToString() + "]");
+            }
+            if (serp.SerpTitle.Contains("[month]"))
+            {
+                serp.SerpTitle = serp.SerpTitle.Replace("[month]", "[" + DateTime.Now.ToString("MMMM") + "]");
+            }
+
+            //DESCRIPTION
+            if (serp.SerpDescription.Contains("[year]"))
+            {
+                serp.SerpDescription = serp.SerpDescription.Replace("[year]", "[" + (DateTime.Now.Year).ToString() + "]");
+            }
+            if (serp.SerpDescription.Contains("[month]"))
+            {
+                serp.SerpDescription = serp.SerpDescription.Replace("[month]", "[" + DateTime.Now.ToString("MMMM") + "]");
+            }
 
             _context.Entry(serp).State = EntityState.Modified;
-
             await SaveContextChangesAsync();
 
             return await GetSerpById(serp.SerpId);
+
         }
 
         public async Task<SerpODTO> AddSerp(SerpIDTO serpIDTO)
@@ -1846,6 +1930,27 @@ namespace P2P.Services
             var serp = _mapper.Map<Serp>(serpIDTO);
             serp.SerpId = 0;
             _context.Serps.Add(serp);
+            await SaveContextChangesAsync();
+            //TITLE
+            if (serp.SerpTitle.Contains("[year]"))
+            {
+                serp.SerpTitle = serp.SerpTitle.Replace("[year]", "[" + (DateTime.Now.Year).ToString() + "]");
+            }
+            if (serp.SerpTitle.Contains("[month]"))
+            {
+                serp.SerpTitle = serp.SerpTitle.Replace("[month]", "[" + DateTime.Now.ToString("MMMM") + "]");
+            }
+
+            //DESCRIPTION
+            if (serp.SerpDescription.Contains("[year]"))
+            {
+                serp.SerpDescription = serp.SerpDescription.Replace("[year]", "[" + (DateTime.Now.Year).ToString() + "]");
+            }
+            if (serp.SerpDescription.Contains("[month]"))
+            {
+                serp.SerpDescription = serp.SerpDescription.Replace("[month]", "[" + DateTime.Now.ToString("MMMM") + "]");
+            }
+
             await SaveContextChangesAsync();
             switch (serpIDTO.DataTypeId)
             {
