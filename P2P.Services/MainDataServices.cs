@@ -2630,7 +2630,32 @@ namespace P2P.Services
 
         public async Task<ReviewODTO> GetReviewById(int id)
         {
-            return await GetReview(id).AsNoTracking().FirstOrDefaultAsync();
+            var review = await GetReview(id).AsNoTracking().FirstOrDefaultAsync();
+            //TITLE
+            var YearForChangeTitle = Regex.Match(review.SerpTitle, @"\[" + DateTime.Now.Year + "]").ToString();
+            if (YearForChangeTitle != "")
+            {
+                review.SerpTitle = review.SerpTitle.Replace(YearForChangeTitle, "[year]");
+            }
+
+            var MonthForChangeTitle = Regex.Match(review.SerpTitle, @"\[" + DateTime.Now.ToString("MMMM") + "]").ToString();
+            if (MonthForChangeTitle != "")
+            {
+                review.SerpTitle = review.SerpTitle.Replace(MonthForChangeTitle, "[month]");
+            }
+            //DESCRIPTION
+            var YearForChangeDesc = Regex.Match(review.SerpDescription, @"\[" + DateTime.Now.Year + "]").ToString();
+            if (YearForChangeDesc != "")
+            {
+                review.SerpDescription = review.SerpDescription.Replace(YearForChangeDesc, "[year]");
+            }
+            var MonthForChangeDesc = Regex.Match(review.SerpDescription, @"\[" + DateTime.Now.ToString("MMMM") + "]").ToString();
+            if (MonthForChangeDesc != "")
+            {
+                review.SerpDescription = review.SerpDescription.Replace(MonthForChangeDesc, "[month]");
+            }
+
+            return review;
         }
 
         public async Task<GetReviewsByRouteODTO> GetReviewsByRoute(string url, int langId)
@@ -2641,7 +2666,36 @@ namespace P2P.Services
                                      && (x.LanguageId == langId)
                                      select x.TableId).FirstOrDefaultAsync();
             var review = await _context.Review.Include(x => x.Serp).Include(x => x.Rev_ReportLink).Where(x => x.IsActive == true && x.ReviewId == UrlReviewId).FirstOrDefaultAsync();
-
+            //TITLE
+            // set review.serp.serptitle [year] from [2022] to 2022
+            var YearForChangeTitle = Regex.Match(review.Serp.SerpTitle, @"\[" + DateTime.Now.Year + "]").ToString();
+            if (YearForChangeTitle != "")
+            {
+                YearForChangeTitle = YearForChangeTitle.Replace("[", string.Empty).Replace("]", string.Empty);
+                review.Serp.SerpTitle = review.Serp.SerpTitle.Replace("[" + DateTime.Now.Year + "]", YearForChangeTitle);
+            }
+            // set review.serp.serptitle [month] from [December] to December
+            var MonthForChangeTitle = Regex.Match(review.Serp.SerpTitle, @"\[" + DateTime.Now.ToString("MMMM") + "]").ToString();
+            if (MonthForChangeTitle != "")
+            {
+                MonthForChangeTitle = MonthForChangeTitle.Replace("[", string.Empty).Replace("]", string.Empty);
+                review.Serp.SerpTitle = review.Serp.SerpTitle.Replace("[" + DateTime.Now.ToString("MMMM") + "]", MonthForChangeTitle);
+            }
+            //DESCRIPTION
+            // set review.serp.SerpDescription [year] from [2022] to 2022
+            var YearForChangeDesc = Regex.Match(review.Serp.SerpDescription, @"\[" + DateTime.Now.Year + "]").ToString();
+            if (YearForChangeDesc != "")
+            {
+                YearForChangeDesc = YearForChangeDesc.Replace("[", string.Empty).Replace("]", string.Empty);
+                review.Serp.SerpDescription = review.Serp.SerpDescription.Replace("[" + DateTime.Now.Year + "]", YearForChangeDesc);
+            }
+            // set review.serp.SerpDescription [month] from [December] to December
+            var MonthForChangeDesc = Regex.Match(review.Serp.SerpDescription, @"\[" + DateTime.Now.ToString("MMMM") + "]").ToString();
+            if (MonthForChangeDesc != "")
+            {
+                MonthForChangeDesc = MonthForChangeDesc.Replace("[", string.Empty).Replace("]", string.Empty);
+                review.Serp.SerpDescription = review.Serp.SerpDescription.Replace("[" + DateTime.Now.ToString("MMMM") + "]", MonthForChangeDesc);
+            }
             var newsfeed = await (from x in _context.NewsFeeds
                                   .Include(x => x.UrlTable)
                                   .Include(x => x.Language)
