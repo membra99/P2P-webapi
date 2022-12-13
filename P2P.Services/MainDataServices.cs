@@ -3,6 +3,7 @@ using Entities.Context;
 using Entities.P2P.MainData;
 using Entities.P2P.MainData.Settings;
 using Microsoft.EntityFrameworkCore;
+using NetTopologySuite.Index.HPRtree;
 using P2P.Base.Services;
 using P2P.DTO.Input;
 using P2P.DTO.Input.EndpointIDTO;
@@ -2497,7 +2498,7 @@ namespace P2P.Services
                                                                                        Path = b.UrlTable.URL,
                                                                                        Excerpt = b.Excerpt,
                                                                                        Tag = b.Tag
-                                                                                   }).ToList();
+                                                                                   }).Distinct().ToList();
                         //var topReviews = await GetParentReview(langId);
                         var retVal = new PageContentODTO
                         {
@@ -2632,41 +2633,54 @@ namespace P2P.Services
         {
             var review = await GetReview(id).AsNoTracking().FirstOrDefaultAsync();
             //TITLE
-            var YearForChangeTitle = Regex.Match(review.SerpTitle, @"\[" + DateTime.Now.Year + "]").ToString();
-            if (YearForChangeTitle != "")
+            if(review.SerpTitle != null)
             {
-                review.SerpTitle = review.SerpTitle.Replace(YearForChangeTitle, "[year]");
-            }
+                var YearForChangeTitle = (Regex.Match(review.SerpTitle, @"\[" + DateTime.Now.Year + "]").ToString());
+                if (YearForChangeTitle != "")
+                {
+                    review.SerpTitle = review.SerpTitle.Replace(YearForChangeTitle, "[year]");
+                }
 
-            var MonthForChangeTitle = Regex.Match(review.SerpTitle, @"\[" + DateTime.Now.ToString("MMMM") + "]").ToString();
-            if (MonthForChangeTitle != "")
-            {
-                review.SerpTitle = review.SerpTitle.Replace(MonthForChangeTitle, "[month]");
+                var MonthForChangeTitle = Regex.Match(review.SerpTitle, @"\[" + DateTime.Now.ToString("MMMM") + "]").ToString();
+                if (MonthForChangeTitle != "")
+                {
+                    review.SerpTitle = review.SerpTitle.Replace(MonthForChangeTitle, "[month]");
+                }
             }
+            
+            
             //DESCRIPTION
-            var YearForChangeDesc = Regex.Match(review.SerpDescription, @"\[" + DateTime.Now.Year + "]").ToString();
-            if (YearForChangeDesc != "")
+            if(review.SerpDescription != null)
             {
-                review.SerpDescription = review.SerpDescription.Replace(YearForChangeDesc, "[year]");
+                var YearForChangeDesc = Regex.Match(review.SerpDescription, @"\[" + DateTime.Now.Year + "]").ToString();
+                if (YearForChangeDesc != "")
+                {
+                    review.SerpDescription = review.SerpDescription.Replace(YearForChangeDesc, "[year]");
+                }
+                var MonthForChangeDesc = Regex.Match(review.SerpDescription, @"\[" + DateTime.Now.ToString("MMMM") + "]").ToString();
+                if (MonthForChangeDesc != "")
+                {
+                    review.SerpDescription = review.SerpDescription.Replace(MonthForChangeDesc, "[month]");
+                }
             }
-            var MonthForChangeDesc = Regex.Match(review.SerpDescription, @"\[" + DateTime.Now.ToString("MMMM") + "]").ToString();
-            if (MonthForChangeDesc != "")
-            {
-                review.SerpDescription = review.SerpDescription.Replace(MonthForChangeDesc, "[month]");
-            }
+            
             //CONTENT
-            var YearForChangeContent = Regex.Match(review.ReviewContent, @"\[" + DateTime.Now.Year + "]").ToString();
-            if (YearForChangeContent != "")
+            if(review.ReviewContent != null)
             {
+                var YearForChangeContent = Regex.Match(review.ReviewContent, @"\[" + DateTime.Now.Year + "]").ToString();
+                if (YearForChangeContent != "")
+                {
 
-                review.ReviewContent = review.ReviewContent.Replace(YearForChangeContent, "[year]");
-            }
-            var MonthForChangeContent = Regex.Match(review.ReviewContent, @"\[" + DateTime.Now.ToString("MMMM") + "]").ToString();
-            if (MonthForChangeContent != "")
-            {
+                    review.ReviewContent = review.ReviewContent.Replace(YearForChangeContent, "[year]");
+                }
+                var MonthForChangeContent = Regex.Match(review.ReviewContent, @"\[" + DateTime.Now.ToString("MMMM") + "]").ToString();
+                if (MonthForChangeContent != "")
+                {
 
-                review.ReviewContent = review.ReviewContent.Replace(MonthForChangeContent, "[month]");
+                    review.ReviewContent = review.ReviewContent.Replace(MonthForChangeContent, "[month]");
+                }
             }
+            
 
             return review;
         }
@@ -2681,49 +2695,53 @@ namespace P2P.Services
             var review = await _context.Review.Include(x => x.Serp).Include(x => x.Rev_ReportLink).Where(x => x.IsActive == true && x.ReviewId == UrlReviewId).FirstOrDefaultAsync();
             //TITLE
             // set review.serp.serptitle [year] from [2022] to 2022
-            var YearForChangeTitle = Regex.Match(review.Serp.SerpTitle, @"\[" + DateTime.Now.Year + "]").ToString();
-            if (YearForChangeTitle != "")
+            if(review != null)
             {
-                YearForChangeTitle = YearForChangeTitle.Replace("[", string.Empty).Replace("]", string.Empty);
-                review.Serp.SerpTitle = review.Serp.SerpTitle.Replace("[" + DateTime.Now.Year + "]", YearForChangeTitle);
+                var YearForChangeTitle = Regex.Match(review.Serp.SerpTitle, @"\[" + DateTime.Now.Year + "]").ToString();
+                if (YearForChangeTitle != "")
+                {
+                    YearForChangeTitle = YearForChangeTitle.Replace("[", string.Empty).Replace("]", string.Empty);
+                    review.Serp.SerpTitle = review.Serp.SerpTitle.Replace("[" + DateTime.Now.Year + "]", YearForChangeTitle);
+                }
+                // set review.serp.serptitle [month] from [December] to December
+                var MonthForChangeTitle = Regex.Match(review.Serp.SerpTitle, @"\[" + DateTime.Now.ToString("MMMM") + "]").ToString();
+                if (MonthForChangeTitle != "")
+                {
+                    MonthForChangeTitle = MonthForChangeTitle.Replace("[", string.Empty).Replace("]", string.Empty);
+                    review.Serp.SerpTitle = review.Serp.SerpTitle.Replace("[" + DateTime.Now.ToString("MMMM") + "]", MonthForChangeTitle);
+                }
+                //DESCRIPTION
+                // set review.serp.SerpDescription [year] from [2022] to 2022
+                var YearForChangeDesc = Regex.Match(review.Serp.SerpDescription, @"\[" + DateTime.Now.Year + "]").ToString();
+                if (YearForChangeDesc != "")
+                {
+                    YearForChangeDesc = YearForChangeDesc.Replace("[", string.Empty).Replace("]", string.Empty);
+                    review.Serp.SerpDescription = review.Serp.SerpDescription.Replace("[" + DateTime.Now.Year + "]", YearForChangeDesc);
+                }
+                // set review.serp.SerpDescription [month] from [December] to December
+                var MonthForChangeDesc = Regex.Match(review.Serp.SerpDescription, @"\[" + DateTime.Now.ToString("MMMM") + "]").ToString();
+                if (MonthForChangeDesc != "")
+                {
+                    MonthForChangeDesc = MonthForChangeDesc.Replace("[", string.Empty).Replace("]", string.Empty);
+                    review.Serp.SerpDescription = review.Serp.SerpDescription.Replace("[" + DateTime.Now.ToString("MMMM") + "]", MonthForChangeDesc);
+                }
+                //CONTENT
+                // set review.ReviewContent [year] from [2022] to 2022
+                var YearForChangeContent = Regex.Match(review.ReviewContent, @"\[" + DateTime.Now.Year + "]").ToString();
+                if (YearForChangeContent != "")
+                {
+                    YearForChangeContent = YearForChangeContent.Replace("[", string.Empty).Replace("]", string.Empty);
+                    review.ReviewContent = review.ReviewContent.Replace("[" + DateTime.Now.Year + "]", YearForChangeContent);
+                }
+                // set review.ReviewContent  [month] from [December] to December
+                var MonthForChangeContent = Regex.Match(review.ReviewContent, @"\[" + DateTime.Now.ToString("MMMM") + "]").ToString();
+                if (MonthForChangeContent != "")
+                {
+                    MonthForChangeContent = MonthForChangeContent.Replace("[", string.Empty).Replace("]", string.Empty);
+                    review.ReviewContent = review.ReviewContent.Replace("[" + DateTime.Now.ToString("MMMM") + "]", MonthForChangeContent);
+                }
             }
-            // set review.serp.serptitle [month] from [December] to December
-            var MonthForChangeTitle = Regex.Match(review.Serp.SerpTitle, @"\[" + DateTime.Now.ToString("MMMM") + "]").ToString();
-            if (MonthForChangeTitle != "")
-            {
-                MonthForChangeTitle = MonthForChangeTitle.Replace("[", string.Empty).Replace("]", string.Empty);
-                review.Serp.SerpTitle = review.Serp.SerpTitle.Replace("[" + DateTime.Now.ToString("MMMM") + "]", MonthForChangeTitle);
-            }
-            //DESCRIPTION
-            // set review.serp.SerpDescription [year] from [2022] to 2022
-            var YearForChangeDesc = Regex.Match(review.Serp.SerpDescription, @"\[" + DateTime.Now.Year + "]").ToString();
-            if (YearForChangeDesc != "")
-            {
-                YearForChangeDesc = YearForChangeDesc.Replace("[", string.Empty).Replace("]", string.Empty);
-                review.Serp.SerpDescription = review.Serp.SerpDescription.Replace("[" + DateTime.Now.Year + "]", YearForChangeDesc);
-            }
-            // set review.serp.SerpDescription [month] from [December] to December
-            var MonthForChangeDesc = Regex.Match(review.Serp.SerpDescription, @"\[" + DateTime.Now.ToString("MMMM") + "]").ToString();
-            if (MonthForChangeDesc != "")
-            {
-                MonthForChangeDesc = MonthForChangeDesc.Replace("[", string.Empty).Replace("]", string.Empty);
-                review.Serp.SerpDescription = review.Serp.SerpDescription.Replace("[" + DateTime.Now.ToString("MMMM") + "]", MonthForChangeDesc);
-            }
-            //CONTENT
-            // set review.ReviewContent [year] from [2022] to 2022
-            var YearForChangeContent = Regex.Match(review.ReviewContent, @"\[" + DateTime.Now.Year + "]").ToString();
-            if (YearForChangeContent != "")
-            {
-                YearForChangeContent = YearForChangeContent.Replace("[", string.Empty).Replace("]", string.Empty);
-                review.ReviewContent = review.ReviewContent.Replace("[" + DateTime.Now.Year + "]", YearForChangeContent);
-            }
-            // set review.ReviewContent  [month] from [December] to December
-            var MonthForChangeContent = Regex.Match(review.ReviewContent, @"\[" + DateTime.Now.ToString("MMMM") + "]").ToString();
-            if (MonthForChangeContent != "")
-            {
-                MonthForChangeContent = MonthForChangeContent.Replace("[", string.Empty).Replace("]", string.Empty);
-                review.ReviewContent = review.ReviewContent.Replace("[" + DateTime.Now.ToString("MMMM") + "]", MonthForChangeContent);
-            }
+            
 
             var newsfeed = await (from x in _context.NewsFeeds
                                   .Include(x => x.UrlTable)
@@ -2946,10 +2964,21 @@ namespace P2P.Services
 
         public async Task<ReviewODTO> EditReviewContent(PutContentIDTO contentIDTO)
         {
-            var review = await _context.Review.Where(x => x.ReviewId == contentIDTO.Id).FirstOrDefaultAsync();
-            review.ReviewContent = contentIDTO.Content;
-            _context.Entry(review).State = EntityState.Modified;
-            await SaveContextChangesAsync();
+            var review = await _context.Review.Where(x => x.ReviewId == contentIDTO.Id).SingleOrDefaultAsync();
+
+            if (contentIDTO.Content.Contains("[year]"))
+            {
+                contentIDTO.Content = contentIDTO.Content.Replace("[year]", "[" + (DateTime.Now.Year).ToString() + "]");
+                review.ReviewContent = contentIDTO.Content.Replace("[year]", "[" + (DateTime.Now.Year).ToString() + "]");
+                _context.Entry(review).State = EntityState.Modified;
+                await SaveContextChangesAsync();
+            }
+            if (contentIDTO.Content.Contains("[month]"))
+            {
+                review.ReviewContent = contentIDTO.Content.Replace("[month]", "[" + DateTime.Now.ToString("MMMM") + "]");
+                _context.Entry(review).State = EntityState.Modified;
+                await SaveContextChangesAsync();
+            }
             return await GetReviewById(review.ReviewId);
         }
 
@@ -3207,7 +3236,8 @@ namespace P2P.Services
                 review.LoanType = review.LoanType != 0 ? review.LoanType : null;
                 review.PortfolioSize = review.PortfolioSize != 0 ? review.PortfolioSize : null;
                 review.Availability = review.Availability != 0 ? review.Availability : null;
-                review.Count = review.Count != 0 ? review.Count : null;
+                var NewReview = await _context.Review.Where(x => x.Name.ToLower() == review.Name.ToLower() && x.LanguageId == 1).SingleOrDefaultAsync();
+                review.Count = (NewReview != null) ? NewReview.Count : ((review.Count != 0) ? review.Count : null);
                 review.Earnings = review.Earnings != 0 ? review.Earnings : null;
                 review.Cryptoloan = review.Cryptoloan != 0 ? review.Cryptoloan : null;
                 review.DiversificationMinInvest = review.DiversificationMinInvest != 0 ? review.DiversificationMinInvest : null;
@@ -3379,6 +3409,55 @@ namespace P2P.Services
         {
             return await GetAcademy(0, langId, tag).ToListAsync();
         }
+        public async Task<AcademyODTO> GetAcademyFull(int id)
+        {
+            var gu = await _context.UrlLanguages.Where(x => x.TableID == id).Select(x => x.GUID).ToListAsync();
+
+            return await (from x in _context.Academies
+                   .Include(x => x.Language)
+                   .Include(x => x.Serp)
+                   .Include(x => x.UrlTable)
+                          where (id == 0 || x.AcademyId == id)
+                          select new AcademyODTO
+                          {
+                              AcademyId = x.AcademyId,
+                              UrlTableId = x.UrlTableId,
+                              URL = x.UrlTable.URL,
+                              SerpId = x.SerpId,
+                              LanguageId = x.LanguageId,
+                              LanguageName = x.Language.LanguageName,
+                              Title = x.Title,
+                              FeaturedImage = x.FeaturedImage,
+                              Tag = x.Tag,
+                              TitleOverview = x.TitleOverview,
+                              Excerpt = x.Excerpt,
+                              CreatedDate = x.CreatedDate,
+                              UpdatedDate = x.UpdatedDate,
+                              UO = (from y in _context.UrlLanguages
+                                    where
+                                     (gu.Contains(y.GUID))
+                                    select _mapper.Map<UrlLanguagesODTO>(y)).ToList()
+                          }).SingleOrDefaultAsync();
+        }
+
+        public async Task<List<AcademyODTO>> GetAcademyByLangIdFull(int langId)
+        {
+            List<int> AcademyIDS = _context.Academies.Where(x => x.LanguageId == langId).Select(x => x.AcademyId).ToList();
+
+            List<AcademyODTO> ListaAkademy = new List<AcademyODTO>();
+            foreach (var id in AcademyIDS)
+            {
+                string guid = await _context.UrlLanguages.Where(x => x.TableID == id).Select(x => x.GUID).FirstOrDefaultAsync();
+                AcademyODTO academyODTO = _context.Academies.Include(x => x.UrlTable).Include(x => x.Language).Where(x => x.AcademyId == id).Select(x => _mapper.Map<AcademyODTO>(x)).SingleOrDefault();
+
+                academyODTO.UO = (from u in _context.UrlLanguages
+                                  where (u.GUID == guid)
+                                  select _mapper.Map<UrlLanguagesODTO>(u)).ToList();
+                ListaAkademy.Add(academyODTO);
+            }
+
+            return ListaAkademy;
+        }
 
         public async Task<AcademyODTO> EditAcademy(AcademyIDTO academyIDTO)
         {
@@ -3392,6 +3471,39 @@ namespace P2P.Services
 
             return await GetAcademyById(academy.AcademyId);
         }
+                                    
+        public async Task<UrlLanguagesODTO> AddUrlLanguage(string LinkDostava, int DataType, string LinkUnos, int? LangID, int TableId)
+        {
+            Entities.P2P.MainData.UrlLanguages langurl = null;
+
+            if (LinkDostava != "string")
+            {
+                langurl = new Entities.P2P.MainData.UrlLanguages();
+                langurl.DataTypeId = DataType;
+                langurl.URL = LinkUnos;
+                langurl.LanguageId = Convert.ToInt32(LangID);
+                langurl.TableID = TableId;
+                langurl.GUID = await _context.UrlLanguages.Where(x => x.URL == LinkDostava).Select(x => x.GUID).FirstOrDefaultAsync();
+                _context.UrlLanguages.Add(langurl);
+            }
+            else
+            {
+                Guid x = Guid.NewGuid();
+                langurl = new Entities.P2P.MainData.UrlLanguages();
+                langurl.DataTypeId = DataType;
+                langurl.URL = LinkUnos;
+                langurl.LanguageId = Convert.ToInt32(LangID);
+                langurl.TableID = TableId;
+                langurl.GUID = x.ToString();
+                _context.UrlLanguages.Add(langurl);
+            }
+
+            await SaveContextChangesAsync();
+            var url = await _context.UrlLanguages.OrderByDescending(y => y.UrlLanguagesID).FirstOrDefaultAsync();
+
+            return _mapper.Map<UrlLanguagesODTO>(url);
+        }
+        
 
         public async Task<AcademyODTO> AddAcademy(AcademyIDTO academyIDTO)
         {
@@ -3409,7 +3521,12 @@ namespace P2P.Services
             _context.Academies.Add(academy);
             await SaveContextChangesAsync();
 
-            return await GetAcademyById(academy.AcademyId);
+            var Link = await _context.UrlTables.Where(x => x.UrlTableId == academyIDTO.UrlTableId).Select(x => x.URL).SingleOrDefaultAsync();
+            var tableID = academy.AcademyId;
+            var LanguageID = academyIDTO.LanguageId;
+            await AddUrlLanguage(academyIDTO.Link, 2, Link, LanguageID, tableID);
+
+            return await GetAcademyFull(academy.AcademyId);
         }
 
         public async Task<AcademyODTO> DeleteAcademy(int id)
@@ -3918,6 +4035,17 @@ namespace P2P.Services
             homeSettings.ReviewUrl = homeSettings.ReviewUrl != 0 ? homeSettings.ReviewUrl : null;
             _context.Entry(homeSettings).State = EntityState.Modified;
 
+            await SaveContextChangesAsync();
+
+            var AllHomesettings = await _context.HomeSettings.Where(x => x.LanguageId == 1).SingleOrDefaultAsync();
+
+            foreach (var item in _context.HomeSettings.ToList())
+            {
+                item.Investment = (homeSettings.Investment == null) ? 0 : AllHomesettings.Investment;
+                item.Returned = (homeSettings.Returned == null) ? 0 : AllHomesettings.Returned;
+                item.Platforms = (homeSettings.Platforms == null) ? 0 : AllHomesettings.Platforms;
+                _context.Entry(homeSettings).State = EntityState.Modified;
+            }
             await SaveContextChangesAsync();
 
             var serp = new Serp

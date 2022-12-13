@@ -24,6 +24,7 @@ namespace Entities.P2P.MainData
         public string PageTitle { get; set; }
 
         public string Content { get; set; }
+        public string Plaforms { get; set; }
 
         public Language Language { get; set; }
         public DataType DataType { get; set; }

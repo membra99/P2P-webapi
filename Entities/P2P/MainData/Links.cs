@@ -19,6 +19,7 @@ namespace Entities.P2P.MainData
 
         [StringLength(50)]
         public string Key { get; set; }
+        public string Category { get; set; }
 
         public Language Language { get; set; }
 

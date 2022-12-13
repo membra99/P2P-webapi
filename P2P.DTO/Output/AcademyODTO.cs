@@ -24,6 +24,7 @@ namespace P2P.DTO.Output
         public string TitleOverview { get; set; }
 
         public string Excerpt { get; set; }
+        public List<UrlLanguagesODTO> UO { get; set; }
 
         public DateTime? CreatedDate { get; set; }
         public DateTime? UpdatedDate { get; set; }

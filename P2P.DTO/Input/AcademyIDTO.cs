@@ -20,6 +20,7 @@ namespace P2P.DTO.Input
         public string Tag { get; set; }
         public string TitleOverview { get; set; }
         public string Excerpt { get; set; }
+        public string Link { get; set; }
 
         public DateTime? CreatedDate { get; set; }
         public DateTime? UpdatedDate { get; set; }

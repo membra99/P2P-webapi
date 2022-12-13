@@ -14,5 +14,8 @@ namespace P2P.DTO.Input
         public string UrlTableName { get; set; }
         public int LanguageId { get; set; }
         public string Key { get; set; }
+        public string Category { get; set; }
+
+        
     }
 }

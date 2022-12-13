@@ -32,5 +32,6 @@ namespace Entities.P2P.MainData
         public ICollection<Category> Categories { get; set; }
         public ICollection<Permission> Permissions { get; set; }
         public ICollection<Author> Author { get; set; }
+        public ICollection<UrlLanguages> UrlLanguages { get; set; }
     }
 }

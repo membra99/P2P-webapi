@@ -42,6 +42,7 @@ namespace Entities.Context
         public DbSet<Blog> Blogs { get; set; }
         public DbSet<Author> Authors { get; set; }
         public DbSet<ImagesInfo> ImagesInfos { get; set; }
+        public DbSet<UrlLanguages> UrlLanguages { get; set; }
 
         #endregion MainData
 
@@ -504,6 +505,20 @@ namespace Entities.Context
                     .WithMany(x => x.ImagesInfos)
                     .HasForeignKey(x => x.AwsUrl)
                     .OnDelete(DeleteBehavior.Restrict);
+            });
+
+            modelBuilder.Entity<UrlLanguages>(entity =>
+            {
+                entity.HasKey(x => x.UrlLanguagesID);
+
+                entity.HasOne(x => x.DataType)
+                    .WithMany(x => x.UrlLanguages)
+                    .OnDelete(DeleteBehavior.Restrict);
+
+                entity.HasOne(x => x.Language)
+                    .WithMany(x => x.UrlLanguages)
+                    .OnDelete(DeleteBehavior.Restrict);
+
             });
 
             #endregion MainData

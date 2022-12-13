@@ -25,6 +25,8 @@ namespace P2P.Base.Services.Mapping
             CreateMap<Language, LanguageODTO>();
             CreateMap<LanguageIDTO, Language>();
 
+            CreateMap<UrlLanguages, UrlLanguagesODTO>();
+
             CreateMap<ImagesInfo, ImagesInfoODTO>()
                 .ForMember(dest => dest.Aws, source => source.MapFrom(m => m.UrlTable.URL));
             CreateMap<ImagesInfoIDTO, ImagesInfo>();
