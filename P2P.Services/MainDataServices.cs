@@ -90,7 +90,7 @@ namespace P2P.Services
         #endregion GlobalFunctions & Statics
 
         #region Testimonial
-
+        //Testimonial
         private IQueryable<TestimonialODTO> GetTestimonial(int id, int langId)
         {
             return from x in _context.Testimonials
