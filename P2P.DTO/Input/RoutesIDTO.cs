@@ -13,5 +13,6 @@ namespace P2P.DTO.Input
         public int LanguageId { get; set; }
         public int TableId { get; set; }
         public string UrlTableName { get; set; }
+        public string Link { get; set; }
     }
 }

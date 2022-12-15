@@ -18,5 +18,6 @@ namespace P2P.DTO.Output
         public DateTime? Valid_Until { get; set; } //If IsCampaign is true - Valid Until is filled, Exclusive is null
         public bool? Exclusive { get; set; } //If IsCampaign is false - Exclusive is filled, Valid Until is null
         public bool IsCampaign { get; set; }
+        public List<UrlLanguagesODTO> UO { get; set; }
     }
 }

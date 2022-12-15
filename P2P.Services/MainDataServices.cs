@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Entities.Context;
+using Entities.Migrations;
 using Entities.P2P.MainData;
 using Entities.P2P.MainData.Settings;
 using Microsoft.EntityFrameworkCore;
@@ -1418,6 +1419,31 @@ namespace P2P.Services
         {
             return await GetCashBack(0, langId).ToListAsync();
         }
+        public async Task<CashBackODTO> GetCashBackFull(int id)
+        {
+            var gu = await _context.UrlLanguages.Where(x => x.TableID == id).Select(x => x.GUID).ToListAsync();
+
+            return await (from x in _context.CashBacks
+                   .Include(x => x.Language)
+                   .Include(x => x.Review)
+                          where (id == 0 || x.CashBackId == id)
+                          select new CashBackODTO
+                          {
+                             CashBackId = x.CashBackId,
+                             CashBack_ca = x.CashBack_ca,
+                             CashBack_terms = x.CashBack_terms,
+                             IsCampaign = x.IsCampaign,
+                             LanguageId = x.LanguageId,
+                             LanguageName = x.Language.LanguageName,
+                             Exclusive = x.Exclusive,
+                             ReviewId = Convert.ToInt32(x.ReviewId),
+                             Name = x.Review.Name,
+                             Valid_Until = x.Valid_Until,
+                              UO = (from y in _context.UrlLanguages
+                                    where (gu.Contains(y.GUID))
+                                    select _mapper.Map<UrlLanguagesODTO>(y)).ToList()
+                          }).SingleOrDefaultAsync();
+        }
 
         public async Task<CashBackODTO> GetCashBackById(int id)
         {
@@ -1452,6 +1478,8 @@ namespace P2P.Services
 
             return cashback;
         }
+
+
 
         public async Task<List<CashbackListODTO>> CashbackList(int langId, bool isCampaign)
         {
@@ -1719,6 +1747,7 @@ namespace P2P.Services
                 urlRoute.TableId = routes.RoutesId;
                 await SaveContextChangesAsync();
             }
+            await AddUrlLanguage(routesIDTO.Link /*link za proveru*/, routesIDTO.DataTypeId, routesIDTO.UrlTableName /*Link koji se upisuje u tabelu*/, routesIDTO.LanguageId, routesIDTO.TableId);
 
             return await GetRoutesById(routes.RoutesId);
         }
@@ -2633,7 +2662,7 @@ namespace P2P.Services
         {
             var review = await GetReview(id).AsNoTracking().FirstOrDefaultAsync();
             //TITLE
-            if(review.SerpTitle != null)
+            if (review.SerpTitle != null)
             {
                 var YearForChangeTitle = (Regex.Match(review.SerpTitle, @"\[" + DateTime.Now.Year + "]").ToString());
                 if (YearForChangeTitle != "")
@@ -2647,10 +2676,9 @@ namespace P2P.Services
                     review.SerpTitle = review.SerpTitle.Replace(MonthForChangeTitle, "[month]");
                 }
             }
-            
-            
+
             //DESCRIPTION
-            if(review.SerpDescription != null)
+            if (review.SerpDescription != null)
             {
                 var YearForChangeDesc = Regex.Match(review.SerpDescription, @"\[" + DateTime.Now.Year + "]").ToString();
                 if (YearForChangeDesc != "")
@@ -2663,9 +2691,9 @@ namespace P2P.Services
                     review.SerpDescription = review.SerpDescription.Replace(MonthForChangeDesc, "[month]");
                 }
             }
-            
+
             //CONTENT
-            if(review.ReviewContent != null)
+            if (review.ReviewContent != null)
             {
                 var YearForChangeContent = Regex.Match(review.ReviewContent, @"\[" + DateTime.Now.Year + "]").ToString();
                 if (YearForChangeContent != "")
@@ -2680,9 +2708,101 @@ namespace P2P.Services
                     review.ReviewContent = review.ReviewContent.Replace(MonthForChangeContent, "[month]");
                 }
             }
-            
+
 
             return review;
+        }
+
+        public async Task<ReviewODTO> GetReviewFull(int id)
+        {
+            var gu = await _context.UrlLanguages.Where(x => x.TableID == id).Select(x => x.GUID).ToListAsync();
+
+            return await (from x in _context.Review
+                   .Include(z => z.Serp)
+                   .Include(z => z.Language)
+                   .Include(x => x.Rev_FacebookUrl)
+                   .Include(x => x.Rev_InstagramUrl)
+                   .Include(x => x.Rev_LinkedInUrl)
+                   .Include(x => x.Rev_TwitterUrl)
+                   .Include(x => x.Rev_YoutubeUrl)
+                   .Include(x => x.Rev_ReportLink)
+                          where (id == 0 || x.ReviewId == id)
+                          select new ReviewODTO
+                          {
+                              ReviewId = x.ReviewId,
+                              SerpId = x.SerpId,
+                              SerpDescription = x.Serp.SerpDescription,
+                              Subtitle = x.Serp.Subtitle,
+                              LanguageId = x.LanguageId,
+                              Languagename = x.Language.LanguageName,
+                              ReportLink = x.ReportLink,
+                              ReportUrlName = x.Rev_ReportLink.URL,
+                              Name = x.Name,
+                              Logo = x.Logo,
+                              Interest = x.Interest,
+                              SecuredBy = x.SecuredBy,
+                              SecuredByCheck = x.SecuredByCheck,
+                              NotSecured = x.NotSecured,
+                              Bonus = x.Bonus,
+                              CustomMessage = x.CustomMessage,
+                              CompareButton = x.CompareButton,
+                              RiskReturn = x.RiskReturn,
+                              Usability = x.Usability,
+                              Liquidity = x.Liquidity,
+                              Support = x.Support,
+                              Features = x.Features,
+                              AutoInvest = x.AutoInvest,
+                              SecondaryMarket = x.SecondaryMarket,
+                              Promotion = x.Promotion,
+                              MinInvestment = x.MinInvestment,
+                              DiversificationOtherCurrency = x.DiversificationOtherCurrency,
+                              Countries = x.Countries,
+                              LoanOriginators = x.LoanOriginators,
+                              LoanType = x.LoanType,
+                              InterestRange = x.InterestRange,
+                              MinLoanPerion = x.MaxLoanPerion,
+                              MaxLoanPerion = x.MaxLoanPerion,
+                              OperatingSince = x.OperatingSince,
+                              Earnings = x.Earnings,
+                              TotalLoanValue = x.TotalLoanValue,
+                              NumberOfInvestors = x.NumberOfInvestors,
+                              InvestorsLoss = x.InvestorsLoss,
+                              PortfolioSize = x.PortfolioSize,
+                              FinancialReport = x.FinancialReport,
+                              StatisticsOtherCurrency = x.StatisticsOtherCurrency,
+                              BuybackGuarantee = x.BuybackGuarantee,
+                              PersonalGuarantee = x.PersonalGuarantee,
+                              Mortage = x.Mortage,
+                              Collateral = x.Collateral,
+                              NoProtection = x.NoProtection,
+                              CryptoAssets = x.CryptoAssets,
+                              LegalName = x.LegalName,
+                              Address = x.Address,
+                              Phone = x.Phone,
+                              Email = x.Email,
+                              LiveChat = x.LiveChat,
+                              OpeningHours = x.OpeningHours,
+                              TableOfContents = x.TableOfContents,
+                              CashbackBonus = x.CashbackBonus,
+                              DiversificationMinInvest = x.DiversificationMinInvest,
+                              ProtectionScheme = x.ProtectionScheme,
+                              ReviewContent = x.ReviewContent,
+                              StatisticsCurrency = x.StatisticsCurrency,
+                              Cryptoloan = x.Cryptoloan,
+                              UpdatedDate = x.UpdatedDate,
+                              RatingCalculated = x.RatingCalculated,
+                              NewPlatform = x.NewPlatform,
+                              Recommended = x.Recommended,
+                              OfficeAddress = x.OfficeAddress,
+                              RiskAndReturn = x.RiskAndReturn,
+                              Availability = x.Availability,
+                              Count = x.Count,
+                              IsActive = x.IsActive,
+                              UO = (from y in _context.UrlLanguages
+                                    where (gu.Contains(y.GUID))
+                                    select _mapper.Map<UrlLanguagesODTO>(y)).ToList()
+                          }).SingleOrDefaultAsync();
+
         }
 
         public async Task<GetReviewsByRouteODTO> GetReviewsByRoute(string url, int langId)
@@ -2695,7 +2815,7 @@ namespace P2P.Services
             var review = await _context.Review.Include(x => x.Serp).Include(x => x.Rev_ReportLink).Where(x => x.IsActive == true && x.ReviewId == UrlReviewId).FirstOrDefaultAsync();
             //TITLE
             // set review.serp.serptitle [year] from [2022] to 2022
-            if(review != null)
+            if (review != null)
             {
                 var YearForChangeTitle = Regex.Match(review.Serp.SerpTitle, @"\[" + DateTime.Now.Year + "]").ToString();
                 if (YearForChangeTitle != "")
@@ -2741,7 +2861,7 @@ namespace P2P.Services
                     review.ReviewContent = review.ReviewContent.Replace("[" + DateTime.Now.ToString("MMMM") + "]", MonthForChangeContent);
                 }
             }
-            
+
 
             var newsfeed = await (from x in _context.NewsFeeds
                                   .Include(x => x.UrlTable)
@@ -3434,8 +3554,7 @@ namespace P2P.Services
                               CreatedDate = x.CreatedDate,
                               UpdatedDate = x.UpdatedDate,
                               UO = (from y in _context.UrlLanguages
-                                    where
-                                     (gu.Contains(y.GUID))
+                                    where (gu.Contains(y.GUID))
                                     select _mapper.Map<UrlLanguagesODTO>(y)).ToList()
                           }).SingleOrDefaultAsync();
         }
@@ -3471,7 +3590,7 @@ namespace P2P.Services
 
             return await GetAcademyById(academy.AcademyId);
         }
-                                    
+
         public async Task<UrlLanguagesODTO> AddUrlLanguage(string LinkDostava, int DataType, string LinkUnos, int? LangID, int TableId)
         {
             Entities.P2P.MainData.UrlLanguages langurl = null;
@@ -3503,7 +3622,7 @@ namespace P2P.Services
 
             return _mapper.Map<UrlLanguagesODTO>(url);
         }
-        
+
 
         public async Task<AcademyODTO> AddAcademy(AcademyIDTO academyIDTO)
         {
@@ -3520,11 +3639,6 @@ namespace P2P.Services
             academy.UpdatedDate = null;
             _context.Academies.Add(academy);
             await SaveContextChangesAsync();
-
-            var Link = await _context.UrlTables.Where(x => x.UrlTableId == academyIDTO.UrlTableId).Select(x => x.URL).SingleOrDefaultAsync();
-            var tableID = academy.AcademyId;
-            var LanguageID = academyIDTO.LanguageId;
-            await AddUrlLanguage(academyIDTO.Link, 2, Link, LanguageID, tableID);
 
             return await GetAcademyFull(academy.AcademyId);
         }
@@ -4646,6 +4760,39 @@ namespace P2P.Services
                    select _mapper.Map<BlogODTO>(x);
         }
 
+        public async Task<BlogODTO> GetBlogFull(int id)
+        {
+            var gu = await _context.UrlLanguages.Where(x => x.TableID == id && x.DataTypeId == 43).Select(x => x.GUID).ToListAsync();
+
+            return await (from x in _context.Blogs
+                   .Include(x => x.Language)
+                   .Include(x => x.Category)
+                   .Include(x => x.Serp)
+                          where (id == 0 || x.BlogId == id)
+                          select new BlogODTO
+                          {
+                              BlogId = x.BlogId,
+                              Name = x.Name,
+                              SerpId = x.SerpId,
+                              SerpDescription = x.Serp.SerpDescription,
+                              SerpTitle = x.Serp.SerpTitle,
+                              Subtitle = x.Serp.Subtitle,
+                              SelectedPopularArticle = x.SelectedPopularArticle,
+                              SelectedPopularArticles = null,
+                              CategoryId = x.CategoryId,
+                              CategoryName = x.Category.CategoryName,
+                              AuthorId = x.AuthorId,
+                              PageTitle = x.PageTitle,
+                              Excerpt = x.Excerpt,
+                              UpdatedDate = DateTime.Now,
+                              RouteName = null,
+                              FeaturedImage = x.FeaturedImage,
+                              UO = (from y in _context.UrlLanguages
+                                    where (gu.Contains(y.GUID))
+                                    select _mapper.Map<UrlLanguagesODTO>(y)).ToList(),
+                          }).SingleOrDefaultAsync();
+        }
+
         private IQueryable<AuthorODTO> GetAuthors(int languageId)
         {
             var blogs = from x in _context.Blogs
@@ -4853,7 +5000,7 @@ namespace P2P.Services
             blog.SerpId = serp.SerpId;
             await SaveContextChangesAsync();
 
-            return await GetBlogById(blog.BlogId);
+            return await GetBlogFull(blog.BlogId);
         }
 
         public async Task<BlogODTO> EditBlogContent(PutContentIDTO contentIDTO)

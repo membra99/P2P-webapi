@@ -86,6 +86,14 @@ namespace P2P.WebApi.Controllers.MainData
             if (blog == null) return NotFound();
             return blog;
         }
+        //GET: api/Blogs/GetBlogFull
+        [HttpGet("GetBlogFull")]
+        public async Task<ActionResult<BlogODTO>> GetFullBlog(int id)
+        {
+            var blog = await _mainDataServices.GetBlogFull(id);
+            if (blog == null) return NotFound();
+            return blog;
+        }
 
         //PUT: api/Blogs
         [HttpPut]

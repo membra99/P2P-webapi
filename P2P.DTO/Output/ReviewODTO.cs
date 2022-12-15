@@ -53,10 +53,10 @@ namespace P2P.DTO.Output
         public int? MinLoanPerion { get; set; }
         public int? MaxLoanPerion { get; set; }
         public int? OperatingSince { get; set; }
-        public int? Earnings { get; set; }
+        public long? Earnings { get; set; }
         public long? TotalLoanValue { get; set; }
-        public int? NumberOfInvestors { get; set; }
-        public int? InvestorsLoss { get; set; }
+        public long? NumberOfInvestors { get; set; }
+        public long? InvestorsLoss { get; set; }
         public int? PortfolioSize { get; set; }
         public string FinancialReport { get; set; }
         public string StatisticsOtherCurrency { get; set; }
@@ -88,5 +88,6 @@ namespace P2P.DTO.Output
         public int? Availability { get; set; }
         public int? Count { get; set; }
         public bool? IsActive { get; set; }
+        public List<UrlLanguagesODTO> UO { get; set; }
     }
 }

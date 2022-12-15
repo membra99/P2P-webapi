@@ -38,6 +38,18 @@ namespace P2P.WebApi.Controllers.MainData
         }
 
         //GET: api/Review
+        [HttpGet("GetReviewFUll")]
+        public async Task<ActionResult<ReviewODTO>> GetFullReview(int id)
+        {
+            var review = await _mainDataServices.GetReviewFull(id);
+            if (review == null)
+            {
+                return NotFound();
+            }
+            return review;
+        }
+
+        //GET: api/Review
         [HttpGet("GetReviewByRoute")]
         public async Task<ActionResult<GetReviewsByRouteODTO>> GetReviewByRoute(string url, int langId)
         {
