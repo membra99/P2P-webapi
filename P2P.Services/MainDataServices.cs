@@ -2930,7 +2930,7 @@ namespace P2P.Services
             };
             var CompanyInfo = new CompanyInfoODTO()
             {
-                Name = review.Name,
+                Name = review.LegalName,
                 Address = review.Address,
                 Phone = review.Phone,
                 Email = review.Email,
