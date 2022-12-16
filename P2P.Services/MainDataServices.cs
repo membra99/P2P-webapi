@@ -1429,16 +1429,16 @@ namespace P2P.Services
                           where (id == 0 || x.CashBackId == id)
                           select new CashBackODTO
                           {
-                             CashBackId = x.CashBackId,
-                             CashBack_ca = x.CashBack_ca,
-                             CashBack_terms = x.CashBack_terms,
-                             IsCampaign = x.IsCampaign,
-                             LanguageId = x.LanguageId,
-                             LanguageName = x.Language.LanguageName,
-                             Exclusive = x.Exclusive,
-                             ReviewId = Convert.ToInt32(x.ReviewId),
-                             Name = x.Review.Name,
-                             Valid_Until = x.Valid_Until,
+                              CashBackId = x.CashBackId,
+                              CashBack_ca = x.CashBack_ca,
+                              CashBack_terms = x.CashBack_terms,
+                              IsCampaign = x.IsCampaign,
+                              LanguageId = x.LanguageId,
+                              LanguageName = x.Language.LanguageName,
+                              Exclusive = x.Exclusive,
+                              ReviewId = Convert.ToInt32(x.ReviewId),
+                              Name = x.Review.Name,
+                              Valid_Until = x.Valid_Until,
                               UO = (from y in _context.UrlLanguages
                                     where (gu.Contains(y.GUID))
                                     select _mapper.Map<UrlLanguagesODTO>(y)).ToList()
@@ -3095,10 +3095,21 @@ namespace P2P.Services
             }
             if (contentIDTO.Content.Contains("[month]"))
             {
+                if(!contentIDTO.Content.Contains("["+DateTime.Now.Year+"]"))
+                {
+                    contentIDTO.Content = contentIDTO.Content.Replace("[month]", "[" + DateTime.Now.ToString("MMMM") + "]");
+                }
                 review.ReviewContent = contentIDTO.Content.Replace("[month]", "[" + DateTime.Now.ToString("MMMM") + "]");
+                contentIDTO.Content = contentIDTO.Content.Replace("[month]", "[" + DateTime.Now.ToString("MMMM") + "]");
                 _context.Entry(review).State = EntityState.Modified;
                 await SaveContextChangesAsync();
             }
+            
+            review.ReviewContent = contentIDTO.Content;
+            _context.Entry(review).State = EntityState.Modified;
+            await SaveContextChangesAsync();
+
+
             return await GetReviewById(review.ReviewId);
         }
 
