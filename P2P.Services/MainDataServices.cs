@@ -2976,7 +2976,7 @@ namespace P2P.Services
             var data = await (from x in _context.CashBacks
                               join r in _context.Review on x.ReviewId equals r.ReviewId into a
                               from d in a.DefaultIfEmpty()
-                              where id != null && d.ReviewId == id && x.IsCampaign == false && d.IsActive == true
+                              where id != null && d.ReviewId == id && d.IsActive == true
                               select new GetCampaignBonusODTO
                               {
                                   CashBackId = x.CashBackId,
