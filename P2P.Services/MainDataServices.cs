@@ -2303,7 +2303,7 @@ namespace P2P.Services
             return page;
         }
 
-        public async Task<List<CryptoODTO>> GetCryptoPage()
+        public async Task<List<CryptoODTO>> GetCryptos()
         {
             const string uri = "https://api.coincap.io/v2/assets";
             using (var client1 = new HttpClient())

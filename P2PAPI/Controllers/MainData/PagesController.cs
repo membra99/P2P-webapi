@@ -67,7 +67,7 @@ namespace P2P.WebApi.Controllers.MainData
         [HttpGet("GetCrypto")]
         public async Task<ActionResult<IEnumerable<CryptoODTO>>> GetCripto()
         {
-            var crypto = await _mainDataServices.GetCryptoPage();
+            var crypto = await _mainDataServices.GetCryptos();
             return crypto;
         }
 
