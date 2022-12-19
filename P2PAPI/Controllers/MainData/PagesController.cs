@@ -64,6 +64,12 @@ namespace P2P.WebApi.Controllers.MainData
             if (page == null) return NotFound();
             return page;
         }
+        [HttpGet("GetCrypto")]
+        public async Task<ActionResult<IEnumerable<CryptoODTO>>> GetCripto()
+        {
+            var crypto = await _mainDataServices.GetCryptoPage();
+            return crypto;
+        }
 
         [HttpGet("GetItemContent")]
         public async Task<ActionResult<GetItemContentODTO>> GetItemContent(int? id, int urlId, int langId)

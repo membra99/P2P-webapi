@@ -15,12 +15,16 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Data;
 using System.Linq;
+using System.Net.Http.Headers;
+using System.Net.Http;
 using System.Reflection.Metadata;
 using System.Security.Policy;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using DataType = Entities.P2P.MainData.DataType;
 using Language = Entities.P2P.MainData.Language;
+using Newtonsoft.Json.Linq;
+using Newtonsoft.Json;
 
 namespace P2P.Services
 {
@@ -2299,6 +2303,26 @@ namespace P2P.Services
             return page;
         }
 
+        public async Task<List<CryptoODTO>> GetCryptoPage()
+        {
+            const string uri = "https://api.coincap.io/v2/assets";
+            using (var client1 = new HttpClient())
+            {
+                var header = new AuthenticationHeaderValue("Bearer", "XXXX");
+                client1.DefaultRequestHeaders.Authorization = header;
+                var cr = client1.GetAsync(uri).Result;
+                List<CryptoODTO> Cript = null;
+                if (cr.IsSuccessStatusCode)
+                {
+                    string a = await cr.Content.ReadAsStringAsync();
+                    JObject json = JObject.Parse(a);
+                    string jsondata = json["data"].ToString();
+                    Cript = JsonConvert.DeserializeObject<List<CryptoODTO>>(jsondata);
+                }
+                return Cript;
+            }
+        }
+
         public async Task<GetPageODTO> GetItem(int id)
         {
             List<ReviewContentDropdownODTO> reviews = await ListOfReviews();
@@ -2574,6 +2598,7 @@ namespace P2P.Services
         public async Task<PageODTO> EditPage(PageIDTO pageIDTO)
         {
             var page = _mapper.Map<Page>(pageIDTO);
+            page.Platforms = pageIDTO.Platforms;
             page.SelectedPopularArticle = page.SelectedPopularArticle == null || page.SelectedPopularArticle == "" ? null : page.SelectedPopularArticle;
             _context.Entry(page).State = EntityState.Modified;
             await SaveContextChangesAsync();

@@ -17,5 +17,8 @@ namespace P2P.DTO.Input
         public string Content { get; set; }
         public string SelectedPopularArticle { get; set; }
         public string Platforms { get; set; }
+        public double? InvestmentAmount { get; set; }
+        public double? MonthlyContribution { get; set; }
+        public int? InvestmentPeriodInMonths { get; set; }
     }
 }

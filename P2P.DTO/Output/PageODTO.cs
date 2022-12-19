@@ -21,8 +21,12 @@ namespace P2P.DTO.Output
         public string LanguageName { get; set; }
         public string PageTitle { get; set; }
         public string Content { get; set; }
+        public double? InvestmentAmount { get; set; }
+        public double? MonthlyContribution { get; set; }
+        public int? InvestmentPeriodInMonths { get; set; }
+        public string Platforms { get; set; }
         public string SelectedPopularArticle { get; set; } //aray // kada se uradi post mora da se doda i serp// i kontent se dodaje // getitemcontent dodati u blogove//i faq answer i title
         public int[] SelectedPopularArticles { get; set; }
-        public string Platforms { get; set; }
+        
     }
 }
