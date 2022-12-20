@@ -43,8 +43,7 @@ namespace Entities.Context
         public DbSet<Author> Authors { get; set; }
         public DbSet<ImagesInfo> ImagesInfos { get; set; }
         public DbSet<UrlLanguages> UrlLanguages { get; set; }
-
-        public DbSet<Crypto> Crypto { get; set; }
+        public DbSet<Crypto> Cryptos { get; set; }
 
         #endregion MainData 
 
@@ -527,6 +526,6 @@ namespace Entities.Context
             });
 
                 #endregion MainData
-            }
+        }
     }
 }

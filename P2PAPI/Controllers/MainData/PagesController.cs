@@ -79,14 +79,6 @@ namespace P2P.WebApi.Controllers.MainData
             return crypto;
         }
 
-        [HttpGet("UbaciCryptose")]
-        public async Task<ActionResult<CryptoODTO>> AddCR()
-        {
-            var Cyrp = await _mainDataServices.AddCryptos();
-            //if (page == null) return NotFound();
-            return Cyrp;
-        }
-
         [HttpGet("GetItemContent")]
         public async Task<ActionResult<GetItemContentODTO>> GetItemContent(int? id, int urlId, int langId)
         {

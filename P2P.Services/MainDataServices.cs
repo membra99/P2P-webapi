@@ -25,6 +25,7 @@ using DataType = Entities.P2P.MainData.DataType;
 using Language = Entities.P2P.MainData.Language;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json;
+using Crypto = Entities.P2P.MainData.Crypto;
 
 namespace P2P.Services
 {
@@ -2611,6 +2612,7 @@ namespace P2P.Services
                             SerpTitle = page.SerpTitle,
                             DataTypeId = page.DataTypeId,
                             DataTypeName = page.DataTypeName,
+                            Platforms = page.Platforms
                         };
 
                         #region YearAndMonthChange
@@ -2672,7 +2674,7 @@ namespace P2P.Services
         }
         public async Task<CryptoODTO> GetCryptoBySymbol(string symbol)
         {
-            var Crypto = await _context.Crypto.Where(x => x.symbol == symbol).SingleOrDefaultAsync();
+            var Crypto = await _context.Cryptos.Where(x => x.symbol == symbol).SingleOrDefaultAsync();
             return _mapper.Map<CryptoODTO>(Crypto);
         }
             public async Task<List<PageODTO>> GetPageByLanguageId(int id)
@@ -2713,34 +2715,6 @@ namespace P2P.Services
             await SaveContextChangesAsync();
 
             return await GetPageById(page.PageId);
-        }
-
-        public async Task<CryptoODTO> AddCryptos()
-        {
-            var ListaCrypto = await GetCryptos();
-            Crypto cr = new Crypto();
-
-            
-            foreach (var item in ListaCrypto)
-            {
-                var prom = _mapper.Map<Crypto>(item);
-                /*cr.id = item.id;
-                cr.name = item.name;
-                cr.volumeUsd24Hr = item.volumeUsd24Hr;
-                cr.vwap24Hr = item.vwap24Hr;
-                cr.supply = item.supply;
-                cr.maxSupply = item.maxSupply;
-                cr.marketCapUsd = item.marketCapUsd;
-                cr.changePercent24Hr = item.changePercent24Hr;
-                cr.explorer = item.explorer;
-                cr.rank = item.rank;
-                cr.symbol = item.symbol;
-                cr.priceUsd = item.priceUsd;*/
-                _context.Crypto.Add(prom);
-                await SaveContextChangesAsync();
-            }
-
-            return null;
         }
 
         public async Task<PageODTO> DeletePage(int id)

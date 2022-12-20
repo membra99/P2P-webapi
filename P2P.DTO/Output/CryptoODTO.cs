@@ -8,7 +8,6 @@ namespace P2P.DTO.Output
 {
     public class CryptoODTO
     {
-        public int IdTable { get; set; }
         public string id { get; set; }
         public string rank { get; set; }
         public string symbol { get; set; }
