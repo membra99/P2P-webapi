@@ -2294,12 +2294,54 @@ namespace P2P.Services
         {
             //return await GetPage(id, 0, 0).AsNoTracking().SingleOrDefaultAsync();
             var page = await GetPage(id, 0, 0).AsNoTracking().SingleOrDefaultAsync();
+           
 
             if (page.SelectedPopularArticle != null)
             {
                 page.SelectedPopularArticles = page.SelectedPopularArticle.Split(",").Select(x => Convert.ToInt32(x)).ToArray();
             }
+            #region YearAndMonthChange
+            //[year][month]Title
+            var YearForChange = Regex.Match(page.SerpTitle, @"\[" + DateTime.Now.Year + "]").ToString();
+              if (YearForChange != "")
+              {
+                  YearForChange = YearForChange.Replace("[", string.Empty).Replace("]", string.Empty);
+                page.SerpTitle = page.SerpTitle.Replace("[" + DateTime.Now.Year + "]", YearForChange);
+              }
+              // set review.serp.serptitle [month] from [December] to December
+              var MonthForChange = Regex.Match(page.SerpTitle, @"\[" + DateTime.Now.ToString("MMMM") + "]").ToString();
+              if (MonthForChange != "")
+              {
+                MonthForChange = MonthForChange.Replace("[", string.Empty).Replace("]", string.Empty);
+                page.SerpTitle = page.SerpTitle.Replace("[" + DateTime.Now.ToString("MMMM") + "]", MonthForChange);
+              }
 
+            //DESCRIPTION
+            // set page.serp.SerpDescription from [2022] to 2022
+            var YearForChangeDesc = Regex.Match(page.SerpDescription, @"\[" + DateTime.Now.Year + "]").ToString();
+            if (YearForChangeDesc != "")
+            {
+                YearForChangeDesc = YearForChangeDesc.Replace("[", string.Empty).Replace("]", string.Empty);
+                page.SerpDescription = page.SerpDescription.Replace("[" + DateTime.Now.Year + "]", YearForChangeDesc);
+            }
+            // set review.serp.SerpDescription [month] from [December] to December
+            var MonthForChangeDesc = Regex.Match(page.SerpDescription, @"\[" + DateTime.Now.ToString("MMMM") + "]").ToString();
+            if (MonthForChangeDesc != "")
+            {
+                MonthForChangeDesc = MonthForChangeDesc.Replace("[", string.Empty).Replace("]", string.Empty);
+                page.SerpDescription = page.SerpDescription.Replace("[" + DateTime.Now.ToString("MMMM") + "]", MonthForChangeDesc);
+            }
+
+            //[year][month] => 2022, 12 page.Content
+            if (page.Content.Contains("[year]"))
+            {
+                page.Content = page.Content.Replace("[year]", (DateTime.Now.Year).ToString());
+            }
+            if (page.Content.Contains("[month]"))
+            {
+                page.Content = page.Content.Replace("[month]", DateTime.Now.ToString("MMMM"));                
+            }
+            #endregion 
             return page;
         }
 
@@ -2569,14 +2611,70 @@ namespace P2P.Services
                             DataTypeId = page.DataTypeId,
                             DataTypeName = page.DataTypeName,
                         };
+
+                        #region YearAndMonthChange
+                        //[year][month]SerpTitle
+                        var YearForChange = Regex.Match(retVal.SerpTitle, @"\[" + DateTime.Now.Year + "]").ToString();
+                        if (YearForChange != "")
+                        {
+                            YearForChange = YearForChange.Replace("[", string.Empty).Replace("]", string.Empty);
+                            retVal.SerpTitle = retVal.SerpTitle.Replace("[" + DateTime.Now.Year + "]", YearForChange);
+                        }
+                        //retval.title
+
+                        if (retVal.Title.Contains("[year]"))
+                        {
+
+                            retVal.Title = retVal.Title.Replace("[year]", (DateTime.Now.Year).ToString());
+                        }
+                        //  [month] from [December] to December
+                        var MonthForChange = Regex.Match(retVal.SerpTitle, @"\[" + DateTime.Now.ToString("MMMM") + "]").ToString();
+                        if (MonthForChange != "")
+                        {
+                            MonthForChange = MonthForChange.Replace("[", string.Empty).Replace("]", string.Empty);
+                            retVal.SerpTitle = retVal.SerpTitle.Replace("[" + DateTime.Now.ToString("MMMM") + "]", MonthForChange);
+                        }
+
+                        //DESCRIPTION
+                        // set retVal.serp.SerpDescription from [2022] to 2022
+                        var YearForChangeDesc = Regex.Match(retVal.SerpDescription, @"\[" + DateTime.Now.Year + "]").ToString();
+                        if (YearForChangeDesc != "")
+                        {
+                            YearForChangeDesc = YearForChangeDesc.Replace("[", string.Empty).Replace("]", string.Empty);
+                            retVal.SerpDescription = retVal.SerpDescription.Replace("[" + DateTime.Now.Year + "]", YearForChangeDesc);
+                        }
+                        // set review.serp.SerpDescription [month] from [December] to December
+                        var MonthForChangeDesc = Regex.Match(retVal.SerpDescription, @"\[" + DateTime.Now.ToString("MMMM") + "]").ToString();
+                        if (MonthForChangeDesc != "")
+                        {
+                            MonthForChangeDesc = MonthForChangeDesc.Replace("[", string.Empty).Replace("]", string.Empty);
+                            retVal.SerpDescription = retVal.SerpDescription.Replace("[" + DateTime.Now.ToString("MMMM") + "]", MonthForChangeDesc);
+                        }
+
+
+                        //[year][month] => 2022, 12 retVal.Content
+                        if (retVal.Content.Contains("[year]"))
+                        {
+                            retVal.Content = retVal.Content.Replace("[year]", (DateTime.Now.Year).ToString());
+                        }
+                        if (retVal.Content.Contains("[month]"))
+                        {
+                            retVal.Content = retVal.Content.Replace("[month]", DateTime.Now.ToString("MMMM"));
+                        }
+                        #endregion
+
                         return retVal;
                     }
                     break;
             }
             return page;
         }
-
-        public async Task<List<PageODTO>> GetPageByLanguageId(int id)
+        public async Task<CryptoODTO> GetCryptoBySymbol(string symbol)
+        {
+            var Crypto = await _context.Crypto.Where(x => x.symbol == symbol).SingleOrDefaultAsync();
+            return _mapper.Map<CryptoODTO>(Crypto);
+        }
+            public async Task<List<PageODTO>> GetPageByLanguageId(int id)
         {
             return await GetPage(0, id, 0).ToListAsync();
         }
@@ -2614,6 +2712,34 @@ namespace P2P.Services
             await SaveContextChangesAsync();
 
             return await GetPageById(page.PageId);
+        }
+
+        public async Task<CryptoODTO> AddCryptos()
+        {
+            var ListaCrypto = await GetCryptos();
+            Crypto cr = new Crypto();
+
+            
+            foreach (var item in ListaCrypto)
+            {
+                var prom = _mapper.Map<Crypto>(item);
+                /*cr.id = item.id;
+                cr.name = item.name;
+                cr.volumeUsd24Hr = item.volumeUsd24Hr;
+                cr.vwap24Hr = item.vwap24Hr;
+                cr.supply = item.supply;
+                cr.maxSupply = item.maxSupply;
+                cr.marketCapUsd = item.marketCapUsd;
+                cr.changePercent24Hr = item.changePercent24Hr;
+                cr.explorer = item.explorer;
+                cr.rank = item.rank;
+                cr.symbol = item.symbol;
+                cr.priceUsd = item.priceUsd;*/
+                _context.Crypto.Add(prom);
+                await SaveContextChangesAsync();
+            }
+
+            return null;
         }
 
         public async Task<PageODTO> DeletePage(int id)
@@ -3214,6 +3340,7 @@ namespace P2P.Services
             return null;
         }
 
+
         public async Task<List<ReviewODTO>> EditParentReview(ReviewIDTO reviewIDTO)
         {
             var review = _mapper.Map<Review>(reviewIDTO);
@@ -3292,7 +3419,7 @@ namespace P2P.Services
                     item.SerpId = item.SerpId;
                     item.LanguageId = item.LanguageId;
                     item.Name = item.Name;
-                    item.Logo = item.Logo;
+                    item.Logo = review.Logo;
                     item.Bonus = item.Bonus;
                     item.CustomMessage = item.CustomMessage;
                     item.CompareButton = item.CompareButton;
@@ -3543,7 +3670,23 @@ namespace P2P.Services
 
         public async Task<AcademyODTO> GetAcademyById(int id)
         {
-            return await GetAcademy(id, 0, null).AsNoTracking().SingleOrDefaultAsync();
+            var academyreturn = await GetAcademy(id, 0, null).AsNoTracking().SingleOrDefaultAsync();
+         
+                var YearForChangeTitle = Regex.Match(academyreturn.Title, @"\[" + DateTime.Now.Year + "]").ToString();
+                if (YearForChangeTitle != "")
+                {
+                    YearForChangeTitle = YearForChangeTitle.Replace("[", string.Empty).Replace("]", string.Empty);
+                    academyreturn.Title = academyreturn.Title.Replace("[" + DateTime.Now.Year + "]", YearForChangeTitle);
+                }
+
+                var MonthForChangeTitle = Regex.Match(academyreturn.Title, @"\[" + DateTime.Now.ToString("MMMM") + "]").ToString();
+                if (MonthForChangeTitle != "")
+                {
+                    MonthForChangeTitle = MonthForChangeTitle.Replace("[", string.Empty).Replace("]", string.Empty);
+                    academyreturn.Title = academyreturn.Title.Replace("[" + DateTime.Now.ToString("MMMM") + "]", MonthForChangeTitle);
+                }
+
+            return academyreturn;
         }
 
         public async Task<List<AcademyODTO>> GetAcademyByLangId(int langId)
@@ -3569,7 +3712,7 @@ namespace P2P.Services
         {
             var gu = await _context.UrlLanguages.Where(x => x.TableID == id).Select(x => x.GUID).ToListAsync();
 
-            return await (from x in _context.Academies
+            var academyreturn = await (from x in _context.Academies
                    .Include(x => x.Language)
                    .Include(x => x.Serp)
                    .Include(x => x.UrlTable)
@@ -3593,6 +3736,21 @@ namespace P2P.Services
                                     where (gu.Contains(y.GUID))
                                     select _mapper.Map<UrlLanguagesODTO>(y)).ToList()
                           }).SingleOrDefaultAsync();
+
+            var YearForChangeTitle = Regex.Match(academyreturn.Title, @"\[" + DateTime.Now.Year + "]").ToString();
+            if (YearForChangeTitle != "")
+            {
+                YearForChangeTitle = YearForChangeTitle.Replace("[", string.Empty).Replace("]", string.Empty);
+                academyreturn.Title = academyreturn.Title.Replace("[" + DateTime.Now.Year + "]", YearForChangeTitle);
+            }
+
+            var MonthForChangeTitle = Regex.Match(academyreturn.Title, @"\[" + DateTime.Now.ToString("MMMM") + "]").ToString();
+            if (MonthForChangeTitle != "")
+            {
+                MonthForChangeTitle = MonthForChangeTitle.Replace("[", string.Empty).Replace("]", string.Empty);
+                academyreturn.Title = academyreturn.Title.Replace("[" + DateTime.Now.ToString("MMMM") + "]", MonthForChangeTitle);
+            }
+            return academyreturn;
         }
 
         public async Task<List<AcademyODTO>> GetAcademyByLangIdFull(int langId)
@@ -3620,11 +3778,24 @@ namespace P2P.Services
 
             academy.UpdatedDate = DateTime.Now;
 
+            #region Change[year][month]
+            if (academy.Title.Contains("[year]"))
+            {
+                academy.Title=academy.Title.Replace("[year]",("["+ DateTime.Now.Year +"]") .ToString());
+                _context.Entry(academy).State = EntityState.Modified;
+               
+            }
+            if (academy.Title.Contains("[month]"))
+            {
+                academy.Title = academy.Title.Replace("[month]", ("["+ DateTime.Now.ToString("MMMM") +"]").ToString());
+                _context.Entry(academy).State = EntityState.Modified;
+                
+            }           
             _context.Entry(academy).State = EntityState.Modified;
-
+            #endregion          
             await SaveContextChangesAsync();
 
-            return await GetAcademyById(academy.AcademyId);
+            return await GetAcademyFull(academy.AcademyId);
         }
 
         public async Task<UrlLanguagesODTO> AddUrlLanguage(string LinkDostava, int DataType, string LinkUnos, int? LangID, int TableId)
@@ -3673,6 +3844,16 @@ namespace P2P.Services
 
             academy.CreatedDate = DateTime.Now;
             academy.UpdatedDate = null;
+
+            if (academy.Title.Contains("[year]"))
+            {
+                academy.Title = academy.Title.Replace("[year]", ("[" + DateTime.Now.Year + "]").ToString());           
+            }
+            if (academy.Title.Contains("[month]"))
+            {
+                academy.Title = academy.Title.Replace("[month]", "[" + (DateTime.Now.ToString("MMMM") + "]").ToString());
+            }
+
             _context.Academies.Add(academy);
             await SaveContextChangesAsync();
 

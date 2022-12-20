@@ -27,6 +27,11 @@ namespace P2P.Base.Services.Mapping
 
             CreateMap<UrlLanguages, UrlLanguagesODTO>();
 
+            CreateMap<Crypto, CryptoODTO>();
+            CreateMap<CryptoIDTO, Crypto>();
+            CreateMap<CryptoODTO, Crypto>();
+
+
             CreateMap<ImagesInfo, ImagesInfoODTO>()
                 .ForMember(dest => dest.Aws, source => source.MapFrom(m => m.UrlTable.URL));
             CreateMap<ImagesInfoIDTO, ImagesInfo>();
@@ -181,12 +186,16 @@ namespace P2P.Base.Services.Mapping
             CreateMap<Category, CategoryODTO>();
             CreateMap<CategoryIDTO, Category>();
 
+            
+              
+
             CreateMap<Blog, BlogODTO>()
                .ForMember(dest => dest.SerpTitle, source => source.MapFrom(m => m.Serp.SerpTitle))
                .ForMember(dest => dest.SerpDescription, source => source.MapFrom(m => m.Serp.SerpDescription))
                .ForMember(dest => dest.Subtitle, source => source.MapFrom(m => m.Serp.Subtitle))
                 .ForMember(dest => dest.CategoryName, source => source.MapFrom(m => m.Category.CategoryName));
             CreateMap<BlogIDTO, Blog>();
+
             CreateMap<Blog, BlogContetntODTO>()
              .ForMember(dest => dest.SerpTitle, source => source.MapFrom(m => m.Serp.SerpTitle))
                .ForMember(dest => dest.SerpDescription, source => source.MapFrom(m => m.Serp.SerpDescription))

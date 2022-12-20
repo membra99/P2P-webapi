@@ -44,7 +44,9 @@ namespace Entities.Context
         public DbSet<ImagesInfo> ImagesInfos { get; set; }
         public DbSet<UrlLanguages> UrlLanguages { get; set; }
 
-        #endregion MainData
+        public DbSet<Crypto> Crypto { get; set; }
+
+        #endregion MainData 
 
         private void P2PModelCreating(ModelBuilder modelBuilder)
         {
@@ -53,6 +55,10 @@ namespace Entities.Context
             modelBuilder.Entity<User>(entity =>
             {
                 entity.HasKey(x => x.UserId);
+            });
+            modelBuilder.Entity<Crypto>(entity =>
+            {
+                entity.HasKey(x => x.symbol);
             });
 
             modelBuilder.Entity<Permission>(entity =>
@@ -518,10 +524,9 @@ namespace Entities.Context
                 entity.HasOne(x => x.Language)
                     .WithMany(x => x.UrlLanguages)
                     .OnDelete(DeleteBehavior.Restrict);
-
             });
 
-            #endregion MainData
-        }
+                #endregion MainData
+            }
     }
 }

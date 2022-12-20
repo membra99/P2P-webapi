@@ -4,11 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace P2P.DTO.Output
+namespace Entities.P2P.MainData
 {
-    public class CryptoODTO
+    public class Crypto
     {
-        public int IdTable { get; set; }
         public string id { get; set; }
         public string rank { get; set; }
         public string symbol { get; set; }
@@ -21,5 +20,6 @@ namespace P2P.DTO.Output
         public string changePercent24Hr { get; set; }
         public string vwap24Hr { get; set; }
         public string explorer { get; set; }
+
     }
 }

@@ -49,6 +49,14 @@ namespace P2P.WebApi.Controllers.MainData
             return page;
         }
 
+        [HttpGet("CryptoBySymbol/{symbol}")]
+        public async Task<ActionResult<CryptoODTO>> GetCryptoSymbol(string symbol)
+        {
+            var Crypto = await _mainDataServices.GetCryptoBySymbol(symbol);
+            if (Crypto == null) return NotFound();
+            return Crypto;
+        }
+
         [HttpGet("GetList/{langId}")]
         public async Task<ActionResult<IEnumerable<GetPageListODTO>>> GetList(int langId)
         {
@@ -69,6 +77,14 @@ namespace P2P.WebApi.Controllers.MainData
         {
             var crypto = await _mainDataServices.GetCryptos();
             return crypto;
+        }
+
+        [HttpGet("UbaciCryptose")]
+        public async Task<ActionResult<CryptoODTO>> AddCR()
+        {
+            var Cyrp = await _mainDataServices.AddCryptos();
+            //if (page == null) return NotFound();
+            return Cyrp;
         }
 
         [HttpGet("GetItemContent")]
