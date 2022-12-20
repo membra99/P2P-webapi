@@ -21,5 +21,6 @@ namespace P2P.DTO.Output.EndPointODTO
         public int DataTypeId { get; set; }
         public string DataTypeName { get; set; }
         public string Platform { get; set; }
+        public string Platforms { get; set; }
     }
 }

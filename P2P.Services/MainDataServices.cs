@@ -2576,7 +2576,8 @@ namespace P2P.Services
                         SerpTitle = pd1.Serp.SerpTitle,
                         Subtitle = pd1.Serp.Subtitle,
                         DataTypeId = (int)pd1.DataTypeId,
-                        DataTypeName = pd1.DataType.DataTypeName
+                        DataTypeName = pd1.DataType.DataTypeName,
+                        Platforms = pd1.Platforms
                     };
                     if (academy != null)
                     {
