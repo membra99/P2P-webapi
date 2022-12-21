@@ -2384,7 +2384,7 @@ namespace P2P.Services
         public async Task<List<SymbolODTO>> GetSymoblAndName()
         {
             List<SymbolODTO> list = new List<SymbolODTO>();
-            var listOfCrypto = (await _context.Crypto.ToListAsync()).OrderBy(x => int.Parse(x.rank));
+            var listOfCrypto = (await _context.Cryptos.ToListAsync()).OrderBy(x => int.Parse(x.rank));
 
             SymbolODTO s = null;
             foreach (var item in listOfCrypto)
@@ -2648,8 +2648,6 @@ namespace P2P.Services
                                                                                        Excerpt = b.Excerpt,
                                                                                        Tag = b.Tag
                                                                                    }).Distinct().ToList();
-                        //var topReviews = await GetParentReview(langId);
-
                         //change year and month
                         //[2022] => 2022
                         #region ChangeYearMonth
@@ -2688,10 +2686,7 @@ namespace P2P.Services
                             DataTypeName = page.DataTypeName,
                             Platforms = page.Platforms
                         };
-
-                        
                         //[year][month]SerpTitle
-
                         //TITLE from [2022] => 2022
                         #region ChangeYearMonth
                        var YearForChange = Regex.Match(retVal.SerpTitle, @"\[" + DateTime.Now.Year + "]").ToString();
