@@ -28,7 +28,6 @@ namespace P2P.Base.Services.Mapping
             CreateMap<UrlLanguages, UrlLanguagesODTO>();
 
             CreateMap<Crypto, CryptoODTO>();
-            CreateMap<CryptoIDTO, Crypto>();
             CreateMap<CryptoODTO, Crypto>();
 
 

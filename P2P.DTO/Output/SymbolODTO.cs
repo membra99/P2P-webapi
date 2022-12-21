@@ -4,11 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace P2P.DTO.Input
+namespace P2P.DTO.Output
 {
-    public class CryptoIDTO
+    public class SymbolODTO
     {
-        public int IdTable { get; set; }
-        public string symbol { get; set; }
+       public string Name { get; set; }
+       public string Symbol { get; set; }
     }
 }

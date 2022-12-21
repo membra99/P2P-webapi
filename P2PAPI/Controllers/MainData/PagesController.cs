@@ -79,6 +79,13 @@ namespace P2P.WebApi.Controllers.MainData
             return crypto;
         }
 
+        [HttpGet("GetCryptoSymbol&Name")]
+        public async Task<ActionResult<IEnumerable<SymbolODTO>>> GetCryptoSymbol()
+        {
+            var crypto = await _mainDataServices.GetSymoblAndName();
+            return crypto;
+        }
+
         [HttpGet("GetItemContent")]
         public async Task<ActionResult<GetItemContentODTO>> GetItemContent(int? id, int urlId, int langId)
         {
