@@ -3218,6 +3218,20 @@ namespace P2P.Services
                     MonthForChangeDesc = MonthForChangeDesc.Replace("[", string.Empty).Replace("]", string.Empty);
                     review.Serp.SerpDescription = review.Serp.SerpDescription.Replace("[" + DateTime.Now.ToString("MMMM") + "]", MonthForChangeDesc);
                 }
+                //SUBTITLE
+                var YearForChangeSubtitle = Regex.Match(review.Serp.Subtitle, @"\[" + DateTime.Now.Year + "]").ToString();
+                if (YearForChangeSubtitle != "")
+                {
+                    YearForChangeSubtitle = YearForChangeSubtitle.Replace("[", string.Empty).Replace("]", string.Empty);
+                    review.Serp.Subtitle = review.Serp.Subtitle.Replace("[" + DateTime.Now.Year + "]", YearForChangeSubtitle);
+                }
+                // set review.serp.Subtitle [month] from [December] to December
+                var MonthForChangeSubtitle = Regex.Match(review.Serp.Subtitle, @"\[" + DateTime.Now.ToString("MMMM") + "]").ToString();
+                if (MonthForChangeSubtitle != "")
+                {
+                    MonthForChangeSubtitle = MonthForChangeSubtitle.Replace("[", string.Empty).Replace("]", string.Empty);
+                    review.Serp.Subtitle = review.Serp.Subtitle.Replace("[" + DateTime.Now.ToString("MMMM") + "]", MonthForChangeSubtitle);
+                }
                 //CONTENT
                 // set review.ReviewContent [year] from [2022] to 2022
                 var YearForChangeContent = Regex.Match(review.ReviewContent, @"\[" + DateTime.Now.Year + "]").ToString();
