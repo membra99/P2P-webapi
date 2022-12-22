@@ -3927,7 +3927,23 @@ namespace P2P.Services
 
         public async Task<List<AcademyODTO>> GetAcademyByLangId(int langId)
         {
-            return await GetAcademy(0, langId, null).ToListAsync();
+            var academy = await GetAcademy(0, langId, null).ToListAsync();
+            foreach (var item in academy)
+            {
+                var YearForChangeTitle = (Regex.Match(item.Title, @"\[" + DateTime.Now.Year + "]").ToString());
+                if (YearForChangeTitle != "")
+                {
+                    item.Title = item.Title.Replace(YearForChangeTitle, "[year]");
+                }
+
+                var MonthForChangeTitle = Regex.Match(item.Title, @"\[" + DateTime.Now.ToString("MMMM") + "]").ToString();
+                if (MonthForChangeTitle != "")
+                {
+                    item.Title = item.Title.Replace(MonthForChangeTitle, "[month]");
+                }
+            }
+            return academy;
+
         }
 
         public async Task<List<PopularArticlesODTO>> GetAcademyValueByLangId(int langId)
