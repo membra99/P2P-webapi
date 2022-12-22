@@ -33,6 +33,14 @@ namespace P2P.WebApi.Controllers.MainData
             return page;
         }
 
+        [HttpGet("UpdateCrypto")]
+        public async Task<ActionResult<List<CryptoODTO>>> UpdateCryptoCurrencies()
+        {
+            var CryptoCurrency = await _mainDataServices.UpdateCrypto();
+            if (CryptoCurrency == null) return NotFound();
+            return CryptoCurrency;
+        }
+
         [HttpGet("ByLanguageId/{langId}")]
         public async Task<ActionResult<IEnumerable<PageODTO>>> GetPagesByLanguageId(int langId)
         {
