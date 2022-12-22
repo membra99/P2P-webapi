@@ -3961,7 +3961,7 @@ namespace P2P.Services
 
             //var academyreturn= await GetAcademy(0, langId, tag).ToListAsync();
 
-            var academyList = await _context.Academies.Where(x => x.LanguageId == langId).Select(x=> _mapper.Map<AcademyODTO>(x)).ToListAsync();
+            var academyList = await _context.Academies.Include(x => x.UrlTable).Where(x => x.LanguageId == langId).Select(x=> _mapper.Map<AcademyODTO>(x)).ToListAsync();
             foreach (var academyreturn in academyList)
             {
                 var YearForChangeTitle = Regex.Match(academyreturn.Title, @"\[" + DateTime.Now.Year + "]").ToString();
