@@ -22,6 +22,7 @@ namespace Entities.P2P.MainData
         public string changePercent24Hr { get; set; }
         public string vwap24Hr { get; set; }
         public string explorer { get; set; }
+        public ICollection<Page> Pages { get; set; }
 
     }
 }

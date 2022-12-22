@@ -58,6 +58,7 @@ namespace Entities.Context
             modelBuilder.Entity<Crypto>(entity =>
             {
                 entity.HasKey(x => x.symbol);
+
             });
 
             modelBuilder.Entity<Permission>(entity =>
@@ -277,6 +278,11 @@ namespace Entities.Context
                 entity.HasOne(x => x.Serp)
                     .WithMany(x => x.Pages)
                     .OnDelete(DeleteBehavior.Restrict);
+
+                entity.HasOne(x => x.Crypto)
+                     .WithMany(x => x.Pages)
+                     .HasForeignKey(x => x.DefaultCrypto)
+                     .OnDelete(DeleteBehavior.Restrict);
             });
 
             modelBuilder.Entity<Review>(entity =>
@@ -525,7 +531,7 @@ namespace Entities.Context
                     .OnDelete(DeleteBehavior.Restrict);
             });
 
-                #endregion MainData
+            #endregion MainData
         }
     }
 }

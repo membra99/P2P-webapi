@@ -28,6 +28,8 @@ namespace Entities.P2P.MainData
         public double? InvestmentAmount { get; set; }
         public double? MonthlyContribution { get; set; }
         public int? InvestmentPeriodInMonths { get; set; }
+        public string DefaultCrypto { get; set; }
+        public Crypto Crypto { get; set; }
         public Language Language { get; set; }
         public DataType DataType { get; set; }
         public Serp Serp { get; set; }
