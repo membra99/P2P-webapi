@@ -2338,46 +2338,88 @@ namespace P2P.Services
                 page.SelectedPopularArticles = page.SelectedPopularArticle.Split(",").Select(x => Convert.ToInt32(x)).ToArray();
             }
             #region YearAndMonthChange
-            //[year][month]Title
-            var YearForChange = Regex.Match(page.SerpTitle, @"\[" + DateTime.Now.Year + "]").ToString();
-              if (YearForChange != "")
-              {
-                  YearForChange = YearForChange.Replace("[", string.Empty).Replace("]", string.Empty);
-                page.SerpTitle = page.SerpTitle.Replace("[" + DateTime.Now.Year + "]", YearForChange);
-              }
-              // set review.serp.serptitle [month] from [December] to December
-              var MonthForChange = Regex.Match(page.SerpTitle, @"\[" + DateTime.Now.ToString("MMMM") + "]").ToString();
-              if (MonthForChange != "")
-              {
-                MonthForChange = MonthForChange.Replace("[", string.Empty).Replace("]", string.Empty);
-                page.SerpTitle = page.SerpTitle.Replace("[" + DateTime.Now.ToString("MMMM") + "]", MonthForChange);
-              }
+            //[year][month]SerpTitle
+            if (page.SerpTitle != null)
+            {
+                var YearForChange = Regex.Match(page.SerpTitle, @"\[" + DateTime.Now.Year + "]").ToString();
+                if (YearForChange != "")
+                {
+                    page.SerpTitle = page.SerpTitle.Replace(YearForChange, "[year]");
+                }
+                // set review.serp.serptitle [month] from [December] to December
+                var MonthForChange = Regex.Match(page.SerpTitle, @"\[" + DateTime.Now.ToString("MMMM") + "]").ToString();
+                if (MonthForChange != "")
+                {
+                    page.SerpTitle = page.SerpTitle.Replace(MonthForChange, "[month]");
+                }
+            }
 
+            if (page.PageTitle != null)
+            {
+                var YearForChangeTitle = Regex.Match(page.PageTitle, @"\[" + DateTime.Now.Year + "]").ToString();
+                if (YearForChangeTitle != "")
+                {
+                    page.PageTitle = page.PageTitle.Replace(YearForChangeTitle, "[year]");
+                }
+
+                //  [month] from [December] to December
+                var MonthForChangeTitle = Regex.Match(page.PageTitle, @"\[" + DateTime.Now.ToString("MMMM") + "]").ToString();
+                if (MonthForChangeTitle != "")
+                {
+                    page.PageTitle = page.PageTitle.Replace(MonthForChangeTitle, "[month]");
+                }
+            }
+            
             //DESCRIPTION
             // set page.serp.SerpDescription from [2022] to 2022
-            var YearForChangeDesc = Regex.Match(page.SerpDescription, @"\[" + DateTime.Now.Year + "]").ToString();
-            if (YearForChangeDesc != "")
+            if (page.SerpDescription != null)
             {
-                YearForChangeDesc = YearForChangeDesc.Replace("[", string.Empty).Replace("]", string.Empty);
-                page.SerpDescription = page.SerpDescription.Replace("[" + DateTime.Now.Year + "]", YearForChangeDesc);
+                var YearForChangeDesc = Regex.Match(page.SerpDescription, @"\[" + DateTime.Now.Year + "]").ToString();
+                if (YearForChangeDesc != "")
+                {
+                    page.SerpDescription = page.SerpDescription.Replace(YearForChangeDesc, "[year]");
+                }
+                // set review.serp.SerpDescription [month] from [December] to December
+                var MonthForChangeDesc = Regex.Match(page.SerpDescription, @"\[" + DateTime.Now.ToString("MMMM") + "]").ToString();
+                if (MonthForChangeDesc != "")
+                {
+                    page.SerpDescription = page.SerpDescription.Replace(MonthForChangeDesc, "[month]");
+                }
             }
-            // set review.serp.SerpDescription [month] from [December] to December
-            var MonthForChangeDesc = Regex.Match(page.SerpDescription, @"\[" + DateTime.Now.ToString("MMMM") + "]").ToString();
-            if (MonthForChangeDesc != "")
+           
+            //SUBTITLE
+            // set page.serp.Subtitle from [2022] to 2022
+            if (page.Subtitle != null)
             {
-                MonthForChangeDesc = MonthForChangeDesc.Replace("[", string.Empty).Replace("]", string.Empty);
-                page.SerpDescription = page.SerpDescription.Replace("[" + DateTime.Now.ToString("MMMM") + "]", MonthForChangeDesc);
+                var YearForChangeSub = Regex.Match(page.Subtitle, @"\[" + DateTime.Now.Year + "]").ToString();
+                if (YearForChangeSub != "")
+                {
+                    page.Subtitle = page.Subtitle.Replace(YearForChangeSub, "[year]");
+                }
+                // set review.serp.Subtitle [month] from [December] to December
+                var MonthForChangeSub = Regex.Match(page.Subtitle, @"\[" + DateTime.Now.ToString("MMMM") + "]").ToString();
+                if (MonthForChangeSub != "")
+                {
+                    page.Subtitle = page.Subtitle.Replace(MonthForChangeSub, "[month]");
+                }
             }
-
-            //[year][month] => 2022, 12 page.Content
-            if (page.Content.Contains("[year]"))
+            
+            //CONTENT
+            // set page.serp.Content from [2022] to 2022
+            if (page.Content != null)
             {
-                page.Content = page.Content.Replace("[year]", (DateTime.Now.Year).ToString());
-            }
-            if (page.Content.Contains("[month]"))
-            {
-                page.Content = page.Content.Replace("[month]", DateTime.Now.ToString("MMMM"));                
-            }
+                var YearForChangeCont = Regex.Match(page.Content, @"\[" + DateTime.Now.Year + "]").ToString();
+                if (YearForChangeCont != "")
+                {
+                    page.Content = page.Content.Replace(YearForChangeCont, "[year]");
+                }
+                // set review.serp.Content [month] from [December] to December
+                var MOnthForChangeCont = Regex.Match(page.Content, @"\[" + DateTime.Now.ToString("MMMM") + "]").ToString();
+                if (MOnthForChangeCont != "")
+                {
+                    page.Content = page.Content.Replace(MOnthForChangeCont, "[month]");
+                }
+            }            
             #endregion 
             return page;
         }
@@ -2820,8 +2862,26 @@ namespace P2P.Services
                 }
             }
 
+            if (page.PageTitle != null)
+            {
+                var YearForChangeTitle = Regex.Match(page.PageTitle, @"\[" + DateTime.Now.Year + "]").ToString();
+                if (YearForChangeTitle != "")
+                {
+                    YearForChangeTitle = YearForChangeTitle.Replace("[", string.Empty).Replace("]", string.Empty);
+                    page.PageTitle = page.PageTitle.Replace("[" + DateTime.Now.Year + "]", YearForChangeTitle);
+                }
+
+                //  [month] from [December] to December
+                var MonthForChangeTitle = Regex.Match(page.PageTitle, @"\[" + DateTime.Now.ToString("MMMM") + "]").ToString();
+                if (MonthForChangeTitle != "")
+                {
+                    MonthForChangeTitle = MonthForChangeTitle.Replace("[", string.Empty).Replace("]", string.Empty);
+                    page.PageTitle = page.PageTitle.Replace("[" + DateTime.Now.ToString("MMMM") + "]", MonthForChangeTitle);
+                }
+            }
+
             //SUBTITLE from [2022] => 2022
-            if(page.Subtitle != null)
+            if (page.Subtitle != null)
             {
                 var YearForChangeSub = Regex.Match(page.Subtitle, @"\[" + DateTime.Now.Year + "]").ToString();
                 if (YearForChangeSub != "")
@@ -2903,12 +2963,58 @@ namespace P2P.Services
             var page = _mapper.Map<Page>(pageIDTO);
             page.Platforms = pageIDTO.Platforms;
             page.SelectedPopularArticle = page.SelectedPopularArticle == null || page.SelectedPopularArticle == "" ? null : page.SelectedPopularArticle;
-            _context.Entry(page).State = EntityState.Modified;
+
+            if(page.PageTitle != null)
+            {
+                //PAGETITLE
+                //Pagetitle---- [year] => [2022]
+                if (page.PageTitle.Contains("[year]"))
+                {
+                    page.PageTitle = page.PageTitle.Replace("[year]", "[" + (DateTime.Now.Year).ToString() + "]");
+                    _context.Entry(page).State = EntityState.Modified;
+                    //await SaveContextChangesAsync();
+                }
+
+                //Pagetitle----[month] => [December]
+                if (page.PageTitle.Contains("[month]"))
+                {
+                    page.PageTitle = page.PageTitle.Replace("[month]", "[" + DateTime.Now.ToString("MMMM") + "]");
+                    //_context.Entry(page).State = EntityState.Modified;
+                }
+            }
+          
+            if (page.Content != null)
+            {
+                //PageContent----[year] => [2022]
+                //CONTENT
+                if (page.Content.Contains("[year]"))
+                {
+                    page.Content = page.Content.Replace("[year]", "[" + (DateTime.Now.Year).ToString() + "]");
+                    _context.Entry(page).State = EntityState.Modified;
+                    //await SaveContextChangesAsync();
+                }
+                //PageContent----[month] => [December]
+                if (page.Content.Contains("[month]"))
+                {
+                    page.Content = page.Content.Replace("[month]", "[" + DateTime.Now.ToString("MMMM") + "]");
+                    _context.Entry(page).State = EntityState.Modified;
+                    //await SaveContextChangesAsync();
+                }
+            }
+            
+            page.ReviewId = (page.ReviewId == 0) ? null : page.ReviewId;
+            page.DataTypeId = (page.DataTypeId == 0) ? null : page.DataTypeId;
+            page.DefaultCrypto = (page.DefaultCrypto == null) ? null : page.DefaultCrypto;
+            page.Platforms = (page.Platforms == null) ? null : page.Platforms;
+            page.InvestmentAmount = (page.InvestmentAmount == 0) ? null : page.InvestmentAmount;
+            page.MonthlyContribution = (page.MonthlyContribution == 0) ? null : page.MonthlyContribution;
+            page.InvestmentPeriodInMonths = (page.InvestmentPeriodInMonths == 0) ? null : page.InvestmentPeriodInMonths;
+            
             await SaveContextChangesAsync();
             return await GetPageById(page.PageId);
         }
-       public async Task<List<CryptoODTO>> UpdateCrypto()
-        {
+            public async Task<List<CryptoODTO>> UpdateCrypto()
+            {
             var Cryp = await GetCryptos();
             List<CryptoODTO> ReturnList = new List<CryptoODTO>();
             var CryptoList = (await _context.Cryptos.ToListAsync()).OrderBy(x => int.Parse(x.rank));
@@ -2942,6 +3048,54 @@ namespace P2P.Services
             var page = _mapper.Map<Page>(pageIDTO);
             page.PageId = 0;
             page.SelectedPopularArticle = page.SelectedPopularArticle == null || page.SelectedPopularArticle == "" ? null : page.SelectedPopularArticle;
+
+            if (page.PageTitle != null)
+            {
+                //PAGETITLE
+                //Pagetitle---- [year] => [2022]
+                if (page.PageTitle.Contains("[year]"))
+                {
+                    page.PageTitle = page.PageTitle.Replace("[year]", "[" + (DateTime.Now.Year).ToString() + "]");
+                    _context.Entry(page).State = EntityState.Modified;
+                    //await SaveContextChangesAsync();
+                }
+
+                //Pagetitle----[month] => [December]
+                if (page.PageTitle.Contains("[month]"))
+                {
+                    page.PageTitle = page.PageTitle.Replace("[month]", "[" + DateTime.Now.ToString("MMMM") + "]");
+                    //_context.Entry(page).State = EntityState.Modified;
+                }
+            }
+           
+            if (page.Content != null)
+            {
+                //PageContent----[year] => [2022]
+                //CONTENT
+                if (page.Content.Contains("[year]"))
+                {
+                    page.Content = page.Content.Replace("[year]", "[" + (DateTime.Now.Year).ToString() + "]");
+                    _context.Entry(page).State = EntityState.Modified;
+                    //await SaveContextChangesAsync();
+                }
+                //PageContent----[month] => [December]
+                if (page.Content.Contains("[month]"))
+                {
+                    page.Content = page.Content.Replace("[month]", "[" + DateTime.Now.ToString("MMMM") + "]");
+                    _context.Entry(page).State = EntityState.Modified;
+                    //await SaveContextChangesAsync();
+                }
+            }
+            
+            page.ReviewId = (page.ReviewId == 0) ? null : page.ReviewId;
+            page.DataTypeId = (page.DataTypeId == 0) ? null : page.DataTypeId;
+            page.DefaultCrypto = (page.DefaultCrypto == "string") ? null : page.DefaultCrypto;
+            page.Platforms = (page.Platforms == "string") ? null : page.Platforms;
+            page.InvestmentAmount = (page.InvestmentAmount == 0) ? null : page.InvestmentAmount;
+            page.MonthlyContribution = (page.MonthlyContribution == 0) ? null : page.MonthlyContribution;
+            page.InvestmentPeriodInMonths = (page.InvestmentPeriodInMonths == 0) ? null : page.InvestmentPeriodInMonths;
+            page.SelectedPopularArticle = (page.SelectedPopularArticle == "string") ? null : page.SelectedPopularArticle;
+
             _context.Pages.Add(page);
             await SaveContextChangesAsync();
 
