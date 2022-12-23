@@ -2684,7 +2684,8 @@ namespace P2P.Services
                         Subtitle = pd1.Serp.Subtitle,
                         DataTypeId = (int)pd1.DataTypeId,
                         DataTypeName = pd1.DataType.DataTypeName,
-                        Platforms = pd1.Platforms
+                        Platforms = pd1.Platforms,
+                        SelectedPopularArtical = pd1.SelectedPopularArticle
                     };
                     if (academy != null)
                     {
@@ -2738,7 +2739,8 @@ namespace P2P.Services
                             SerpTitle = page.SerpTitle,
                             DataTypeId = page.DataTypeId,
                             DataTypeName = page.DataTypeName,
-                            Platforms = page.Platforms
+                            Platforms = page.Platforms,
+                            SelectedPopularArtical = page.SelectedPopularArtical
                         };
                         //[year][month]SerpTitle
                         //SERPTITLE from [2022] => 2022
@@ -2962,9 +2964,9 @@ namespace P2P.Services
         {
             var page = _mapper.Map<Page>(pageIDTO);
             page.Platforms = pageIDTO.Platforms;
-            page.SelectedPopularArticle = page.SelectedPopularArticle == null || page.SelectedPopularArticle == "" ? null : page.SelectedPopularArticle;
+            page.SelectedPopularArticle = (page.SelectedPopularArticle == null || page.SelectedPopularArticle == "") ? null : page.SelectedPopularArticle;
 
-            if(page.PageTitle != null)
+            if (page.PageTitle != null)
             {
                 //PAGETITLE
                 //Pagetitle---- [year] => [2022]
@@ -3001,15 +3003,9 @@ namespace P2P.Services
                     //await SaveContextChangesAsync();
                 }
             }
-            
-            page.ReviewId = (page.ReviewId == 0) ? null : page.ReviewId;
-            page.DataTypeId = (page.DataTypeId == 0) ? null : page.DataTypeId;
-            page.DefaultCrypto = (page.DefaultCrypto == null) ? null : page.DefaultCrypto;
-            page.Platforms = (page.Platforms == null) ? null : page.Platforms;
-            page.InvestmentAmount = (page.InvestmentAmount == 0) ? null : page.InvestmentAmount;
-            page.MonthlyContribution = (page.MonthlyContribution == 0) ? null : page.MonthlyContribution;
-            page.InvestmentPeriodInMonths = (page.InvestmentPeriodInMonths == 0) ? null : page.InvestmentPeriodInMonths;
-            
+
+            _context.Entry(page).State = EntityState.Modified;
+
             await SaveContextChangesAsync();
             return await GetPageById(page.PageId);
         }
