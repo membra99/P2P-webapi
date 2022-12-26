@@ -37,13 +37,6 @@ namespace P2P.WebApi.Controllers.MainData
             return await _mainDataServices.GetByDataTypeId(dataTypeId);
         }
 
-        //GET: api/Serp
-        [HttpGet("ChangeYearAndMonth")]
-        public async Task ChangeYearAndMonth()
-        {
-            await _mainDataServices.UpdateSerpYearAndMonth();
-        }
-
         //PUT: api/Serp
         [HttpPut]
         public async Task<ActionResult<SerpODTO>> PutSerp(SerpIDTO serpIDTO)
