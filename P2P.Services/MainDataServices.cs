@@ -2904,6 +2904,8 @@ namespace P2P.Services
             YM = await EditDate(null, null, null, page.PageTitle, page.Content, null);
             page.PageTitle = YM.PageTitle;
             page.Content = YM.Content;
+            _context.Entry(page).State = EntityState.Modified;
+            await SaveContextChangesAsync();
 
             #region SelectedPopularArticlesCheck
             var lista = await _context.PageArticles.Where(x => x.PageId == page.PageId).ToListAsync();
@@ -2911,31 +2913,33 @@ namespace P2P.Services
             {
                 PageArticles pa;
                 var popularArticle = page.SelectedPopularArticle.Split(",").Select(x => Convert.ToInt32(x)).ToArray();
-                
+
                 foreach (var item in popularArticle)
                 {
                     var selectedPopArt = await _context.PageArticles.Where(x => x.PageId == page.PageId && x.AcademyId == item).FirstOrDefaultAsync();
                     pa = new PageArticles();
                     pa.PageId = page.PageId;
                     pa.AcademyId = item;
-                    if(selectedPopArt == null)
+                    if (selectedPopArt == null)
                     {
                         _context.PageArticles.Add(pa);
                         await SaveContextChangesAsync();
                     }
                 }
-                foreach(var item1 in lista)
+                if(lista != null)
                 {
-                   if(!popularArticle.Contains(item1.AcademyId))
+                    foreach (var item1 in lista)
                     {
-                        _context.PageArticles.Remove(item1);
-                        await SaveContextChangesAsync();
+                        if (!popularArticle.Contains(item1.AcademyId))
+                        {
+                            _context.PageArticles.Remove(item1);
+                            await SaveContextChangesAsync();
+                        }
                     }
                 }
-                
             }
-            
-            if (page.SelectedPopularArticle == null || page.SelectedPopularArticle == "")
+
+            if ((page.SelectedPopularArticle == null || page.SelectedPopularArticle == "") && lista != null)
             {
                 foreach (var item2 in lista)
                 {
@@ -2944,8 +2948,7 @@ namespace P2P.Services
                 }
             }
             #endregion
-            _context.Entry(page).State = EntityState.Modified;
-            await SaveContextChangesAsync();
+
             return await GetPageById(page.PageId);
         }
         public async Task<List<CryptoODTO>> UpdateCrypto()
