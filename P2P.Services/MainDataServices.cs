@@ -3,6 +3,7 @@ using Entities.Context;
 using Entities.P2P.MainData;
 using Entities.P2P.MainData.Settings;
 using Microsoft.EntityFrameworkCore;
+using NetTopologySuite.Index.HPRtree;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using P2P.Base.Services;
@@ -11,6 +12,7 @@ using P2P.DTO.Input.EndpointIDTO;
 using P2P.DTO.Output;
 using P2P.DTO.Output.EndPointODTO;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
@@ -2520,7 +2522,7 @@ namespace P2P.Services
 
             YearMonthODTO YM = new YearMonthODTO();
 
-            if (page.SelectedPopularArticle != null)
+            if (page.SelectedPopularArticle != null && page.SelectedPopularArticle != "string")
             {
                 page.SelectedPopularArticles = page.SelectedPopularArticle.Split(",").Select(x => Convert.ToInt32(x)).ToArray();
             }
@@ -2902,6 +2904,45 @@ namespace P2P.Services
             YM = await EditDate(null, null, null, page.PageTitle, page.Content, null);
             page.PageTitle = YM.PageTitle;
             page.Content = YM.Content;
+
+            #region SelectedPopularArticlesCheck
+            var lista = await _context.PageArticles.Where(x => x.PageId == page.PageId).ToListAsync();
+            if (page.SelectedPopularArticle != null)
+            {
+                PageArticles pa;
+                var popularArticle = page.SelectedPopularArticle.Split(",").Select(x => Convert.ToInt32(x)).ToArray();
+                
+                foreach (var item in popularArticle)
+                {
+                    var selectedPopArt = await _context.PageArticles.Where(x => x.PageId == page.PageId && x.AcademyId == item).FirstOrDefaultAsync();
+                    pa = new PageArticles();
+                    pa.PageId = page.PageId;
+                    pa.AcademyId = item;
+                    if(selectedPopArt == null)
+                    {
+                        _context.PageArticles.Add(pa);
+                        await SaveContextChangesAsync();
+                    }
+                }
+                foreach(var item1 in lista)
+                {
+                   if(!popularArticle.Contains(item1.AcademyId))
+                    {
+                        _context.PageArticles.Remove(item1);
+                        await SaveContextChangesAsync();
+                    }
+                }
+                
+            }
+            #endregion
+            if (page.SelectedPopularArticle == null)
+            {
+                foreach (var item2 in lista)
+                {
+                    _context.PageArticles.Remove(item2);
+                    await SaveContextChangesAsync();
+                }
+            }
             _context.Entry(page).State = EntityState.Modified;
             await SaveContextChangesAsync();
             return await GetPageById(page.PageId);
