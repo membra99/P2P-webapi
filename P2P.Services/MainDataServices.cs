@@ -2934,8 +2934,8 @@ namespace P2P.Services
                 }
                 
             }
-            #endregion
-            if (page.SelectedPopularArticle == null)
+            
+            if (page.SelectedPopularArticle == null || page.SelectedPopularArticle == "")
             {
                 foreach (var item2 in lista)
                 {
@@ -2943,6 +2943,7 @@ namespace P2P.Services
                     await SaveContextChangesAsync();
                 }
             }
+            #endregion
             _context.Entry(page).State = EntityState.Modified;
             await SaveContextChangesAsync();
             return await GetPageById(page.PageId);
