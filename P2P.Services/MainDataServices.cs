@@ -2852,12 +2852,12 @@ namespace P2P.Services
             }
             //SERPTITLE
             YearMonthODTO YM2 = new YearMonthODTO();
-            YM2 = await ChangeDateFormatFront(page.SerpTitle, page.SerpDescription, page.Subtitle, null, null, page.Title);
+            YM2 = await ChangeDateFormatFront(page.SerpTitle, page.SerpDescription, page.Subtitle, null, page.Content, page.Title);
             page.SerpTitle = YM2.SerpTitle;
             page.SerpDescription = YM2.SerpDescription;
             page.Subtitle = YM2.Subtitle;
             page.Title = YM2.Title;
-
+            page.Content = YM2.Content;
             return page;
         }
         public async Task<CryptoODTO> GetCryptoBySymbol(string symbol)
