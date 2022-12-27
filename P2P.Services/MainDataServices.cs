@@ -1,10 +1,10 @@
 ﻿using AutoMapper;
 using Entities.Context;
-using Entities.Migrations;
 using Entities.P2P.MainData;
 using Entities.P2P.MainData.Settings;
 using Microsoft.EntityFrameworkCore;
-using NetTopologySuite.Index.HPRtree;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using P2P.Base.Services;
 using P2P.DTO.Input;
 using P2P.DTO.Input.EndpointIDTO;
@@ -12,24 +12,14 @@ using P2P.DTO.Output;
 using P2P.DTO.Output.EndPointODTO;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using System.Data;
 using System.Linq;
-using System.Net.Http.Headers;
 using System.Net.Http;
-using System.Reflection.Metadata;
-using System.Security.Policy;
+using System.Net.Http.Headers;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using DataType = Entities.P2P.MainData.DataType;
 using Language = Entities.P2P.MainData.Language;
-using Newtonsoft.Json.Linq;
-using Newtonsoft.Json;
-using Crypto = Entities.P2P.MainData.Crypto;
-using BCrypt.Net;
-using Microsoft.AspNetCore.Mvc.RazorPages;
-using System.Data.Common;
-using System.Security.Cryptography;
 
 namespace P2P.Services
 {
@@ -2907,46 +2897,6 @@ namespace P2P.Services
             var page = _mapper.Map<Entities.P2P.MainData.Page>(pageIDTO);
             page.Platforms = pageIDTO.Platforms;
             page.SelectedPopularArticle = (page.SelectedPopularArticle == null || page.SelectedPopularArticle == "") ? null : page.SelectedPopularArticle;
-
-            if (page.PageTitle != null)
-            {
-                //PAGETITLE
-                //Pagetitle---- [year] => [2022]
-                if (page.PageTitle.Contains("[year]"))
-                {
-                    page.PageTitle = page.PageTitle.Replace("[year]", "[" + (DateTime.Now.Year).ToString() + "]");
-                    _context.Entry(page).State = EntityState.Modified;
-                    //await SaveContextChangesAsync();
-                }
-
-                //Pagetitle----[month] => [December]
-                if (page.PageTitle.Contains("[month]"))
-                {
-                    page.PageTitle = page.PageTitle.Replace("[month]", "[" + DateTime.Now.ToString("MMMM") + "]");
-                    //_context.Entry(page).State = EntityState.Modified;
-                }
-            }
-          
-            if (page.Content != null)
-            {
-                //PageContent----[year] => [2022]
-                //CONTENT
-                if (page.Content.Contains("[year]"))
-                {
-                    page.Content = page.Content.Replace("[year]", "[" + (DateTime.Now.Year).ToString() + "]");
-                    _context.Entry(page).State = EntityState.Modified;
-                    //await SaveContextChangesAsync();
-                }
-                //PageContent----[month] => [December]
-                if (page.Content.Contains("[month]"))
-                {
-                    page.Content = page.Content.Replace("[month]", "[" + DateTime.Now.ToString("MMMM") + "]");
-                    _context.Entry(page).State = EntityState.Modified;
-                    //await SaveContextChangesAsync();
-                }
-            }
-
-            _context.Entry(page).State = EntityState.Modified;
 
             YearMonthODTO YM = new YearMonthODTO();
             YM = await EditDate(null, null, null, page.PageTitle, page.Content, null);
