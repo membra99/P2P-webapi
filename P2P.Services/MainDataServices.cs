@@ -2840,22 +2840,12 @@ namespace P2P.Services
                         };
 
                         YearMonthODTO YM1 = new YearMonthODTO();
-                        YM1 = await ChangeDateFormatFront(retVal.SerpTitle, retVal.SerpDescription, retVal.Subtitle, null, null, retVal.Title);
+                        YM1 = await ChangeDateFormatFront(retVal.SerpTitle, retVal.SerpDescription, retVal.Subtitle, null, retVal.Content, retVal.Title);
                         retVal.SerpTitle = YM1.SerpTitle;
                         retVal.SerpDescription = YM1.SerpDescription;
                         retVal.Subtitle = YM1.Subtitle;
                         retVal.Title = YM1.Title;
-                        //CONTENT
-                        //[year][month] => 2022, 12 retVal.Content
-                        if (retVal.Content.Contains("[year]"))
-                        {
-                            retVal.Content = retVal.Content.Replace("[year]", (DateTime.Now.Year).ToString());
-                        }
-                        if (retVal.Content.Contains("[month]"))
-                        {
-                            retVal.Content = retVal.Content.Replace("[month]", DateTime.Now.ToString("MMMM"));
-                        }
-
+                        retVal.Content = YM1.Content;
                         return retVal;
                     }
                     break;
