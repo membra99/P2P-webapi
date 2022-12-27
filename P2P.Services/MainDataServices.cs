@@ -3173,9 +3173,12 @@ namespace P2P.Services
             if (review != null)
             {
                 YearMonthODTO ym = new YearMonthODTO();
-                ym = await ChangeDateFormatAdmin(null,null,null, null, review.ReviewContent, null);
+                ym = await ChangeDateFormatFront(review.Serp.SerpTitle, review.Serp.SerpDescription, review.Serp.Subtitle, null, review.ReviewContent, null);
                
                 review.ReviewContent = ym.Content;
+                review.Serp.SerpDescription = ym.SerpDescription;
+                review.Serp.SerpTitle = ym.SerpTitle;
+                review.Serp.Subtitle = ym.Subtitle;
             }
             var newsfeed = await (from x in _context.NewsFeeds
                                   .Include(x => x.UrlTable)
