@@ -5285,6 +5285,14 @@ namespace P2P.Services
                 UpdatedDate = blog.UpdatedDate,
                 FeaturedImage = blog.FeaturedImage
             };
+
+            YearMonthODTO ym1 = new YearMonthODTO();
+            ym1 = await ChangeDateFormatFront(retval.SerpTitle, retval.SerpDescription, retval.Subtitle, retval.PageTitle, retval.Content, null);
+            retval.SerpTitle = ym1.SerpTitle;
+            retval.SerpDescription = ym1.SerpDescription;
+            retval.Subtitle = ym1.Subtitle;
+            retval.PageTitle = ym1.PageTitle;
+            retval.Content = ym1.Content;
             return retval;
         }
 
@@ -5307,7 +5315,9 @@ namespace P2P.Services
                 PageId = page.BlogId,
                 Content = page.Content,
             };
-
+            YearMonthODTO ym1 = new YearMonthODTO();
+            ym1 = await ChangeDateFormatAdmin(null, null, null, null, retVal.Content, null);
+            retVal.Content = ym1.Content;
             return retVal;
         }
 
