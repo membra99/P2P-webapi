@@ -151,10 +151,10 @@ namespace P2P.Services
                 }
 
                 var MonthForChangeSerpTitle = Regex.Match(serpTitle, @"\[" + DateTime.Now.ToString("MMMM") + "]").ToString();
-                if (YearForChangeSerpTitle != "")
+                if (MonthForChangeSerpTitle != "")
                 {
-                    YearForChangeSerpTitle = YearForChangeSerpTitle.Replace("[", string.Empty).Replace("]", string.Empty);
-                    serpTitle = serpTitle.Replace("[" + DateTime.Now.ToString("MMMM") + "]", YearForChangeSerpTitle);
+                    MonthForChangeSerpTitle = MonthForChangeSerpTitle.Replace("[", string.Empty).Replace("]", string.Empty);
+                    serpTitle = serpTitle.Replace("[" + DateTime.Now.ToString("MMMM") + "]", MonthForChangeSerpTitle);
                 }
                 YearMonth.SerpTitle = serpTitle;
             }
@@ -169,10 +169,10 @@ namespace P2P.Services
                 }
 
                 var MonthForChangeDesc = Regex.Match(serpDescription, @"\[" + DateTime.Now.ToString("MMMM") + "]").ToString();
-                if (YearForChangeDesc != "")
+                if (MonthForChangeDesc != "")
                 {
-                    YearForChangeDesc = YearForChangeDesc.Replace("[", string.Empty).Replace("]", string.Empty);
-                    serpDescription = serpDescription.Replace("[" + DateTime.Now.ToString("MMMM") + "]", YearForChangeDesc);
+                    MonthForChangeDesc = MonthForChangeDesc.Replace("[", string.Empty).Replace("]", string.Empty);
+                    serpDescription = serpDescription.Replace("[" + DateTime.Now.ToString("MMMM") + "]", MonthForChangeDesc);
                 }
                 YearMonth.SerpDescription = serpDescription;
             }           
