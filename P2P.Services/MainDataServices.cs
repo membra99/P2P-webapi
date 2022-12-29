@@ -5580,7 +5580,7 @@ namespace P2P.Services
             };
 
             YearMonthODTO ym1 = new YearMonthODTO();
-            ym1 = await ChangeDateFormatFront(retval.SerpTitle, retval.SerpDescription, retval.Subtitle, retval.PageTitle, retval.Content, null);
+            ym1 = await ChangeDateFormatFront(retval.SerpTitle, retval.SerpDescription, retval.Subtitle, retval.PageTitle, retval.Content, null, retval.LanguageId);
             retval.SerpTitle = ym1.SerpTitle;
             retval.SerpDescription = ym1.SerpDescription;
             retval.Subtitle = ym1.Subtitle;
