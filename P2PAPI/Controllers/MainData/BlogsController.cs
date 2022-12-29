@@ -44,9 +44,9 @@ namespace P2P.WebApi.Controllers.MainData
 
         //GET: api/Blogs/ByLanguageId
         [HttpGet("ByLanguageId")]
-        public async Task<ActionResult<List<BlogODTO>>> GetByLanguageId(int languageId)
+        public async Task<ActionResult<List<BlogODTO>>> GetByLanguageId(int languageId, string UseCase)
         {
-            var blog = await _mainDataServices.GetBlogsByLang(languageId);
+            var blog = await _mainDataServices.GetBlogsByLang(languageId, UseCase);
             if (blog == null) return NotFound();
             return blog;
         }
