@@ -33,9 +33,9 @@ namespace P2P.WebApi.Controllers.MainData
 
         //GET: api/HomeSettings
         [HttpGet("ByLanguageId/{id}")]
-        public async Task<ActionResult<IEnumerable<HomeSettingsODTO>>> GetByLanguageId(int id)
+        public async Task<ActionResult<IEnumerable<HomeSettingsODTO>>> GetByLanguageId(int id, string UseCase)
         {
-            return await _mainDataServices.GetHomeSettingsByLangId(id);
+            return await _mainDataServices.GetHomeSettingsByLangId(id, UseCase);
         }
 
         //PUT: api/HomeSettings

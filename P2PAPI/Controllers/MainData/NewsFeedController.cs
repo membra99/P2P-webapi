@@ -37,9 +37,9 @@ namespace P2P.WebApi.Controllers.MainData
         }
 
         [HttpGet("GetList/{langId}")]
-        public async Task<ActionResult<IEnumerable<GetNewsFeedListODTO>>> GetListNewsFeedByLangId(int langId)
+        public async Task<ActionResult<IEnumerable<GetNewsFeedListODTO>>> GetListNewsFeedByLangId(int langId, string UseCase)
         {
-            var newsFeed = await _mainDataServices.GetListNewsFeedByLangId(langId);
+            var newsFeed = await _mainDataServices.GetListNewsFeedByLangId(langId, UseCase);
             if (newsFeed == null)
             {
                 return NotFound();

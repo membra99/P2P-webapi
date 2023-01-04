@@ -32,9 +32,9 @@ namespace P2P.WebApi.Controllers.MainData
 
         //GET: api/FooterSettings
         [HttpGet("ByLanguageId")]
-        public async Task<ActionResult<IEnumerable<FooterSettingsODTO>>> GetByLanguageId(int id)
+        public async Task<ActionResult<IEnumerable<FooterSettingsODTO>>> GetByLanguageId(int id, string UseCase)
         {
-            return await _mainDataServices.GetFooterSettingsByLangId(id);
+            return await _mainDataServices.GetFooterSettingsByLangId(id, UseCase);
         }
 
         //PUT: api/FooterSettings

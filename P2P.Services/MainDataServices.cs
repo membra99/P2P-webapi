@@ -1286,7 +1286,7 @@ namespace P2P.Services
             return await _mapper.ProjectTo<FooterSettingsODTO>(GetFooterSettings(id)).AsNoTracking().SingleOrDefaultAsync();
         }
 
-        public async Task<List<FooterSettingsODTO>> GetFooterSettingsByLangId(int langId)
+        public async Task<List<FooterSettingsODTO>> GetFooterSettingsByLangId(int langId, string UseCase)
         {
             List<FooterSettingsODTO> FootSettings = await (from x in _context.FooterSettings
                                                            where x.LanguageId == langId
@@ -1344,6 +1344,29 @@ namespace P2P.Services
                                                                               && (b.LanguageId == langId)
                                                                               select _mapper.Map<SettingsAttributeODTO>(b)).ToList(),
                                                            }).ToListAsync();
+
+            YearMonthODTO YM;
+            if (UseCase == "Dashboard")
+            {
+                foreach (var item in FootSettings)
+                {
+                    YM = new YearMonthODTO();
+                    YM = await ChangeDateFormatAdmin(item.FooterNote, item.CopyrightNotice,null, null, null, null);
+                    item.FooterNote = YM.SerpTitle;
+                    item.CopyrightNotice = YM.SerpDescription;
+                }
+            }
+            else
+            {
+                foreach (var item in FootSettings)
+                {
+                    YM = new YearMonthODTO();
+                    YM = await ChangeDateFormatFront(item.FooterNote, item.CopyrightNotice, null, null, null, null, item.LanguageId);
+                    item.FooterNote = YM.SerpTitle;
+                    item.CopyrightNotice = YM.SerpDescription;
+                }
+            }
+
             return FootSettings;
         }
 
@@ -4694,9 +4717,9 @@ namespace P2P.Services
             return await GetNewsFeed(id, 0).AsNoTracking().SingleOrDefaultAsync();
         }
 
-        public async Task<List<GetNewsFeedListODTO>> GetListNewsFeedByLangId(int languageId)
+        public async Task<List<GetNewsFeedListODTO>> GetListNewsFeedByLangId(int languageId, string UseCase)
         {
-            var newsFeed = _context.NewsFeeds.Where(x => x.LanguageId == languageId).Select(x => new GetNewsFeedListODTO
+            var newsFeed = await _context.NewsFeeds.Where(x => x.LanguageId == languageId).Select(x => new GetNewsFeedListODTO
             {
                 Name = _context.Review.Where(e => e.ReviewId == x.ReviewId && e.IsActive == true).Select(x => x.Name).FirstOrDefault(),
                 NewsText = x.NewsText,
@@ -4711,7 +4734,28 @@ namespace P2P.Services
                 Logo = _context.Review.Where(e => e.ReviewId == x.ReviewId && e.IsActive == true).Select(e => e.Logo).FirstOrDefault()
             }).OrderBy(x => x.CreatedDate).ToListAsync();
 
-            return await newsFeed;
+            YearMonthODTO YM;
+            if (UseCase == "Dashboard")
+            {
+                foreach (var item in newsFeed)
+                {
+                    YM = new YearMonthODTO();
+                    YM = await ChangeDateFormatAdmin(item.NewsText, null, null, null, null, null);
+                    item.NewsText = YM.SerpTitle;
+                }
+            }
+            else
+            {
+                foreach (var item in newsFeed)
+                {
+                    YM = new YearMonthODTO();
+                    YM = await ChangeDateFormatFront(item.NewsText, null, null, null, null, null, languageId);
+                    item.NewsText = YM.SerpTitle;
+                    //There is a chance that we also need item.Paragraph
+                }
+            }
+
+            return  newsFeed;
         }
 
         public async Task<List<GetNewsFeedListODTO>> GetAllNews(int Id)
@@ -4870,7 +4914,7 @@ namespace P2P.Services
             return await _mapper.ProjectTo<HomeSettingsODTO>(GetHomeSettings(id, 0)).AsNoTracking().SingleOrDefaultAsync();
         }
 
-        public async Task<List<HomeSettingsODTO>> GetHomeSettingsByLangId(int langId)
+        public async Task<List<HomeSettingsODTO>> GetHomeSettingsByLangId(int langId, string UseCase)
         {
             List<string> reviewPlatforms = new List<string>();
             foreach (var platform in await (from x in _context.HomeSettings
@@ -4964,6 +5008,33 @@ namespace P2P.Services
                                                                                && (c.LanguageId == langId)
                                                                                select _mapper.Map<SettingsAttributeODTO>(c)).ToList(),
                                                          }).ToListAsync();
+
+            YearMonthODTO YM;
+            if (UseCase == "Dashboard")
+            {
+                foreach (var item in homeSettings)
+                {
+                    YM = new YearMonthODTO();
+                    YM = await ChangeDateFormatAdmin(item.SerpTitle, item.SerpDescription, item.Subtitle, null, null, item.Title);
+                    item.SerpTitle = YM.SerpTitle;
+                    item.SerpDescription = YM.SerpDescription;
+                    item.Subtitle = YM.Subtitle;
+                    item.Title = YM.Title;
+                }
+            }
+            else
+            {
+                foreach (var item in homeSettings)
+                {
+                    YM = new YearMonthODTO();
+                    YM = await ChangeDateFormatFront(item.SerpTitle, item.SerpDescription, item.Subtitle, null, null, item.Title, item.LanguageId);
+                    item.SerpTitle = YM.SerpTitle;
+                    item.SerpDescription = YM.SerpDescription;
+                    item.Subtitle = YM.Subtitle;
+                    item.Title = YM.Title;
+                }
+            }
+
             return homeSettings;
         }
 
@@ -5234,7 +5305,7 @@ namespace P2P.Services
             return await _mapper.ProjectTo<AboutSettingsODTO>(GetAboutSettings(id, 0)).AsNoTracking().SingleOrDefaultAsync();
         }
 
-        public async Task<List<AboutSettingsODTO>> GetAboutSettingsByLangId(int langId)
+        public async Task<List<AboutSettingsODTO>> GetAboutSettingsByLangId(int langId, string UseCase)
         {
             List<AboutSettingsODTO> aboutSettings = await (from x in _context.AboutSettings
                                                            where x.LanguageId == langId
@@ -5277,6 +5348,37 @@ namespace P2P.Services
                                                                              && (c.LanguageId == langId)
                                                                              select _mapper.Map<SettingsAttributeODTO>(c)).ToList()
                                                            }).ToListAsync();
+            YearMonthODTO YM;
+            if (UseCase == "Dashboard")
+            {
+                foreach (var item in aboutSettings)
+                {
+                    YM = new YearMonthODTO();
+                    YM = await ChangeDateFormatAdmin(item.SerpTitle, item.SerpDescription, item.Subtitle, item.Paragraph, item.Section2Paragraph, item.Title);
+                    item.SerpTitle = YM.SerpTitle;
+                    item.SerpDescription = YM.SerpDescription;
+                    item.Subtitle = YM.Subtitle;
+                    item.Title = YM.Title;
+                    item.Paragraph = YM.PageTitle;
+                    item.Section2Paragraph = YM.Content;
+                }                
+            }
+            else
+            {
+                foreach (var item in aboutSettings)
+                {
+                    YM = new YearMonthODTO();
+                    YM = await ChangeDateFormatFront(item.SerpTitle, item.SerpDescription, item.Subtitle, item.Paragraph, item.Section2Paragraph, item.Title, item.LanguageId);
+                    item.SerpTitle = YM.SerpTitle;
+                    item.SerpDescription = YM.SerpDescription;
+                    item.Subtitle = YM.Subtitle;
+                    item.Title = YM.Title;
+                    item.Paragraph = YM.PageTitle;
+                    item.Section2Paragraph = YM.Content;
+                    //There is a chance that we also need item.Paragraph
+                }                
+            }
+            
             return aboutSettings;
         }
 
@@ -5651,7 +5753,7 @@ namespace P2P.Services
             blog.SerpTitle = ym.SerpTitle;
             blog.SerpDescription = ym.SerpDescription;
             blog.Subtitle = ym.Subtitle;
-            blog.PageTitle = ym.PageTitle;
+            blog.PageTitle = ym.PageTitle; 
             blog.Content = ym.Content;
             return blog;
         }
