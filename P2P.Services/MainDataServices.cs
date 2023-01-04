@@ -3936,7 +3936,7 @@ namespace P2P.Services
                     item.NumberOfInvestors = review.NumberOfInvestors;
                     item.InvestorsLoss = review.InvestorsLoss;
                     item.PortfolioSize = review.PortfolioSize;
-                    item.FinancialReport = review.FinancialReport;
+                    //item.FinancialReport = review.FinancialReport;
                     item.StatisticsCurrency = review.StatisticsCurrency;
                     item.BuybackGuarantee = review.BuybackGuarantee;
                     item.PersonalGuarantee = review.PersonalGuarantee;
