@@ -4163,16 +4163,29 @@ namespace P2P.Services
             return academyreturn;
         }
 
-        public async Task<List<AcademyODTO>> GetAcademyByLangId(int langId)
+        public async Task<List<AcademyODTO>> GetAcademyByLangId(int langId, string UseCase)
         {
             YearMonthODTO YM = null;
             var academy = await GetAcademy(0, langId, null).ToListAsync();
-            foreach (var item in academy)
+            if(UseCase == "Dashboard")
             {
-                YM = new YearMonthODTO();
-                YM = await ChangeDateFormatAdmin(null, null, null, null, null, item.Title);
-                item.Title = YM.Title;
+                foreach (var item in academy)
+                {
+                    YM = new YearMonthODTO();
+                    YM = await ChangeDateFormatAdmin(null, null, null, null, null, item.Title);
+                    item.Title = YM.Title;
+                }
             }
+            else
+            {
+                foreach (var item in academy)
+                {
+                    YM = new YearMonthODTO();
+                    YM = await ChangeDateFormatFront(null, null, null, null, null, item.Title, item.LanguageId);
+                    item.Title = YM.Title;
+                }
+            }
+            
             return academy;
         }
 
@@ -4375,7 +4388,15 @@ namespace P2P.Services
 
         public async Task<PagesSettingsODTO> GetPagesSettingsById(int id)
         {
-            return await GetPagesSettings(id, 0).AsNoTracking().FirstOrDefaultAsync();
+            var result = await GetPagesSettings(id, 0).AsNoTracking().FirstOrDefaultAsync();
+            YearMonthODTO ym;
+            ym = await ChangeDateFormatAdmin(result.SerpTitle, result.SerpDescription, result.Subtitle, null, null, result.Title);
+            result.SerpTitle = ym.SerpTitle;
+            result.SerpDescription = ym.SerpDescription;
+            result.Subtitle = ym.Subtitle;
+            result.Title = ym.Title;
+
+            return result;
         }
 
         public async Task<PagesSettingsODTO> GetPagesSettingsByLangId(int langId)
@@ -4383,9 +4404,10 @@ namespace P2P.Services
             return await GetPagesSettings(0, langId).AsNoTracking().FirstOrDefaultAsync();
         }
 
-        public async Task<PagesSettingsODTO> GetNewsSettingsByLangId(int langId)
+        public async Task<PagesSettingsODTO> GetNewsSettingsByLangId(int langId, string UseCase)
         {
-            return await _context.PagesSettings.Where(x => x.LanguageId == langId && x.DataTypeId == NEWS_SETTINGS_TYPEID).Select(x =>
+            YearMonthODTO YM;
+            var NewsSettings =  await _context.PagesSettings.Where(x => x.LanguageId == langId && x.DataTypeId == NEWS_SETTINGS_TYPEID).Select(x =>
                      new PagesSettingsODTO
                      {
                          PagesSettingsId = x.PagesSettingsId,
@@ -4400,11 +4422,35 @@ namespace P2P.Services
                          Platform = x.Platform,
                          Title = x.Title,
                      }).FirstOrDefaultAsync();
+
+            if (UseCase == "Dashboard")
+            {
+                YM = new YearMonthODTO();
+                YM = await ChangeDateFormatAdmin(NewsSettings.SerpTitle, NewsSettings.SerpDescription, NewsSettings.Subtitle, null, null, NewsSettings.Title);
+                NewsSettings.SerpTitle = YM.SerpTitle;
+                NewsSettings.SerpDescription = YM.SerpDescription;
+                NewsSettings.Subtitle = YM.Subtitle;
+                NewsSettings.Title = YM.Title;
+
+            }
+            else
+            {
+                YM = new YearMonthODTO();
+                YM = await ChangeDateFormatFront(NewsSettings.SerpTitle, NewsSettings.SerpDescription, NewsSettings.Subtitle, null, null, NewsSettings.Title, NewsSettings.LanguageId);
+                NewsSettings.SerpTitle = YM.SerpTitle;
+                NewsSettings.SerpDescription = YM.SerpDescription;
+                NewsSettings.Subtitle = YM.Subtitle;
+                NewsSettings.Title = YM.Title;
+            }
+
+            return NewsSettings;
+
         }
 
-        public async Task<PagesSettingsODTO> GetBlogSettingsByLangId(int langId)
+        public async Task<PagesSettingsODTO> GetBlogSettingsByLangId(int langId, string UseCase)
         {
-            return await _context.PagesSettings.Where(x => x.LanguageId == langId && x.DataTypeId == BLOG_SETTINGS_TYPEID).Select(x =>
+            YearMonthODTO YM;
+            var BlogSettings = await _context.PagesSettings.Where(x => x.LanguageId == langId && x.DataTypeId == BLOG_SETTINGS_TYPEID).Select(x =>
                      new PagesSettingsODTO
                      {
                          PagesSettingsId = x.PagesSettingsId,
@@ -4420,11 +4466,34 @@ namespace P2P.Services
                          Platform = x.Platform,
                          Title = x.Title,
                      }).FirstOrDefaultAsync();
+
+            if (UseCase == "Dashboard")
+            {
+                YM = new YearMonthODTO();
+                YM = await ChangeDateFormatAdmin(BlogSettings.SerpTitle, BlogSettings.SerpDescription, BlogSettings.Subtitle, null, null, BlogSettings.Title);
+                BlogSettings.SerpTitle = YM.SerpTitle;
+                BlogSettings.SerpDescription = YM.SerpDescription;
+                BlogSettings.Subtitle = YM.Subtitle;
+                BlogSettings.Title = YM.Title;
+
+            }
+            else
+            {
+                YM = new YearMonthODTO();
+                YM = await ChangeDateFormatFront(BlogSettings.SerpTitle, BlogSettings.SerpDescription, BlogSettings.Subtitle, null, null, BlogSettings.Title, BlogSettings.LanguageId);
+                BlogSettings.SerpTitle = YM.SerpTitle;
+                BlogSettings.SerpDescription = YM.SerpDescription;
+                BlogSettings.Subtitle = YM.Subtitle;
+                BlogSettings.Title = YM.Title;
+            }
+
+            return BlogSettings;
         }
 
-        public async Task<PagesSettingsODTO> GetBonusSettingsByLangId(int langId)
+        public async Task<PagesSettingsODTO> GetBonusSettingsByLangId(int langId, string UseCase)
         {
-            return await _context.PagesSettings.Where(x => x.LanguageId == langId && x.DataTypeId == BONUS_SETTINGS_TYPEID).Select(x =>
+            YearMonthODTO YM;
+            var BonusSettings = await _context.PagesSettings.Where(x => x.LanguageId == langId && x.DataTypeId == BONUS_SETTINGS_TYPEID).Select(x =>
                      new PagesSettingsODTO
                      {
                          PagesSettingsId = x.PagesSettingsId,
@@ -4439,11 +4508,34 @@ namespace P2P.Services
                          Platform = x.Platform,
                          Title = x.Title,
                      }).FirstOrDefaultAsync();
+
+            if (UseCase == "Dashboard")
+            {
+                    YM = new YearMonthODTO();
+                    YM = await ChangeDateFormatAdmin(BonusSettings.SerpTitle, BonusSettings.SerpDescription, BonusSettings.Subtitle, null, null, BonusSettings.Title);
+                BonusSettings.SerpTitle = YM.SerpTitle;
+                BonusSettings.SerpDescription = YM.SerpDescription;
+                BonusSettings.Subtitle = YM.Subtitle;
+                BonusSettings.Title = YM.Title;
+                
+            }
+            else
+            {
+                    YM = new YearMonthODTO();
+                    YM = await ChangeDateFormatFront(BonusSettings.SerpTitle, BonusSettings.SerpDescription, BonusSettings.Subtitle, null, null, BonusSettings.Title, BonusSettings.LanguageId);
+                BonusSettings.SerpTitle = YM.SerpTitle;
+                BonusSettings.SerpDescription = YM.SerpDescription;
+                BonusSettings.Subtitle = YM.Subtitle;
+                BonusSettings.Title = YM.Title;
+            }
+            
+            return BonusSettings;
         }
 
-        public async Task<PagesSettingsODTO> GetAcademySettingsByLangId(int langId)
+        public async Task<PagesSettingsODTO> GetAcademySettingsByLangId(int langId, string UseCase)
         {
-            return await _context.PagesSettings.Where(x => x.LanguageId == langId && x.DataTypeId == ACADEMY_SETTINGS_TYPEID).Select(x =>
+            YearMonthODTO YM;
+            var AcademySettings = await _context.PagesSettings.Where(x => x.LanguageId == langId && x.DataTypeId == ACADEMY_SETTINGS_TYPEID).Select(x =>
                      new PagesSettingsODTO
                      {
                          PagesSettingsId = x.PagesSettingsId,
@@ -4458,11 +4550,34 @@ namespace P2P.Services
                          Platform = x.Platform,
                          Title = x.Title,
                      }).FirstOrDefaultAsync();
+
+            if (UseCase == "Dashboard")
+            {
+                YM = new YearMonthODTO();
+                YM = await ChangeDateFormatAdmin(AcademySettings.SerpTitle, AcademySettings.SerpDescription, AcademySettings.Subtitle, null, null, AcademySettings.Title);
+                AcademySettings.SerpTitle = YM.SerpTitle;
+                AcademySettings.SerpDescription = YM.SerpDescription;
+                AcademySettings.Subtitle = YM.Subtitle;
+                AcademySettings.Title = YM.Title;
+
+            }
+            else
+            {
+                YM = new YearMonthODTO();
+                YM = await ChangeDateFormatFront(AcademySettings.SerpTitle, AcademySettings.SerpDescription, AcademySettings.Subtitle, null, null, AcademySettings.Title, AcademySettings.LanguageId);
+                AcademySettings.SerpTitle = YM.SerpTitle;
+                AcademySettings.SerpDescription = YM.SerpDescription;
+                AcademySettings.Subtitle = YM.Subtitle;
+                AcademySettings.Title = YM.Title;
+            }
+
+            return AcademySettings;
         }
 
-        public async Task<PagesSettingsODTO> GetReviewSettingsByLangId(int langId)
+        public async Task<PagesSettingsODTO> GetReviewSettingsByLangId(int langId, string UseCase)
         {
-            return await _context.PagesSettings.Where(x => x.LanguageId == langId && x.DataTypeId == REVIEW_SETTINGS_TYPEID).Select(x =>
+            YearMonthODTO YM;
+            var ReviewSettings = await _context.PagesSettings.Where(x => x.LanguageId == langId && x.DataTypeId == REVIEW_SETTINGS_TYPEID).Select(x =>
                      new PagesSettingsODTO
                      {
                          PagesSettingsId = x.PagesSettingsId,
@@ -4477,6 +4592,28 @@ namespace P2P.Services
                          Platform = x.Platform,
                          Title = x.Title,
                      }).FirstOrDefaultAsync();
+
+            if (UseCase == "Dashboard")
+            {
+                YM = new YearMonthODTO();
+                YM = await ChangeDateFormatAdmin(ReviewSettings.SerpTitle, ReviewSettings.SerpDescription, ReviewSettings.Subtitle, null, null, ReviewSettings.Title);
+                ReviewSettings.SerpTitle = YM.SerpTitle;
+                ReviewSettings.SerpDescription = YM.SerpDescription;
+                ReviewSettings.Subtitle = YM.Subtitle;
+                ReviewSettings.Title = YM.Title;
+
+            }
+            else
+            {
+                YM = new YearMonthODTO();
+                YM = await ChangeDateFormatFront(ReviewSettings.SerpTitle, ReviewSettings.SerpDescription, ReviewSettings.Subtitle, null, null, ReviewSettings.Title, ReviewSettings.LanguageId);
+                ReviewSettings.SerpTitle = YM.SerpTitle;
+                ReviewSettings.SerpDescription = YM.SerpDescription;
+                ReviewSettings.Subtitle = YM.Subtitle;
+                ReviewSettings.Title = YM.Title;
+            }
+
+            return ReviewSettings;
         }
 
         public async Task<PagesSettingsODTO> EditPagesSettings(PagesSettingsIDTO pagesSettingsIDTO)
@@ -5533,7 +5670,7 @@ namespace P2P.Services
             {
                 var route = await _context.Routes.Where(x => x.LanguageId == languageId && x.DataTypeId == BLOG_TYPEID && x.TableId == item.BlogId).Select(x => x.UrlTableId).FirstOrDefaultAsync();
                 var url = await _context.UrlTables.Where(x => x.UrlTableId == route).Select(x => x.URL).FirstOrDefaultAsync();
-
+                
                 var data = new BlogODTO()
                 {
                     BlogId = item.BlogId,

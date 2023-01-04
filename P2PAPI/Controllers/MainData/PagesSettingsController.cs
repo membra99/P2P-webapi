@@ -36,9 +36,9 @@ namespace P2P.WebApi.Controllers.MainData
 
         //GET: api/PagesSettings
         [HttpGet("GetBonusSettingsByLangId/{langId}")]
-        public async Task<ActionResult<PagesSettingsODTO>> GetBonusSettings(int langId)
+        public async Task<ActionResult<PagesSettingsODTO>> GetBonusSettings(int langId, string UseCase)
         {
-            var PagesSettings = await _mainDataServices.GetBonusSettingsByLangId(langId);
+            var PagesSettings = await _mainDataServices.GetBonusSettingsByLangId(langId, UseCase);
             if (PagesSettings == null)
             {
                 return NotFound();
@@ -48,9 +48,9 @@ namespace P2P.WebApi.Controllers.MainData
 
         //GET: api/PagesSettings
         [HttpGet("GetNewsSettingsByLangId/{langId}")]
-        public async Task<ActionResult<PagesSettingsODTO>> GetNewsSettings(int langId)
+        public async Task<ActionResult<PagesSettingsODTO>> GetNewsSettings(int langId, string UseCase)
         {
-            var PagesSettings = await _mainDataServices.GetNewsSettingsByLangId(langId);
+            var PagesSettings = await _mainDataServices.GetNewsSettingsByLangId(langId, UseCase);
             if (PagesSettings == null)
             {
                 return NotFound();
@@ -60,9 +60,9 @@ namespace P2P.WebApi.Controllers.MainData
 
         //GET: api/PagesSettings
         [HttpGet("GetBlogsSettingsByLangId/{langId}")]
-        public async Task<ActionResult<PagesSettingsODTO>> GetBlogsSettings(int langId)
+        public async Task<ActionResult<PagesSettingsODTO>> GetBlogsSettings(int langId, string UseCase)
         {
-            var PagesSettings = await _mainDataServices.GetBlogSettingsByLangId(langId);
+            var PagesSettings = await _mainDataServices.GetBlogSettingsByLangId(langId, UseCase);
             if (PagesSettings == null)
             {
                 return NotFound();
@@ -72,9 +72,9 @@ namespace P2P.WebApi.Controllers.MainData
 
         //GET: api/PagesSettings
         [HttpGet("GetAcademySettingsByLangId/{langId}")]
-        public async Task<ActionResult<PagesSettingsODTO>> GetAcademySettings(int langId)
+        public async Task<ActionResult<PagesSettingsODTO>> GetAcademySettings(int langId, string UseCase)
         {
-            var PagesSettings = await _mainDataServices.GetAcademySettingsByLangId(langId);
+            var PagesSettings = await _mainDataServices.GetAcademySettingsByLangId(langId, UseCase);
             if (PagesSettings == null)
             {
                 return NotFound();
@@ -84,9 +84,9 @@ namespace P2P.WebApi.Controllers.MainData
 
         //GET: api/PagesSettings
         [HttpGet("GetReviewSettingsByLangId/{langId}")]
-        public async Task<ActionResult<PagesSettingsODTO>> GetReviewSettings(int langId)
+        public async Task<ActionResult<PagesSettingsODTO>> GetReviewSettings(int langId, string UseCase)
         {
-            var PagesSettings = await _mainDataServices.GetReviewSettingsByLangId(langId);
+            var PagesSettings = await _mainDataServices.GetReviewSettingsByLangId(langId, UseCase);
             if (PagesSettings == null)
             {
                 return NotFound();
