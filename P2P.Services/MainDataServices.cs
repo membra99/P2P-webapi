@@ -1395,6 +1395,12 @@ namespace P2P.Services
             footerSettings.LinkedInLink = footerSettings.LinkedInLink != 0 ? footerSettings.LinkedInLink : null;
             footerSettings.YoutubeLink = footerSettings.YoutubeLink != 0 ? footerSettings.YoutubeLink : null;
             footerSettings.PodcastLink = footerSettings.PodcastLink != 0 ? footerSettings.PodcastLink : null;
+
+            YearMonthODTO ym = new YearMonthODTO();
+            ym = await EditDate(footerSettings.CopyrightNotice, footerSettings.FooterNote, null, null, null, null);
+            footerSettings.FooterNote = ym.SerpDescription;// Parameter FooterNote was placed into SerpDescription variable inside the function EditDate
+            footerSettings.CopyrightNotice = ym.SerpTitle;// Parameter CopyrightNotice was placed into SerpTitle variable inside the function EditDate
+
             _context.Entry(footerSettings).State = EntityState.Modified;
             await SaveContextChangesAsync();
 
@@ -1616,6 +1622,12 @@ namespace P2P.Services
             footerSettings.YoutubeLink = footerSettings.YoutubeLink != 0 ? footerSettings.YoutubeLink : null;
             footerSettings.PodcastLink = footerSettings.PodcastLink != 0 ? footerSettings.PodcastLink : null;
             footerSettings.FooterSettingsId = 0;
+
+            YearMonthODTO ym = new YearMonthODTO();
+            ym = await EditDate(footerSettings.CopyrightNotice, footerSettings.FooterNote, null, null, null, null);
+            footerSettings.FooterNote = ym.SerpDescription;// Parameter FooterNote was placed into SerpDescription variable inside the function EditDate
+            footerSettings.CopyrightNotice = ym.SerpTitle;// Parameter CopyrightNotice was placed into SerpTitle variable inside the function EditDate
+
 
             _context.FooterSettings.Add(footerSettings);
 
@@ -4785,6 +4797,14 @@ namespace P2P.Services
             serp.SerpDescription = pagesSettingsIDTO.SerpDescription;
             serp.Subtitle = pagesSettingsIDTO.Subtitle;
 
+            YearMonthODTO YM = new YearMonthODTO();
+            YM = await EditDate(serp.SerpTitle, serp.SerpDescription, serp.Subtitle, null, null, pagesSettings.Title);
+            pagesSettings.Serp.SerpTitle = YM.SerpTitle;
+            pagesSettings.Serp.SerpDescription = YM.SerpDescription;
+            pagesSettings.Serp.Subtitle = YM.Subtitle;
+            pagesSettings.Title = YM.Title;
+
+            _context.Entry(pagesSettings).State = EntityState.Modified;
             _context.Entry(serp).State = EntityState.Modified;
 
             await SaveContextChangesAsync();
@@ -4804,10 +4824,22 @@ namespace P2P.Services
                     SerpDescription = pagesSettingsIDTO.SerpDescription,
                     Subtitle = pagesSettingsIDTO.Subtitle
                 };
+
+                YearMonthODTO YM = new YearMonthODTO();
+                YM = await EditDate(serp.SerpTitle, serp.SerpDescription, serp.Subtitle, null, null, null);
+                serp.SerpTitle = YM.SerpTitle;
+                serp.SerpDescription = YM.SerpDescription;
+                serp.Subtitle = YM.Subtitle;
+
                 _context.Serps.Add(serp);
                 await SaveContextChangesAsync();
                 pageSett.PagesSettingsId = 0;
                 pageSett.SerpId = serp.SerpId;
+
+                YearMonthODTO YM1 = new YearMonthODTO();
+                YM1 = await EditDate(serp.SerpTitle, serp.SerpDescription, serp.Subtitle, null, null, pageSett.Title);
+                pageSett.Title = YM1.Title;
+
                 _context.PagesSettings.Add(pageSett);
                 await SaveContextChangesAsync();
 
@@ -5209,6 +5241,13 @@ namespace P2P.Services
                 TableId = homeSettings.HomeSettingsId
             };
 
+            YearMonthODTO YM = new YearMonthODTO();
+            YM = await EditDate(serp.SerpTitle, serp.SerpDescription, serp.Subtitle, null,null, homeSettings.Title);
+            serp.SerpTitle = YM.SerpTitle;
+            serp.SerpDescription = YM.SerpDescription;
+            serp.Subtitle = YM.Subtitle;
+            homeSettings.Title = YM.Title;
+            _context.Entry(homeSettings).State = EntityState.Modified;
             _context.Serps.Add(serp);
             await SaveContextChangesAsync();
 
@@ -5319,6 +5358,16 @@ namespace P2P.Services
                 DataTypeId = HOME_SETTINGS_TYPEID,
                 TableId = homeSettings.HomeSettingsId
             };
+
+            YearMonthODTO YM = new YearMonthODTO();
+            YM = await EditDate(serp.SerpTitle, serp.SerpDescription, serp.Subtitle, null, null, homeSettings.Title);
+            serp.SerpTitle = YM.SerpTitle;
+            serp.SerpDescription = YM.SerpDescription;
+            serp.Subtitle = YM.Subtitle;
+            homeSettings.Title = YM.Title;
+
+            _context.Entry(homeSettings).State = EntityState.Modified;
+            await SaveContextChangesAsync();
 
             _context.Serps.Add(serp);
             await SaveContextChangesAsync();
@@ -5525,6 +5574,8 @@ namespace P2P.Services
         {
             var aboutSettings = _mapper.Map<AboutSettings>(aboutSettingsIDTO);
             aboutSettings.SerpId = aboutSettings.SerpId != 0 ? aboutSettings.SerpId : null;
+
+          
             _context.Entry(aboutSettings).State = EntityState.Modified;
             await SaveContextChangesAsync();
 
@@ -5537,10 +5588,22 @@ namespace P2P.Services
                 TableId = aboutSettingsIDTO.AboutSettingsId
             };
 
+            YearMonthODTO YM = new YearMonthODTO();
+            YM = await EditDate(serp.SerpTitle, serp.SerpDescription, serp.Subtitle, aboutSettings.Paragraph, aboutSettings.Section2Paragraph, aboutSettings.Title);
+            serp.SerpTitle = YM.SerpTitle;
+            serp.SerpDescription = YM.SerpDescription;
+            serp.Subtitle = YM.Subtitle;
+            aboutSettings.Paragraph = YM.PageTitle;
+            aboutSettings.Section2Paragraph = YM.Content;
+            aboutSettings.Title = YM.Title;
+
             _context.Serps.Add(serp);
             await SaveContextChangesAsync();
 
             aboutSettings.SerpId = serp.SerpId;
+
+            _context.Entry(aboutSettings).State = EntityState.Modified;
+
             await SaveContextChangesAsync();
 
             var settAttr = new SettingsAttribute();
@@ -5614,6 +5677,14 @@ namespace P2P.Services
                 DataTypeId = ABOUT_SETTINGS_TYPEID,
                 TableId = aboutSettingsIDTO.AboutSettingsId
             };
+            YearMonthODTO YM = new YearMonthODTO();
+            YM = await EditDate(serp.SerpTitle, serp.SerpDescription, serp.Subtitle, aboutSettings.Paragraph, aboutSettings.Section2Paragraph, aboutSettings.Title);
+            serp.SerpTitle = YM.SerpTitle;
+            serp.SerpDescription = YM.SerpDescription;
+            serp.Subtitle = YM.Subtitle;
+            aboutSettings.Paragraph = YM.PageTitle;
+            aboutSettings.Section2Paragraph = YM.Content;
+            aboutSettings.Title = YM.Title;
 
             _context.Serps.Add(serp);
             await SaveContextChangesAsync();
@@ -5733,11 +5804,16 @@ namespace P2P.Services
         public async Task<List<SettingsAttributeODTO>> EditSettingsAttribute(List<SettingsAttributeIDTO> settingsAttributeIDTO)
         {
             var settingsAttribute = settingsAttributeIDTO.Select(x => _mapper.Map<SettingsAttribute>(x)).ToList();
-
+            YearMonthODTO ym;
             foreach (var settAttr in settingsAttribute)
             {
                 var urlId = await _context.UrlTables.Where(x => x.URL.ToLower() == settAttr.Value && x.DataTypeId == settAttr.DataTypeId).Select(x => x.UrlTableId).FirstOrDefaultAsync();
                 settAttr.UrlTableId = settAttr.Value != null && urlId != 0 ? urlId : null;
+
+                ym = new YearMonthODTO();
+                ym = await EditDate(null, null, null, null, settAttr.Value,null);
+                settAttr.Value = ym.Content;
+
                 _context.Entry(settAttr).State = EntityState.Modified;
                 await SaveContextChangesAsync();
                 if (settAttr.UrlTableId != null)
@@ -5768,13 +5844,18 @@ namespace P2P.Services
         public async Task<List<SettingsAttributeODTO>> AddSettingsAttribute(List<SettingsAttributeIDTO> settingsAttributeIDTO)
         {
             var settingsAttribute = settingsAttributeIDTO.Select(x => _mapper.Map<SettingsAttribute>(x)).ToList();
-
+            YearMonthODTO ym;
             foreach (var settAttr in settingsAttribute)
             {
                 settAttr.SettingsAttributeId = 0;
                 var urlId = await _context.UrlTables.Where(x => x.URL.ToLower() == settAttr.Value && x.DataTypeId == settAttr.DataTypeId).Select(x => x.UrlTableId).FirstOrDefaultAsync();
                 settAttr.UrlTableId = settAttr.Value != null && urlId != 0 ? urlId : null;
                 settAttr.Value = settAttr.Value != null ? settAttr.Value : null;
+
+                ym = new YearMonthODTO();
+                ym = await EditDate(null, null, null, null, settAttr.Value, null);
+                settAttr.Value = ym.Content;
+
                 _context.SettingsAttributes.Add(settAttr);
                 await SaveContextChangesAsync();
                 if (settAttr.UrlTableId != null)
