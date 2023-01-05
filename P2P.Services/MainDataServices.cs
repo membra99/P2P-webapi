@@ -6037,12 +6037,13 @@ namespace P2P.Services
                     foreach (var item1 in blogs)
                     {
                         ym = new YearMonthODTO();
-                        ym = await ChangeDateFormatAdmin(item1.SerpTitle, item1.SerpDescription, item1.Subtitle, item1.PageTitle, item1.Content, null);
+                        ym = await ChangeDateFormatAdmin(item1.SerpTitle, item1.SerpDescription, item1.Subtitle, item1.PageTitle, item1.Content, item1.Excerpt);
                         item1.SerpTitle = ym.SerpTitle;
                         item1.SerpDescription = ym.SerpDescription;
                         item1.Subtitle = ym.Subtitle;
                         item1.Content = ym.Content;
                         item1.PageTitle = ym.PageTitle;
+                        item.Excerpt = ym.Title;
                     }
                 }
                 else
@@ -6050,12 +6051,13 @@ namespace P2P.Services
                     foreach (var item1 in blogs)
                     {
                         ym = new YearMonthODTO();
-                        ym = await ChangeDateFormatFront(item1.SerpTitle, item1.SerpDescription, item1.Subtitle, item1.PageTitle, item1.Content, null, item1.LanguageId);
+                        ym = await ChangeDateFormatFront(item1.SerpTitle, item1.SerpDescription, item1.Subtitle, item1.PageTitle, item1.Content, item1.Excerpt, item1.LanguageId);
                         item1.SerpTitle = ym.SerpTitle;
                         item1.SerpDescription = ym.SerpDescription;
                         item1.Subtitle = ym.Subtitle;
                         item1.Content = ym.Content;
                         item1.PageTitle = ym.PageTitle;
+                        item1.Excerpt = ym.Title;
                     }
                 }
             }
