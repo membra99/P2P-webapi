@@ -2871,7 +2871,7 @@ namespace P2P.Services
             return null;
         }
 
-        public async Task<List<FaqListODTO>> GetFaqListByBlogTitleId(int faqTitleId)
+        public async Task<List<FaqListODTO>> GetFaqListByBlogTitleId(int faqTitleId, string UseCase)
         {
             var blog = await _context.FaqTitles.Where(x => x.FaqTitleId == faqTitleId).FirstOrDefaultAsync();
             if (blog.BlogId != null)
@@ -2884,10 +2884,21 @@ namespace P2P.Services
                     var LanguageId = await (from x in _context.FaqTitles
                                             join r in _context.Review on x.ReviewId equals r.ReviewId
                                             select r.LanguageId).FirstOrDefaultAsync();
-                    ym = new YearMonthODTO();
-                    ym = await ChangeDateFormatFront(null, null, null, null, item.Question, item.Answer, LanguageId);
-                    item.Answer = ym.Title;
-                    item.Question = ym.Content;
+
+                    if(UseCase == "Dashboard")
+                    {
+                        ym = new YearMonthODTO();
+                        ym = await ChangeDateFormatAdmin(null, null, null, null, item.Question, item.Answer);
+                        item.Answer = ym.Title;
+                        item.Question = ym.Content;
+                    }
+                    else
+                    {
+                        ym = new YearMonthODTO();
+                        ym = await ChangeDateFormatFront(null, null, null, null, item.Question, item.Answer, LanguageId);
+                        item.Answer = ym.Title;
+                        item.Question = ym.Content;
+                    }
                 }
                 return FaqList;
             }

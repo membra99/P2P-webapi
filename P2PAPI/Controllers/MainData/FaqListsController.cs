@@ -44,9 +44,9 @@ namespace P2P.WebApi.Controllers.MainData
 
         //GET: api/FaqList
         [HttpGet("ByBlogTitleId")]
-        public async Task<ActionResult<IEnumerable<FaqListODTO>>> GetByBlogTitleId(int faqTitleId)
+        public async Task<ActionResult<IEnumerable<FaqListODTO>>> GetByBlogTitleId(int faqTitleId, string UseCase)
         {
-            var faqList = await _mainDataServices.GetFaqListByBlogTitleId(faqTitleId);
+            var faqList = await _mainDataServices.GetFaqListByBlogTitleId(faqTitleId, UseCase);
             if (faqList == null) return NotFound();
             return faqList;
         }
