@@ -1369,7 +1369,7 @@ namespace P2P.Services
                 foreach (var item in FootSettings)
                 {
                     YM = new YearMonthODTO();
-                    YM = await ChangeDateFormatAdmin(item.FooterNote, item.CopyrightNotice,null, null, null, null);
+                    YM = await ChangeDateFormatAdmin(item.FooterNote, item.CopyrightNotice, null, null, null, null);
                     item.FooterNote = YM.SerpTitle;
                     item.CopyrightNotice = YM.SerpDescription;
                 }
@@ -2226,7 +2226,7 @@ namespace P2P.Services
                                        Disadvantages = _context.ReviewAttributes.Where(x => x.ReviewId == d.ReviewId && x.DataTypeId == DISSADVANTAGE_ATTR_TYPEID).Select(x => _mapper.Map<ReviewAttributeODTO>(x)).ToList()
                                    }
                                }).OrderByDescending(e => e.Stars).ToListAsync();
-            
+
             var campaign = await (from x in _context.CashBacks
                                   join r in _context.Review on x.ReviewId equals r.ReviewId into a
                                   from d in a.DefaultIfEmpty()
@@ -2270,7 +2270,7 @@ namespace P2P.Services
                 CashBackCampaign = campaign
             };
 
-           
+
             return cashback;
         }
 
@@ -2716,9 +2716,9 @@ namespace P2P.Services
         public async Task<List<GetFaqTitleByReviewIdODTO>> GetFaqTitleByReviewId(int reviewId)
         {
             var Faq = await (from x in _context.FaqTitles
-                          where (reviewId == 0 || x.ReviewId == reviewId)
-                          && x.ReviewId != null
-                          select _mapper.Map<GetFaqTitleByReviewIdODTO>(x)).ToListAsync();
+                             where (reviewId == 0 || x.ReviewId == reviewId)
+                             && x.ReviewId != null
+                             select _mapper.Map<GetFaqTitleByReviewIdODTO>(x)).ToListAsync();
 
             YearMonthODTO ym;
             foreach (var item in Faq)
@@ -2726,27 +2726,27 @@ namespace P2P.Services
                 ym = new YearMonthODTO();
                 var LanguageId = await _context.FaqTitles.Include(x => x.Review).Where(x => x.ReviewId == item.ReviewId).Select(x => x.Review.LanguageId).FirstOrDefaultAsync();
                 ym = await ChangeDateFormatFront(null, null, null, null, null, item.Title, LanguageId);
-                if(ym != null)
+                if (ym != null)
                 {
                     item.Title = ym.Title;
                 }
             }
             return Faq;
-            
+
         }
 
         public async Task<List<GetFaqTitleByPageIdODTO>> GetFaqTitleByPageId(int pageId)
         {
             var FaqTitleByPageId = await (from x in _context.FaqTitles
-                          where (pageId == 0 || x.PageId == pageId)
-                          && x.PageId != null
-                          select _mapper.Map<GetFaqTitleByPageIdODTO>(x)).ToListAsync();
+                                          where (pageId == 0 || x.PageId == pageId)
+                                          && x.PageId != null
+                                          select _mapper.Map<GetFaqTitleByPageIdODTO>(x)).ToListAsync();
             YearMonthODTO ym;
             foreach (var item in FaqTitleByPageId)
             {
                 ym = new YearMonthODTO();
                 var LanguageId = await _context.Pages.Where(x => x.PageId == item.PageId).Select(x => x.LanguageId).FirstOrDefaultAsync();
-                ym = await ChangeDateFormatFront(null, null, null, null, null, item.Title,LanguageId);
+                ym = await ChangeDateFormatFront(null, null, null, null, null, item.Title, LanguageId);
                 item.Title = ym.Title;
             }
             return FaqTitleByPageId;
@@ -2755,9 +2755,9 @@ namespace P2P.Services
         public async Task<List<GetFaqTitleByBlogIdODTO>> GetFaqTitleByBlogId(int blogId)
         {
             var FaqTitleByBlog = await (from x in _context.FaqTitles
-                          where (blogId == 0 || x.BlogId == blogId)
-                          && x.BlogId != null
-                          select _mapper.Map<GetFaqTitleByBlogIdODTO>(x)).ToListAsync();
+                                        where (blogId == 0 || x.BlogId == blogId)
+                                        && x.BlogId != null
+                                        select _mapper.Map<GetFaqTitleByBlogIdODTO>(x)).ToListAsync();
             YearMonthODTO ym;
             foreach (var item in FaqTitleByBlog)
             {
@@ -2853,8 +2853,8 @@ namespace P2P.Services
             {
                 /*var LanguageId = await _context.FaqTitles.Include(x=> x.Review).Where(x=> x.FaqTitleId == item.FaqTitleId).SingleOrDefaultAsync();*/
                 var LanguageId = await (from x in _context.FaqTitles
-                                  join r in _context.Review on x.ReviewId equals r.ReviewId
-                                  select r.LanguageId).FirstOrDefaultAsync();
+                                        join r in _context.Review on x.ReviewId equals r.ReviewId
+                                        select r.LanguageId).FirstOrDefaultAsync();
                 ym = new YearMonthODTO();
                 ym = await ChangeDateFormatFront(null, null, null, null, item.Question, item.Answer, LanguageId);
                 item.Answer = ym.Title;
@@ -2885,7 +2885,7 @@ namespace P2P.Services
                                             join r in _context.Review on x.ReviewId equals r.ReviewId
                                             select r.LanguageId).FirstOrDefaultAsync();
 
-                    if(UseCase == "Dashboard")
+                    if (UseCase == "Dashboard")
                     {
                         ym = new YearMonthODTO();
                         ym = await ChangeDateFormatAdmin(null, null, null, null, item.Question, item.Answer);
@@ -2902,7 +2902,7 @@ namespace P2P.Services
                 }
                 return FaqList;
             }
-                
+
             return null;
         }
 
@@ -3881,42 +3881,42 @@ namespace P2P.Services
         {
             var lang = _context.Languages.First(e => e.LanguageId == langId);
             var ReviewRoute = await (from x in _context.Review
-                               join r in _context.Routes.Where(x => x.DataTypeId == REVIEW_TYPEID) on x.ReviewId equals r.TableId into c
-                               from a in c.DefaultIfEmpty()
-                               where (a.DataTypeId == REVIEW_TYPEID && x.LanguageId == langId && x.IsActive == true)
-                               select new GetParentReviewODTO
-                               {
-                                   ReviewId = x.ReviewId,
-                                   Stars = x.RatingCalculated,
-                                   Logo = x.Logo,
-                                   Name = x.Name,
-                                   LinkTo = a.UrlTableId,
-                                   LinkToUrl = a.UrlTable.URL,
-                                   NewPlatform = x.NewPlatform,
-                                   Interest = x.Interest,
-                                   SecuredBy = x.SecuredBy,
-                                   Count = (x.Count != null) ? x.Count : 0,
-                                   Guarantee = (bool)x.BuybackGuarantee ? "buyback guarantee" : (bool)x.PersonalGuarantee ? "personal guarantee " : (bool)x.Mortage ? "mortgage" : (bool)x.Collateral ? "collateral" :
-                                               (bool)x.NoProtection ? "not secured" : (bool)x.CryptoAssets ? "cryptoassets" : "",
-                                   IsSecured = !x.NotSecured,
-                                   ExternalLinkKey = x.Name.ToLower(),
-                                   CustomMessage = x.CustomMessage,
-                                   Recommended = x.Recommended,
-                                   CompareButton = (bool)x.CompareButton ? true : false,
-                               }).OrderBy(x => x.ReviewId).ToListAsync();
+                                     join r in _context.Routes.Where(x => x.DataTypeId == REVIEW_TYPEID) on x.ReviewId equals r.TableId into c
+                                     from a in c.DefaultIfEmpty()
+                                     where (a.DataTypeId == REVIEW_TYPEID && x.LanguageId == langId && x.IsActive == true)
+                                     select new GetParentReviewODTO
+                                     {
+                                         ReviewId = x.ReviewId,
+                                         Stars = x.RatingCalculated,
+                                         Logo = x.Logo,
+                                         Name = x.Name,
+                                         LinkTo = a.UrlTableId,
+                                         LinkToUrl = a.UrlTable.URL,
+                                         NewPlatform = x.NewPlatform,
+                                         Interest = x.Interest,
+                                         SecuredBy = x.SecuredBy,
+                                         Count = (x.Count != null) ? x.Count : 0,
+                                         Guarantee = (bool)x.BuybackGuarantee ? "buyback guarantee" : (bool)x.PersonalGuarantee ? "personal guarantee " : (bool)x.Mortage ? "mortgage" : (bool)x.Collateral ? "collateral" :
+                                                     (bool)x.NoProtection ? "not secured" : (bool)x.CryptoAssets ? "cryptoassets" : "",
+                                         IsSecured = !x.NotSecured,
+                                         ExternalLinkKey = x.Name.ToLower(),
+                                         CustomMessage = x.CustomMessage,
+                                         Recommended = x.Recommended,
+                                         CompareButton = (bool)x.CompareButton ? true : false,
+                                     }).OrderBy(x => x.ReviewId).ToListAsync();
             YearMonthODTO ym;
-                foreach (var item in ReviewRoute)
+            foreach (var item in ReviewRoute)
+            {
+                ym = new YearMonthODTO();
+                ym = await ChangeDateFormatFront(null, null, null, null, item.CustomMessage, null, langId);
+
+                if (ym != null)
                 {
-                    ym = new YearMonthODTO();
-                    ym = await ChangeDateFormatFront(null, null, null, null, item.CustomMessage, null, langId);
-
-                    if(ym != null)
-                    {
-                        item.CustomMessage = ym.Content;//Custom message will be delivered to function as Content
-                    }
-
+                    item.CustomMessage = ym.Content;//Custom message will be delivered to function as Content
                 }
-            return  ReviewRoute;
+
+            }
+            return ReviewRoute;
         }
 
         public async Task<ReviewODTO> EditReviewContent(PutContentIDTO contentIDTO)
@@ -4355,29 +4355,17 @@ namespace P2P.Services
             return academyreturn;
         }
 
-        public async Task<List<AcademyODTO>> GetAcademyByLangId(int langId, string UseCase)
+        public async Task<List<AcademyODTO>> GetAcademyByLangId(int langId)
         {
             YearMonthODTO YM = null;
             var academy = await GetAcademy(0, langId, null).ToListAsync();
-            if(UseCase == "Dashboard")
+            foreach (var item in academy)
             {
-                foreach (var item in academy)
-                {
-                    YM = new YearMonthODTO();
-                    YM = await ChangeDateFormatAdmin(null, null, null, null, null, item.Title);
-                    item.Title = YM.Title;
-                }
+                YM = new YearMonthODTO();
+                YM = await ChangeDateFormatAdmin(null, null, null, null, item.Excerpt, item.Title);
+                item.Title = YM.Title;
+                item.Excerpt = YM.Content;
             }
-            else
-            {
-                foreach (var item in academy)
-                {
-                    YM = new YearMonthODTO();
-                    YM = await ChangeDateFormatFront(null, null, null, null, null, item.Title, item.LanguageId);
-                    item.Title = YM.Title;
-                }
-            }
-            
             return academy;
         }
 
@@ -4601,7 +4589,7 @@ namespace P2P.Services
         public async Task<PagesSettingsODTO> GetNewsSettingsByLangId(int langId, string UseCase)
         {
             YearMonthODTO YM;
-            var NewsSettings =  await _context.PagesSettings.Where(x => x.LanguageId == langId && x.DataTypeId == NEWS_SETTINGS_TYPEID).Select(x =>
+            var NewsSettings = await _context.PagesSettings.Where(x => x.LanguageId == langId && x.DataTypeId == NEWS_SETTINGS_TYPEID).Select(x =>
                      new PagesSettingsODTO
                      {
                          PagesSettingsId = x.PagesSettingsId,
@@ -4705,24 +4693,24 @@ namespace P2P.Services
 
             if (UseCase == "Dashboard")
             {
-                    YM = new YearMonthODTO();
-                    YM = await ChangeDateFormatAdmin(BonusSettings.SerpTitle, BonusSettings.SerpDescription, BonusSettings.Subtitle, null, null, BonusSettings.Title);
+                YM = new YearMonthODTO();
+                YM = await ChangeDateFormatAdmin(BonusSettings.SerpTitle, BonusSettings.SerpDescription, BonusSettings.Subtitle, null, null, BonusSettings.Title);
                 BonusSettings.SerpTitle = YM.SerpTitle;
                 BonusSettings.SerpDescription = YM.SerpDescription;
                 BonusSettings.Subtitle = YM.Subtitle;
                 BonusSettings.Title = YM.Title;
-                
+
             }
             else
             {
-                    YM = new YearMonthODTO();
-                    YM = await ChangeDateFormatFront(BonusSettings.SerpTitle, BonusSettings.SerpDescription, BonusSettings.Subtitle, null, null, BonusSettings.Title, BonusSettings.LanguageId);
+                YM = new YearMonthODTO();
+                YM = await ChangeDateFormatFront(BonusSettings.SerpTitle, BonusSettings.SerpDescription, BonusSettings.Subtitle, null, null, BonusSettings.Title, BonusSettings.LanguageId);
                 BonusSettings.SerpTitle = YM.SerpTitle;
                 BonusSettings.SerpDescription = YM.SerpDescription;
                 BonusSettings.Subtitle = YM.Subtitle;
                 BonusSettings.Title = YM.Title;
             }
-            
+
             return BonusSettings;
         }
 
@@ -4904,10 +4892,11 @@ namespace P2P.Services
         }
 
         public async Task<NewsFeedODTO> GetNewsFeedById(int id)
-        {  
+        {
             var NewsFeed = await GetNewsFeed(id, 0).AsNoTracking().SingleOrDefaultAsync();
-            YearMonthODTO ym = await ChangeDateFormatAdmin(null, null, null, null, NewsFeed.NewsText, null);
+            YearMonthODTO ym = await ChangeDateFormatAdmin(null, null, null, null, NewsFeed.NewsText, NewsFeed.TagLine);
             NewsFeed.NewsText = ym.Content;
+            NewsFeed.TagLine = ym.Title;
 
             return NewsFeed;
         }
@@ -4952,7 +4941,7 @@ namespace P2P.Services
                 }
             }
 
-            return  newsFeed;
+            return newsFeed;
         }
 
         public async Task<List<GetNewsFeedListODTO>> GetAllNews(int Id)
@@ -5270,7 +5259,7 @@ namespace P2P.Services
             };
 
             YearMonthODTO YM = new YearMonthODTO();
-            YM = await EditDate(serp.SerpTitle, serp.SerpDescription, serp.Subtitle, null,null, homeSettings.Title);
+            YM = await EditDate(serp.SerpTitle, serp.SerpDescription, serp.Subtitle, null, null, homeSettings.Title);
             serp.SerpTitle = YM.SerpTitle;
             serp.SerpDescription = YM.SerpDescription;
             serp.Subtitle = YM.Subtitle;
@@ -5577,7 +5566,7 @@ namespace P2P.Services
                     item.Title = YM.Title;
                     item.Paragraph = YM.PageTitle;
                     item.Section2Paragraph = YM.Content;
-                }                
+                }
             }
             else
             {
@@ -5592,9 +5581,9 @@ namespace P2P.Services
                     item.Paragraph = YM.PageTitle;
                     item.Section2Paragraph = YM.Content;
                     //There is a chance that we also need item.Paragraph
-                }                
+                }
             }
-            
+
             return aboutSettings;
         }
 
@@ -5603,7 +5592,7 @@ namespace P2P.Services
             var aboutSettings = _mapper.Map<AboutSettings>(aboutSettingsIDTO);
             aboutSettings.SerpId = aboutSettings.SerpId != 0 ? aboutSettings.SerpId : null;
 
-          
+
             _context.Entry(aboutSettings).State = EntityState.Modified;
             await SaveContextChangesAsync();
 
@@ -5839,7 +5828,7 @@ namespace P2P.Services
                 settAttr.UrlTableId = settAttr.Value != null && urlId != 0 ? urlId : null;
 
                 ym = new YearMonthODTO();
-                ym = await EditDate(null, null, null, null, settAttr.Value,null);
+                ym = await EditDate(null, null, null, null, settAttr.Value, null);
                 settAttr.Value = ym.Content;
 
                 _context.Entry(settAttr).State = EntityState.Modified;
@@ -5997,12 +5986,13 @@ namespace P2P.Services
             }
 
             YearMonthODTO ym = new YearMonthODTO();
-            ym = await ChangeDateFormatAdmin(blog.SerpTitle, blog.SerpDescription, blog.Subtitle, blog.PageTitle, blog.Content, null);
+            ym = await ChangeDateFormatAdmin(blog.SerpTitle, blog.SerpDescription, blog.Subtitle, blog.PageTitle, blog.Content, blog.Excerpt);
             blog.SerpTitle = ym.SerpTitle;
             blog.SerpDescription = ym.SerpDescription;
             blog.Subtitle = ym.Subtitle;
-            blog.PageTitle = ym.PageTitle; 
+            blog.PageTitle = ym.PageTitle;
             blog.Content = ym.Content;
+            blog.Excerpt = ym.Title;
             return blog;
         }
 
@@ -6020,7 +6010,7 @@ namespace P2P.Services
             {
                 var route = await _context.Routes.Where(x => x.LanguageId == languageId && x.DataTypeId == BLOG_TYPEID && x.TableId == item.BlogId).Select(x => x.UrlTableId).FirstOrDefaultAsync();
                 var url = await _context.UrlTables.Where(x => x.UrlTableId == route).Select(x => x.URL).FirstOrDefaultAsync();
-                
+
                 var data = new BlogODTO()
                 {
                     BlogId = item.BlogId,
