@@ -742,8 +742,11 @@ namespace P2P.Services
         {
             var testimonial = _mapper.Map<Testimonial>(testimonialIDTO);
 
-            _context.Entry(testimonial).State = EntityState.Modified;
+            YearMonthODTO ym = new YearMonthODTO();
+            ym = await EditDate(null, null, null, null, testimonial.TestimonialText, null);
+            testimonial.TestimonialText = ym.Content;
 
+            _context.Entry(testimonial).State = EntityState.Modified;
             await SaveContextChangesAsync();
 
             return await Get(testimonial.TestimonialId);
@@ -753,6 +756,11 @@ namespace P2P.Services
         {
             var testimonial = _mapper.Map<Testimonial>(testimonialIDTO);
             testimonial.TestimonialId = 0;
+
+            YearMonthODTO ym = new YearMonthODTO();
+            ym = await EditDate(null, null, null, null, testimonial.TestimonialText, null);
+            testimonial.TestimonialText = ym.Content;//Parameter "TestimonialText" will be placed into Context in the function above
+
             _context.Testimonials.Add(testimonial);
             await SaveContextChangesAsync();
             return await Get(testimonial.TestimonialId);
@@ -2231,16 +2239,16 @@ namespace P2P.Services
             foreach (var item in offer)
             {
                 ym = new YearMonthODTO();
-                ym = await ChangeDateFormatFront(item.CashbackCta, item.Terms, null, null, null, null, langId);
-                item.CashbackCta = ym.SerpTitle;
+                ym = await ChangeDateFormatFront(null, item.Terms, null, null, null, item.CashbackCta, langId);
+                item.CashbackCta = ym.Title;
                 item.Terms = ym.SerpDescription;
             }
 
             foreach (var item in campaign)
             {
                 ym = new YearMonthODTO();
-                ym = await ChangeDateFormatFront(item.CashbackCta, item.Terms, null, null, null, null, langId);
-                item.CashbackCta = ym.SerpTitle;
+                ym = await ChangeDateFormatFront(null, item.Terms, null, null, null, item.CashbackCta, langId);
+                item.CashbackCta = ym.Title;
                 item.Terms = ym.SerpDescription;
             }
             var cashback = new CampaignBonusODTO
@@ -2270,6 +2278,12 @@ namespace P2P.Services
                     cashBack.Valid_Until = null;
                 }
             }
+
+            YearMonthODTO ym = new YearMonthODTO();
+            ym = await EditDate(null, cashBack.CashBack_terms, null, null, null, cashBack.CashBack_ca);
+            cashBack.CashBack_terms = ym.SerpDescription;
+            cashBack.CashBack_ca = ym.Title;
+
             _context.Entry(cashBack).State = EntityState.Modified;
 
             await SaveContextChangesAsync();
@@ -2295,6 +2309,12 @@ namespace P2P.Services
                     cashBack.Valid_Until = null;
                 }
             }
+
+            YearMonthODTO ym = new YearMonthODTO();
+            ym = await EditDate(null, cashBack.CashBack_terms, null, null, null, cashBack.CashBack_ca);
+            cashBack.CashBack_terms = ym.SerpDescription;
+            cashBack.CashBack_ca = ym.Title;
+
             cashBack.CashBackId = 0;
             _context.CashBacks.Add(cashBack);
 
@@ -2740,8 +2760,11 @@ namespace P2P.Services
         {
             var faqTitle = _mapper.Map<FaqTitle>(faqTitleIDTO);
 
-            _context.Entry(faqTitle).State = EntityState.Modified;
+            YearMonthODTO ym = new YearMonthODTO();
+            ym = await EditDate(null, null, null, null, null, faqTitle.Title);
+            faqTitle.Title = ym.Title;
 
+            _context.Entry(faqTitle).State = EntityState.Modified;
             await SaveContextChangesAsync();
 
             return await GetFaqTitleById(faqTitle.FaqTitleId);
@@ -2752,8 +2775,12 @@ namespace P2P.Services
             var faqTitle = _mapper.Map<FaqTitle>(faqTitleIDTO);
 
             faqTitle.FaqTitleId = 0;
-            _context.FaqTitles.Add(faqTitle);
 
+            YearMonthODTO ym = new YearMonthODTO();
+            ym = await EditDate(null, null, null, null, null, faqTitle.Title);
+            faqTitle.Title = ym.Title;
+
+            _context.FaqTitles.Add(faqTitle);
             await SaveContextChangesAsync();
 
             return await GetFaqTitleById(faqTitle.FaqTitleId);
@@ -2859,8 +2886,12 @@ namespace P2P.Services
         {
             var faqList = _mapper.Map<FaqList>(faqListIDTO);
 
-            _context.Entry(faqList).State = EntityState.Modified;
+            YearMonthODTO ym = new YearMonthODTO();
+            ym = await EditDate(null, null, null, null, faqList.Question, faqList.Answer);
+            faqList.Question = ym.Content;
+            faqList.Answer = ym.Title;
 
+            _context.Entry(faqList).State = EntityState.Modified;
             await SaveContextChangesAsync();
 
             return await GetFaqListById(faqList.FaqPageListId);
@@ -2871,10 +2902,14 @@ namespace P2P.Services
             var faqList = _mapper.Map<FaqList>(faqListIDTO);
 
             faqList.FaqPageListId = 0;
+
+            YearMonthODTO ym = new YearMonthODTO();
+            ym = await EditDate(null, null, null, null, faqList.Question, faqList.Answer);
+            faqList.Question = ym.Content;
+            faqList.Answer = ym.Title;
+
             _context.FaqLists.Add(faqList);
-
             await SaveContextChangesAsync();
-
             return await GetFaqListById(faqList.FaqPageListId);
         }
 
