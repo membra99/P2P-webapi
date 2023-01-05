@@ -3311,24 +3311,26 @@ namespace P2P.Services
 
                         YearMonthODTO YM1 = new YearMonthODTO();
                         var LanguageID = await _context.Pages.Where(x => x.PageId == retVal.PageId).Select(x => x.LanguageId).SingleOrDefaultAsync();
-                        YM1 = await ChangeDateFormatFront(retVal.SerpTitle, retVal.SerpDescription, retVal.Subtitle, null, retVal.Content, retVal.Title, LanguageID);
+                        YM1 = await ChangeDateFormatFront(retVal.SerpTitle, retVal.SerpDescription, retVal.Subtitle, retVal.PageTitle, retVal.Content, retVal.Title, LanguageID);
                         retVal.SerpTitle = YM1.SerpTitle;
                         retVal.SerpDescription = YM1.SerpDescription;
                         retVal.Subtitle = YM1.Subtitle;
                         retVal.Title = YM1.Title;
                         retVal.Content = YM1.Content;
+                        retVal.PageTitle = YM1.PageTitle;
                         return retVal;
                     }
                     break;
             }
             YearMonthODTO YM2 = new YearMonthODTO();
             var LanguageID1 = await _context.Pages.Where(x => x.PageId == page.PageId).Select(x => x.LanguageId).SingleOrDefaultAsync();
-            YM2 = await ChangeDateFormatFront(page.SerpTitle, page.SerpDescription, page.Subtitle, null, page.Content, page.Title, LanguageID1);
+            YM2 = await ChangeDateFormatFront(page.SerpTitle, page.SerpDescription, page.Subtitle, page.PageTitle, page.Content, page.Title, LanguageID1);
             page.SerpTitle = YM2.SerpTitle;
             page.SerpDescription = YM2.SerpDescription;
             page.Subtitle = YM2.Subtitle;
             page.Title = YM2.Title;
             page.Content = YM2.Content;
+            page.PageTitle = YM2.PageTitle;
             return page;
         }
 
