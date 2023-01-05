@@ -4337,8 +4337,8 @@ namespace P2P.Services
             YearMonthODTO YM = new YearMonthODTO();
             var academyreturn = await GetAcademy(id, 0, null).AsNoTracking().SingleOrDefaultAsync();
 
-            YM = await ChangeDateFormatAdmin(null, null, null, null, null, academyreturn.Title);
-
+            YM = await ChangeDateFormatAdmin(null, null, null, null, academyreturn.Excerpt, academyreturn.Title);
+            academyreturn.Excerpt = YM.Content;
             academyreturn.Title = YM.Title;
 
             return academyreturn;
@@ -4390,8 +4390,9 @@ namespace P2P.Services
             foreach (var academyreturn in academyList)
             {
                 ym = new YearMonthODTO();
-                ym = await ChangeDateFormatFront(null, null, null, null, null, academyreturn.Title, academyreturn.LanguageId);
+                ym = await ChangeDateFormatFront(null, null, null, null, academyreturn.Excerpt, academyreturn.Title, academyreturn.LanguageId);
                 academyreturn.Title = ym.Title;
+                academyreturn.Excerpt = ym.Content;
             }
             return academyList;
         }
@@ -4923,8 +4924,9 @@ namespace P2P.Services
                 foreach (var item in newsFeed)
                 {
                     YM = new YearMonthODTO();
-                    YM = await ChangeDateFormatAdmin(item.NewsText, null, null, null, null, null);
+                    YM = await ChangeDateFormatAdmin(item.NewsText, item.TagLine, null, null, null, null);
                     item.NewsText = YM.SerpTitle;
+                    item.TagLine = YM.SerpDescription;
                 }
             }
             else
@@ -4932,8 +4934,9 @@ namespace P2P.Services
                 foreach (var item in newsFeed)
                 {
                     YM = new YearMonthODTO();
-                    YM = await ChangeDateFormatFront(item.NewsText, null, null, null, null, null, languageId);
+                    YM = await ChangeDateFormatFront(item.NewsText, item.TagLine, null, null, null, null, languageId);
                     item.NewsText = YM.SerpTitle;
+                    item.TagLine = YM.SerpDescription;
                     //There is a chance that we also need item.Paragraph
                 }
             }
