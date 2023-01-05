@@ -3,6 +3,7 @@ using Entities.Context;
 using Entities.P2P.MainData;
 using Entities.P2P.MainData.Settings;
 using Microsoft.EntityFrameworkCore;
+using NetTopologySuite.Index.HPRtree;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using P2P.Base.Services;
@@ -2934,11 +2935,19 @@ namespace P2P.Services
                 var fl = await _context.FaqLists.Where(x => x.Position == faqList.Position && x.FaqTitleId == faqList.FaqTitleId).FirstOrDefaultAsync();
                 if (fl != null)
                 {
+                    YearMonthODTO ym = new YearMonthODTO();
+                    ym = await EditDate(null, null, null, null, faqList.Question, faqList.Answer);
+                    faqList.Question = ym.Content;
+                    faqList.Answer = ym.Title;
                     _context.Entry(fl).State = EntityState.Modified;
                     await SaveContextChangesAsync();
                 }
                 else
                 {
+                    YearMonthODTO ym = new YearMonthODTO();
+                    ym = await EditDate(null, null, null, null, faqList.Question, faqList.Answer);
+                    faqList.Question = ym.Content;
+                    faqList.Answer = ym.Title;
                     faqList.FaqPageListId = 0;
                     _context.FaqLists.Add(faqList);
                 }
@@ -4452,8 +4461,9 @@ namespace P2P.Services
             academy.UpdatedDate = DateTime.Now;
 
             YearMonthODTO ym = new YearMonthODTO();
-            ym = await EditDate(null, null, null, null, null, academy.Title);
+            ym = await EditDate(null, null, null, null, academy.Excerpt, academy.Title);
             academy.Title = ym.Title;
+            academy.Excerpt = ym.Content;
 
             _context.Entry(academy).State = EntityState.Modified;
             await SaveContextChangesAsync();
@@ -4972,8 +4982,10 @@ namespace P2P.Services
 
         public async Task<NewsFeedODTO> EditNewsFeed(NewsFeedIDTO newsFeedIDTO)
         {
-            var newsFeeds = _mapper.Map<NewsFeed>(newsFeedIDTO); ;
-
+            var newsFeeds = _mapper.Map<NewsFeed>(newsFeedIDTO);
+            YearMonthODTO YM = await EditDate(newsFeeds.NewsText, newsFeeds.TagLine, null, null, null, null);
+            newsFeeds.NewsText = YM.SerpTitle;
+            newsFeeds.TagLine = YM.SerpDescription;
             _context.Entry(newsFeeds).State = EntityState.Modified;
 
             await SaveContextChangesAsync();
@@ -6162,9 +6174,10 @@ namespace P2P.Services
                     await SaveContextChangesAsync();
                 }
                 YearMonthODTO ym1 = new YearMonthODTO();
-                ym1 = await EditDate(null, null, null, blog.PageTitle, blog.Content, null);
+                ym1 = await EditDate(null, null, null, blog.PageTitle, blog.Content, blog.Excerpt);
                 blog.PageTitle = ym1.PageTitle;
                 blog.Content = ym1.Content;
+                blog.Excerpt = ym1.Title;
                 _context.Entry(blog).State = EntityState.Modified;
                 await SaveContextChangesAsync();
                 return await GetBlogById(blog.BlogId);
