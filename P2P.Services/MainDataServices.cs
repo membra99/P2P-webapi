@@ -2118,7 +2118,12 @@ namespace P2P.Services
 
         public async Task<CashBackODTO> GetCashBackById(int id)
         {
-            return await GetCashBack(id, 0).AsNoTracking().SingleOrDefaultAsync();
+            var cashback=  await GetCashBack(id, 0).AsNoTracking().SingleOrDefaultAsync();
+            YearMonthODTO ym = new YearMonthODTO();
+            ym = await ChangeDateFormatAdmin(null, null, null, null, cashback.CashBack_ca, cashback.CashBack_terms);
+            cashback.CashBack_ca = ym.Content;
+            cashback.CashBack_terms = ym.Title;
+            return cashback;
         }
 
         public async Task<GetCashbackCampOfferODTO> Get(int id, bool isCampaign)
@@ -5005,6 +5010,12 @@ namespace P2P.Services
             if (newsFeeds.ReviewId == 0)
                 newsFeeds.ReviewId = null;
             newsFeeds.UrlTableId = null;
+
+            YearMonthODTO ym = new YearMonthODTO();
+            ym = await EditDate(null, null, null, null, newsFeeds.NewsText, newsFeeds.TagLine);
+            newsFeeds.NewsText = ym.Content;
+            newsFeeds.TagLine = ym.Title;
+
             _context.NewsFeeds.Add(newsFeeds);
             await SaveContextChangesAsync();
             if (newsFeedIDTO.Url != null)
